@@ -1,4 +1,4 @@
-# xeontem-front-end-course
+# xeontem-diplom-calendar
 
 - **Name:** Artsiom Kukharev (Артем Кухарев)
 
