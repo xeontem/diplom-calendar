@@ -1,4 +1,4 @@
-export default class Array  {
+class Array  {
   constructor () {
   return [
   {
@@ -95,3 +95,5 @@ export default class Array  {
   }
 
 ]}};
+
+export default new Array;

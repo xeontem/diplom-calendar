@@ -1,21 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './App';
 import registerServiceWorker from './registerServiceWorker';
+import './index.css';
 
-import Events from './events';
-import Calendar from './calendar/main';
+import events from './events';
 
-let events = new Events();
-
-export default class App extends React.Component {
-  constructor(...args) {
-    super(...args);
-  }
-  
-  render() {
-    return ( <Calendar /> )
-  }
-}
-
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App
+	events={events}
+ />, document.getElementById('root'));
 registerServiceWorker();
