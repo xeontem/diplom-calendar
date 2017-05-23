@@ -57,6 +57,7 @@ class Popup extends React.Component {
       <div ref='root' style={style} className='rbc-overlay'>
         <div className='rbc-overlay-header'>
           { localizer.format(props.slotStart, props.dayHeaderFormat, props.culture) }
+        }
         </div>
         {
           events.map((event, idx) =>

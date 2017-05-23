@@ -216,7 +216,7 @@ class MonthView extends React.Component {
         )}
       >
         {drilldownView
-          ? <a
+          ? <a//eslint-disable-line
               href="#"
               onClick={e => this.handleHeadingClick(date, drilldownView, e)}
             >

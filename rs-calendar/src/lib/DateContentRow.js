@@ -49,7 +49,7 @@ const defaultProps = {
 
 class DateContentRow extends React.Component {
 
-  constructor(...args) {
+  constructor(...args) {//eslint-disable-line
     super(...args);
   }
 

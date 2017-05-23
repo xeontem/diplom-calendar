@@ -204,24 +204,6 @@ class DaySlot extends React.Component {
     let node = findDOMNode(this);
     let selector = this._selector = new Selection(()=> findDOMNode(this))
 
-    let maybeSelect = (box) => {
-      let onSelecting = this.props.onSelecting
-      let current = this.state || {};
-      let state = selectionState(box);
-      let { startDate: start, endDate: end } = state;
-
-      if (onSelecting) {
-        if (
-          (dates.eq(current.startDate, start, 'minutes') &&
-          dates.eq(current.endDate, end, 'minutes')) ||
-          onSelecting({ start, end }) === false
-        )
-          return
-      }
-
-      this.setState(state)
-    }
-
     let selectionState = ({ y }) => {
       let { step, min, max } = this.props;
       let { top, bottom } = getBoundsForNode(node)
@@ -253,6 +235,25 @@ class DaySlot extends React.Component {
         endSlot: positionFromDate(end, min, this._totalMin)
       }
     }
+
+    let maybeSelect = (box) => {
+      let onSelecting = this.props.onSelecting
+      let current = this.state || {};
+      let state = selectionState(box);
+      let { startDate: start, endDate: end } = state;
+
+      if (onSelecting) {
+        if (
+          (dates.eq(current.startDate, start, 'minutes') &&
+          dates.eq(current.endDate, end, 'minutes')) ||
+          onSelecting({ start, end }) === false
+        )
+          return
+      }
+
+      this.setState(state)
+    }
+
 
     selector.on('selecting', maybeSelect)
     selector.on('selectStart', maybeSelect)

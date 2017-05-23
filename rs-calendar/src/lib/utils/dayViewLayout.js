@@ -201,7 +201,7 @@ export default function getStyledEvents ({
       }
     })
 
-    childGroups.forEach(group => {
+    childGroups.forEach(group => {//eslint-disable-line
       let parentIdx = idx
       let siblingIdx = 0
 

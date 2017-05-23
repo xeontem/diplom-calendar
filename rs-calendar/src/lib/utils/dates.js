@@ -122,7 +122,7 @@ let dates = {
     let ms = date.getTime()
       , div = 1;
 
-    switch (unit) {
+    switch (unit) {//eslint-disable-line
       case 'week':
         div *= 7
       case 'day':

@@ -13,18 +13,18 @@ const Formats = {
 }
 
 function getRangeBounds(range) {
-  let start = range[0]
-  let end = range[range.length - 1]
+  let start = range[0] || range.start;
+  let end = range[range.length - 1] || range.end;
   return { start, end }
 }
 
 export default function viewLabel(date, view, formats, culture) {
-  let View = VIEWS[view]
-  let headerSingle = view === views.MONTH || view === views.DAY
+  let View = VIEWS[view];
+  let headerSingle = view === views.MONTH || view === views.DAY;
 
-  formats = defaultFormats(formats || {})
+  formats = defaultFormats(formats || {});
 
-  let headerFormat = formats[Formats[view]]
+  let headerFormat = formats[Formats[view]];
 
   return headerSingle
     ? localizer.format(date, headerFormat, culture)

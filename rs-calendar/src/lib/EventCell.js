@@ -5,6 +5,7 @@ import dates from './utils/dates';
 import { accessor, elementType } from './utils/propTypes';
 import { accessor as get } from './utils/accessors';
 
+//---------------------------- it render on the month view -------------------------------
 let propTypes = {
   event: PropTypes.object.isRequired,
   slotStart: PropTypes.instanceOf(Date),
@@ -60,6 +61,7 @@ class EventCell extends React.Component {
           onClick={(e) => onSelect(event, e)}
         >
           <div className='rbc-event-content' title={title}>
+          <h6>CELL</h6>
             { Event
               ? <Event event={event} title={title}/>
               : title

@@ -18,9 +18,7 @@ class Toolbar extends React.Component {
 
   render() {
     let { messages, label } = this.props;
-
     messages = message(messages)
-
     return (
       <div className='rbc-toolbar'>
         <span className='rbc-btn-group'>

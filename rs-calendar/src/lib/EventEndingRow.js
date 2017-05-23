@@ -30,9 +30,9 @@ class EventEndingRow extends React.Component {
     while (current <= slotCount) {
       let key = '_lvl_' + current
 
-      let { event, left, right, span } = rowSegments.filter(seg =>
+      let { event, left, right, span } = rowSegments.filter(seg =>//eslint-disable-line
         isSegmentInSlot(seg, current)
-      )[0] || {} //eslint-disable-line
+      )[0] || {} 
 
       if (!event) {
         current++
@@ -91,7 +91,7 @@ class EventEndingRow extends React.Component {
     let count = eventsInSlot(segments, slot)
 
     return count
-      ? <a
+      ? <a                    //eslint-disable-line
           key={'sm_' + slot}
           href="#"
           className={'rbc-show-more'}
@@ -104,6 +104,7 @@ class EventEndingRow extends React.Component {
 
   showMore(slot, e) {
     e.preventDefault()
+    alert(slot);
     this.props.onShowMore(slot)
   }
 }

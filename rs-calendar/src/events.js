@@ -2,71 +2,96 @@ export default class Array  {
   constructor () {
   return [
   {
-    'title': 'All Day Event',
+    'title': '3 этап обучения',
     'allDay': true,
-    'start': new Date(2015, 3, 0),
-    'end': new Date(2015, 3, 1)
+    //'start': new Date(2017, 3, 18),
+    
+    'description': 'some description',
+    'duration': 4934951,
+    'id': '5915cd1589e1e8ac13de8550',
+    'location': 'Minsk, Kuprevicha str., 1/2 110',
+    'resources': [
+        {
+            'description': 'bla bla bla',
+            'resource': 'url',
+            'type': 'aliqua'
+        },
+        {
+            'description': 'bla bla bla',
+            'resource': 'url',
+            'type': 'aliqua'
+        },
+        {
+            'description': 'bla bla bla',
+            'resource': 'url',
+            'type': 'aliqua'
+        }
+    ],
+    'speakers': [3216548, 68765213, 46546321, 234768792],
+    'start': '2017-03-18T01:11:08Z',
+    // 'title': 'et',
+    'type': 'workshop'    
   },
   {
-    'title': 'Long Event',
-    'start': new Date(2015, 3, 7),
-    'end': new Date(2015, 3, 10)
+    'title': 'Webinar: CSS Frameworks',
+    "start":"2017-02-13T12:51:24Z",
   },
+
 
   {
     'title': 'DTS STARTS',
-    'start': new Date(2016, 2, 13, 0, 0, 0),
-    'end': new Date(2016, 2, 20, 0, 0, 0)
+    "start":"2017-02-13T12:51:24Z",
   },
+
 
   {
     'title': 'DTS ENDS',
-    'start': new Date(2016, 10, 6, 0, 0, 0),
-    'end': new Date(2016, 10, 13, 0, 0, 0)
+    "start":"2017-02-13T12:51:24Z",
   },
+
 
   {
     'title': 'Some Event',
-    'start': new Date(2015, 3, 9, 0, 0, 0),
-    'end': new Date(2015, 3, 9, 0, 0, 0)
+    "start":"2017-02-13T12:51:24Z",
   },
+
   {
     'title': 'Conference',
-    'start': new Date(2015, 3, 11),
-    'end': new Date(2015, 3, 13),
-    desc: 'Big conference for important people'
+    "start":"2017-02-13T12:51:24Z",
+    
+    'desc': 'Big conference for important people'
   },
   {
     'title': 'Meeting',
-    'start': new Date(2015, 3, 12, 10, 30, 0, 0),
-    'end': new Date(2015, 3, 12, 12, 30, 0, 0),
+    "start":"2017-02-13T12:51:24Z",
+    
     desc: 'Pre-meeting meeting, to prepare for the meeting'
   },
   {
     'title': 'Lunch',
-    'start':new Date(2015, 3, 12, 12, 0, 0, 0),
-    'end': new Date(2015, 3, 12, 13, 0, 0, 0),
+    "start":"2017-02-13T12:51:24Z",
+    
     desc: 'Power lunch'
   },
   {
     'title': 'Meeting',
-    'start':new Date(2015, 3, 12,14, 0, 0, 0),
-    'end': new Date(2015, 3, 12,15, 0, 0, 0)
+    "start":"2017-02-13T12:51:24Z",
   },
+
   {
     'title': 'Happy Hour',
-    'start':new Date(2015, 3, 12, 17, 0, 0, 0),
-    'end': new Date(2015, 3, 12, 17, 30, 0, 0),
+    "start":"2017-02-13T12:51:24Z",
+    
     desc: 'Most important meal of the day'
   },
   {
     'title': 'Dinner',
-    'start':new Date(2015, 3, 12, 20, 0, 0, 0),
-    'end': new Date(2015, 3, 12, 21, 0, 0, 0)
+    "start":"2017-02-13T12:51:24Z",
   },
+
   {
     'title': 'Birthday Party',
-    'start':new Date(2015, 3, 13, 7, 0, 0),
-    'end': new Date(2015, 3, 13, 10, 30, 0)
+    "start":"2017-02-13T12:51:24Z",
   }
+
 ]}};

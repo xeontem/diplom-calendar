@@ -502,7 +502,6 @@ class Calendar extends React.Component {
      , elementProps
      , date: current
      , ...props } = this.props;
-
    formats = defaultFormats(formats)
 
    let View = this.getView();
@@ -517,9 +516,7 @@ class Calendar extends React.Component {
        dateCellWrapper: BackgroundWrapper
      }
    )
-
    let ToolbarToRender = components.toolbar || Toolbar
-
    return (
      <div
        {...elementProps}

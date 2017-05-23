@@ -152,7 +152,6 @@ class Agenda extends React.Component {
         label = localizer.format(end, this.props.agendaTimeFormat, culture)
       }
     }
-
     if (dates.gt(day, start, 'day')) labelClass = 'rbc-continues-prior'
     if (dates.lt(day, end, 'day'))   labelClass += ' rbc-continues-after'
 

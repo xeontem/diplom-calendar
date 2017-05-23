@@ -310,7 +310,7 @@ export default class TimeGrid extends Component {
           style={segStyle(1, this.slots)}
         >
           {drilldownView ? (
-            <a
+            <a//eslint-disable-line
               href='#'
               onClick={e => this.handleHeaderClick(date, drilldownView, e)}
             >

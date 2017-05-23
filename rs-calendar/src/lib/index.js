@@ -23,5 +23,4 @@ Object.assign(Calendar, {
     dateCellWrapper: BackgroundWrapper
   }
 })
-
 export default Calendar

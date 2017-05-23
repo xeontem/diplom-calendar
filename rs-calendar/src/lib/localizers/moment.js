@@ -30,7 +30,7 @@ export let formats = {
   agendaDateFormat: 'ddd MMM DD',
   agendaTimeFormat: 'LT',
   agendaTimeRangeFormat: timeRangeFormat
-}
+};
 
 export default function (moment){
   let locale = (m, c) => c ? m.locale(c) : m;
