@@ -1,0 +1,12 @@
+//colors
+$black_87: rgba(0, 0, 0, 0.87);
+$color_gossamer_approx: #009688;
+
+a {
+  display: block;
+  text-decoration: none;
+  color: $black_87;
+}
+.md-text--theme-primary a {
+  color: $color_gossamer_approx;
+}
