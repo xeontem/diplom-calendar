@@ -9,6 +9,9 @@ export default class Month extends React.Component {
 		super(props);
 	}
 
+	_showEvent = () => alert(this.state.ev);
+
+
 	render() {
 		const to = new Date();
 		const from = new Date(to - 1000 * 60 * 60 * 24 * 30) ;
@@ -16,6 +19,7 @@ export default class Month extends React.Component {
 			<div style={{width: '100%'}}>
 				<div className="md-grid no-padding">	
 					<List><ListItem primaryText="Day" /></List>
+					<List><ListItem primaryText="Show Ev" onClick={this._showEvent}/></List>
 				</div>	
 			</div>	
 		)

@@ -7,7 +7,12 @@ import EventsList from '../eventsList/EventsList';
 export default class Month extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {ev: null}
 	}
+
+	_setEvent = () => this.setState({ev: 'my events'});
+
+	_showEvent = () => alert(this.state.ev);
 
 	render() {
 		const to = new Date();
@@ -15,7 +20,8 @@ export default class Month extends React.Component {
 		return (
 			<div style={{width: '100%'}}>
 				<div className="md-grid no-padding">	
-					<List><ListItem primaryText="Month" /></List>
+					<List><ListItem primaryText="Set Ev" onClick={this._setEvent} /></List>
+					<List><ListItem primaryText="Show Ev" onClick={this._showEvent}/></List>
 				</div>	
 			</div>	
 		)
