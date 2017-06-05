@@ -22,7 +22,8 @@ export default class TravelDatesPanel extends React.Component {
         {name: "Please wait",
          src: ""
         }
-      ]
+      ],
+      start: false
     };
   }
 
@@ -41,6 +42,12 @@ export default class TravelDatesPanel extends React.Component {
 
   componentWillUpdate() {
     
+  }
+
+  _saveDates = () => {
+    this.setState({start: true});
+    alert(`start: ${this.state.start}`);
+    this.componentDidMount();
   }
 
   _expand = () => {
@@ -96,7 +103,9 @@ export default class TravelDatesPanel extends React.Component {
             <h5 className="md-subheading-1">Description:</h5>
             <p className="md-body-1" key='0'>bla bla</p>
           </CSSTransitionGroup>
+          <div className="mentors">
           {Mentor().map((speaker) => speaker)}
+          </div>
         </ExpansionPanel>
     );
     }else return null;
