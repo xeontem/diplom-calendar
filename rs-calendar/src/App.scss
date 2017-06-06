@@ -16,10 +16,25 @@ a {
 	width: 100%;
 }
 
-.mentors {
-
+.md-block-expanded {
+	margin: 64px auto;
 }
 
-.mentors button {
-	
+.description {
+	padding: 15px;
+}
+
+.chip {
+	margin: 5px;
+}
+
+.loading-bar {
+	width: 110% !important;
+    top: -25px;
+    z-index: 1000;
+    left: -8px;
+}
+
+.event-selector {
+
 }

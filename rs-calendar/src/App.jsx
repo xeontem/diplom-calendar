@@ -18,7 +18,6 @@ import './App.css';
 
 export default class App extends PureComponent {
     constructor(props) {
-        console.dir(props);
         super(props);
         this.Agend = () => (<Agenda events={props.events}/>);
         this.title = 'Agenda';
@@ -74,7 +73,6 @@ export default class App extends PureComponent {
 
     render() {
         let count = this.state.count;
-        // console.dir(count);
         let View = this.state.view[count];
         let link = () => (
             <Link to="/month">Month</Link>

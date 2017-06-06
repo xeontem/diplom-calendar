@@ -12,31 +12,12 @@ WebFontLoader.load({
   },
 });
 
-// let events;
-
-// fetch('http://128.199.53.150/events')
-//   .then(function(response) {
-//   if(response.ok) {
-//     return response.json();
-//   }
-// }).then(function(myJson){
-// 	events = myJson;
-
-	// class myApp extends React.Component {
-	// 	constructor(props) {
-	// 		super(props);
-	// 	}
-
-	// 	render() {
-	// 		return <App events={events} />
-	// 	}
-	// }
-	ReactDOM.render((
-		<BrowserRouter>
-	        <div>
-	            <Route path="/" component={App} />
-	            <Redirect to="/agenda"/>
-	        </div>
-	    </BrowserRouter>),
-	  document.getElementById('root')
-	);
+ReactDOM.render((
+	<BrowserRouter>
+	    <div>
+	        <Route path="/" component={App} />
+	        <Redirect to="/agenda"/>
+	    </div>
+	</BrowserRouter>),
+	document.getElementById('root')
+);
