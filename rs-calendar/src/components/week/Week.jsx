@@ -2,7 +2,7 @@ import React from 'react';
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import List from 'react-md/lib/Lists/List';
 import ListItem from 'react-md/lib/Lists/ListItem';
-import EventsList from '../eventsList/EventsList';
+import EventsList from '../eventsList/eventsList';
 
 export default class Month extends React.Component {
 	constructor(props) {

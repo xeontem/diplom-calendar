@@ -1,4 +1,3 @@
-/* TravelDatesPanel.jsx */
 import React from 'react';
 import PropTypes from 'prop-types';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
@@ -12,11 +11,10 @@ import Button from 'react-md/lib/Buttons/Button';
 import Divider from 'react-md/lib/Dividers';
 import TextField from 'react-md/lib/TextFields';
 import Toolbar from 'react-md/lib/Toolbars';
-import loremIpsum from 'lorem-ipsum';
 
 import Card from '../eventCard/Card';
 
-export default class TravelDatesPanel extends React.Component {
+export default class EventsList extends React.Component {
   // static propTypes = {
   //   focused: PropTypes.bool,
   //   columnWidths: PropTypes.arrayOf(PropTypes.number),
@@ -40,16 +38,7 @@ export default class TravelDatesPanel extends React.Component {
   }
 
   componentDidMount() {
-    if(this.props.event){
-      let urls = [];
-      this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
-      Promise.all(urls.map(url => fetch(url)))
-        .then(resp => Promise.all( resp.map(r => r.json()) ))
-        .then(speakers => {
-            console.dir(speakers);
-            this.setState({speakers})
-        });
-    }
+    
   }
 
   componentWillUpdate() {
@@ -63,7 +52,15 @@ export default class TravelDatesPanel extends React.Component {
   }
 
   _expand = () => {
-    // alert('opened');
+    if(this.props.event){
+      let urls = [];
+      this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
+      Promise.all(urls.map(url => fetch(url)))
+        .then(resp => Promise.all( resp.map(r => r.json()) ))
+        .then(speakers => {
+            this.setState({speakers})
+        });
+    }
   };
 
   _openDialog = (e, pressed) => {
@@ -144,11 +141,9 @@ export default class TravelDatesPanel extends React.Component {
                 avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" random />}
               />
               ))}
-          </CSSTransitionGroup>
-          <div className="mentors">
-          </div>
-        </ExpansionPanel>
-      </div>  
+        </CSSTransitionGroup>
+      </ExpansionPanel>
+    </div>  
     );
   }
 }

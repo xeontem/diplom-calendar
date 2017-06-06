@@ -11,7 +11,7 @@ import inboxListItems from './components/constants/inboxListItems';
 import Month from './components/month/Month';
 import Week from './components/week/Week';
 import Day from './components/day/Day';
-import Agenda from './components/agenda/Agenda';
+import Agenda from './components/agenda/Agenda.jsx';
 
 import './App.css';
 
@@ -19,7 +19,6 @@ import './App.css';
 export default class App extends PureComponent {
     constructor(props) {
         super(props);
-        this.Agend = () => (<Agenda events={props.events}/>);
         this.title = 'Agenda';
         this.state = {
             key: 0,
@@ -94,7 +93,7 @@ export default class App extends PureComponent {
                 <Route exact path="/month" component={Month} />
                 <Route path="/week" component={Week} />
                 <Route path="/day" component={Day} />
-                <Route path="/agenda" component={this.Agend} />
+                <Route path="/agenda" component={Agenda} />
             </Switch>
             </NavigationDrawer>
         );
