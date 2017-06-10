@@ -55,8 +55,8 @@ export default class Column extends React.Component {
 		let endMins;
 		let height = 0;
 		if(this.props.day.event) {
-			startHours = this.props.day.event.start.slice(11, 13);
-			startMins = this.props.day.event.start.slice(14, 16);
+			startHours = new Date(this.props.day.event.start).toString().slice(16, 18);
+			startMins = new Date(this.props.day.event.start).toString().slice(19, 21);
 			marginTop = 24 + 55 * startHours;
 			marginTop += startMins * 0.9;
 			endHours = new Date(Number(new Date(this.props.day.event.start)) + Number(new Date(this.props.day.event.duration))).toString().slice(16, 18);

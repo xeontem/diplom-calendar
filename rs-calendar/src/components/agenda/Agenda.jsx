@@ -14,7 +14,7 @@ export default class Agenda extends React.Component {
 		this.state = {
 			events: [],
             filtered: [],
-			loaded: false,
+			loaded: 1,
 			toasts: [{text: "events successfully loaded"}],
             value: 'All',
             from: 'All',
@@ -35,16 +35,19 @@ export default class Agenda extends React.Component {
     			that.setState({
     				events,
                     filtered: events,
-    				loaded: true
+    				loaded: 0
     			});
     		});
         }
 	}
 
 	_progressBarShower = () => {
-		if(!this.state.loaded) return {opacity: 1};
-		else return {opacity: 0};
-	}
+        const mobile = typeof window.orientation !== 'undefined';
+        let top = 47;
+        let opacity = this.state.loaded;
+        if(mobile) top = 40;
+        return {opacity, top};
+    }
 
 	_snackBarShower = () => {
 		if(this.state.loaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;

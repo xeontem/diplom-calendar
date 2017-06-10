@@ -1,8 +1,8 @@
 {
-  "name": "rs-calendar-by-xeontem",
+  "name": "md-calendar",
   "version": "0.1.0",
   "private": true,
-  "description": "An example usage of react-md and create-react-app.",
+  "description": "rs-calendar-by-xeontem",
   "dependencies": {
     "node-sass": "^4.5.2",
     "npm-run-all": "^4.0.2",

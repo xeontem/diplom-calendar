@@ -42,7 +42,7 @@ export default class Week extends React.Component {
                          {name: 'workshop', abbreviation: 'workshop'}],
 			events: [],
             filtered: [],
-			loaded: false,
+			loaded: 1,
 			toasts: [{text: "events successfully loaded"}],
             value: 'All',
             from: 'All',
@@ -81,7 +81,7 @@ export default class Week extends React.Component {
                 appliedEventsMonth,
                 weekToShow,
                 curIndexOfWeek,
-				loaded: true
+				loaded: 0
 			});
 		});
         }
@@ -168,9 +168,12 @@ export default class Week extends React.Component {
     }
 
     _progressBarShower = () => {
-		if(!this.state.loaded) return {opacity: 1};
-		else return {opacity: 0};
-	}
+        const mobile = typeof window.orientation !== 'undefined';
+        let top = 47;
+        let opacity = this.state.loaded;
+        if(mobile) top = 40;
+        return {opacity, top};
+    }
 
 	_snackBarShower = () => {
 		if(this.state.loaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
@@ -406,7 +409,7 @@ export default class Week extends React.Component {
                     <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}, ${this.state.weekToShow.weekCounter+1} week`} />
                         
                     <div className="header-week">
-                        <div className="column-week">{mobile ? 'T' : 'Time'}</div>
+                        <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
                         <div className={today === 'Mon' ? "column-week today-week-day" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[0]}</span>Mon</p>
                         </div>

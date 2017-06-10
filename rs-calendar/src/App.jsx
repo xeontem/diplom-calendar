@@ -75,6 +75,16 @@ export default class App extends PureComponent {
                 <Route path="/day" component={Day} />
                 <Route path="/agenda" component={Agenda} />
             </Switch>
+            <Button
+              tooltipPosition="top"
+              tooltipLabel="send feedback"
+              href="mailto:xeontem@gmail.com"
+              floating
+              secondary
+              fixed
+            >
+              mail_outline
+            </Button>
             </NavigationDrawer>
         );
     }
