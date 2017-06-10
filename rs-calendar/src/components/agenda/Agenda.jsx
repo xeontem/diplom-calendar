@@ -23,6 +23,7 @@ export default class Agenda extends React.Component {
 	}
 	componentDidMount() {
         if(!this.state.events.length) {
+            console.log('fetching events');
     		let that = this;
     		fetch('http://128.199.53.150/events')
     		  .then(function(response) {
@@ -30,6 +31,7 @@ export default class Agenda extends React.Component {
     		    return response.json();
     		  }
     		}).then(function(events){
+                console.log('events successfully fetched');
     			that.setState({
     				events,
                     filtered: events,
@@ -164,15 +166,14 @@ export default class Agenda extends React.Component {
                             {name: 'webinar', abbreviation: 'webinar'},
                             {name: 'workshop', abbreviation: 'workshop'}]
         const mobile = typeof window.orientation !== 'undefined';
-		return (
-			<div className="agenda-wrapper">
+        return (
+            <div className="agenda-wrapper">
 				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
-				<div className="md-grid no-padding">
-					<DatePicker
-						id="local-ru-RU"
-				        label="Select from date"
-				        locales="ru-RU"
-				        defaultValue={this.state.from}
+                <div className="md-grid no-padding">
+                    <DatePicker
+                        id="local-ru-RU"
+                        label="Select from date"
+                        locales="ru-RU"
 				        className="md-cell"
                         onChange={this._filterByFromDate}
 					/>
@@ -180,16 +181,14 @@ export default class Agenda extends React.Component {
 						id="local-ru-RU"
 				        label="Select to date"
 				        locales="ru-RU"
-				        defaultValue={this.state.to}
 				        className="md-cell"
                         onChange={this._filterByToDate}
 					/>
                     <SelectField
                       id="statesControlled"
                       label="Select type of event"
-                      placeholder="Some State"
+                      placeholder="event type"
                       menuItems={stateItems}
-                      value={this.state.value}
                       onChange={this._filterByType}
                       errorText="A state is required"
                       className="md-cell"

@@ -6,7 +6,7 @@ export default [{
   key: 'Month',
   primaryText: <Link to="/month">Month</Link>,
   leftIcon: <FontIcon>date_range</FontIcon>,
-  active: false,
+  active: true,
 }, {
   key: 'Week',
   primaryText: <Link to="/week">Week</Link>,
@@ -21,6 +21,6 @@ export default [{
   key: 'Agenda',
   primaryText: <Link to="/agenda">Agenda</Link>,
   leftIcon: <FontIcon>list</FontIcon>,
-  active: true,
+  active: false,
 }, { key: 'divider', divider: true }
 ];

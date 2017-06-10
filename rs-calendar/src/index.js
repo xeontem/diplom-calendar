@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import App from './App';
 import './index.css';
-
 import WebFontLoader from 'webfontloader';
 
 WebFontLoader.load({
@@ -16,7 +15,7 @@ ReactDOM.render((
 	<BrowserRouter>
 	    <div>
 	        <Route path="/" component={App} />
-	        <Redirect to="/agenda"/>
+	        <Redirect to="/month"/>
 	    </div>
 	</BrowserRouter>),
 	document.getElementById('root')

@@ -6,7 +6,8 @@ import List from 'react-md/lib/Lists/List';
 import ListItem from 'react-md/lib/Lists/ListItem';
 import ExpansionPanel from 'react-md/lib/ExpansionPanels';
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import Chip from 'react-md/lib/Chips';import Dialog from 'react-md/lib/Dialogs';
+import Chip from 'react-md/lib/Chips';
+import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons/Button';
 import Divider from 'react-md/lib/Dividers';
 import TextField from 'react-md/lib/TextFields';
@@ -45,12 +46,6 @@ export default class EventsList extends React.Component {
     
   }
 
-  _openCard = () => {
-    this.setState({start: true});
-    alert(`start: ${this.state.start}`);
-    this.componentDidMount();
-  }
-
   _expand = () => {
     if(this.props.event){
       let urls = [];
@@ -82,12 +77,12 @@ export default class EventsList extends React.Component {
     const { columnWidths, focused, mobile } = this.props;
 
     let padd;
-    if (mobile) padd = { paddingRight: 16 };
+    if (mobile) padd = { paddingRight: 25 };
     else padd = {paddingRight: 0};
     
     let secLabel;
     if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
-    else secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)} Ends: ${new Date(this.props.event.duration).toString().slice(4, 24)}`
+    else secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)} Ends: ${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`
     return (
       <div>
       <Dialog

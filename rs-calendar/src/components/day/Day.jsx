@@ -5,17 +5,23 @@ import Snackbar from 'react-md/lib/Snackbars';
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 import DataTable from 'react-md/lib/DataTables/DataTable';
-import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableBody from 'react-md/lib/DataTables/TableBody';
+import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
-import EventsList from '../eventsList/eventsList';
+import EventsRow from './eventsRow';
 
 export default class Agenda extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+            stateItems: [{name: 'All', abbreviation: 'All'},
+                            {name: 'deadline', abbreviation: 'deadline'},
+                            {name: 'event', abbreviation: 'event'},
+                            {name: 'lecture', abbreviation: 'lecture'},
+                            {name: 'webinar', abbreviation: 'webinar'},
+                            {name: 'workshop', abbreviation: 'workshop'}],
 			events: [],
             filtered: [],
 			loaded: false,
@@ -25,8 +31,10 @@ export default class Agenda extends React.Component {
             to: 'All'
 		}
 	}
-	componentDidMount() {
+
+	componentWillMount() {
         if(!this.state.events.length) {
+        console.log('fetching events');
 		let that = this;
 		fetch('http://128.199.53.150/events')
 		  .then(function(response) {
@@ -34,7 +42,7 @@ export default class Agenda extends React.Component {
 		    return response.json();
 		  }
 		}).then(function(events){
-           
+            console.log('events successfully fetched');
 			that.setState({
 				events,
                 filtered: events,
@@ -161,50 +169,8 @@ export default class Agenda extends React.Component {
         this.setState({filtered, value});
     }
 
-	  _openCard = () => {
-	    this.setState({start: true});
-	    alert(`start: ${this.state.start}`);
-	    this.componentDidMount();
-	  }
-
-	  _expand = () => {
-	    // alert('opened');
-	  };
-
-	  _openDialog = (e, pressed) => {
-	      let { pageX, pageY } = e;
-	      if (e.changedTouches) {
-	        const [touch] = e.changedTouches;
-	        pageX = touch.pageX;
-	        pageY = touch.pageY;
-	      }
-	    this.setState({ visible: true, pageX, pageY });
-	  }
-
-	  _closeDialog = () => {
-	    this.setState({ visible: false });
-	  }
-
-
 	render() {
-		const to = new Date();
-		const from = new Date(to - 1000 * 60 * 60 * 24 * 30) ;
-        const stateItems = [{name: 'All', abbreviation: 'All'},
-                            {name: 'deadline', abbreviation: 'deadline'},
-                            {name: 'event', abbreviation: 'event'},
-                            {name: 'lecture', abbreviation: 'lecture'},
-                            {name: 'webinar', abbreviation: 'webinar'},
-                            {name: 'workshop', abbreviation: 'workshop'}]
-
-        const rows = this.state.filtered.map((event, i) => (
-	      <TableRow key={i}>
-	        <TableColumn>{event.title}</TableColumn>
-	        <TableColumn>{event.type}</TableColumn>
-	        <TableColumn>{event.description.slice(0, 45)+'...'}</TableColumn>
-	        <TableColumn>{event.location}</TableColumn>
-	      </TableRow>
-	    ));
-
+        let mobile = typeof window.orientation !== 'undefined';
 		return (
 			<div className="agenda-wrapper">
 				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
@@ -213,7 +179,6 @@ export default class Agenda extends React.Component {
 						id="local-ru-RU"
 				        label="Select from date"
 				        locales="ru-RU"
-				        defaultValue={this.state.from}
 				        className="md-cell"
                         onChange={this._filterByFromDate}
 					/>
@@ -221,7 +186,6 @@ export default class Agenda extends React.Component {
 						id="local-ru-RU"
 				        label="Select to date"
 				        locales="ru-RU"
-				        defaultValue={this.state.to}
 				        className="md-cell"
                         onChange={this._filterByToDate}
 					/>
@@ -229,8 +193,7 @@ export default class Agenda extends React.Component {
                       id="statesControlled"
                       label="Select type of event"
                       placeholder="Some State"
-                      menuItems={stateItems}
-                      value={this.state.value}
+                      menuItems={this.state.stateItems}
                       onChange={this._filterByType}
                       errorText="A state is required"
                       className="md-cell"
@@ -242,14 +205,14 @@ export default class Agenda extends React.Component {
 					<DataTable plain onClick={this._showInfo}>
 				        <TableHeader>
 				          <TableRow>
-				            <TableColumn>title</TableColumn>
 				            <TableColumn>type</TableColumn>
+                            <TableColumn>title</TableColumn>
 				            <TableColumn>description</TableColumn>
 				            <TableColumn>location</TableColumn>
 				          </TableRow>
 				        </TableHeader>
 				        <TableBody>
-				          {rows}
+				          { this.state.filtered.map((event) => (<EventsRow key={event.id} mobile={mobile} event={event}/>)) }
 				        </TableBody>
 				     </DataTable>
 				</div>

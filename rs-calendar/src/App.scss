@@ -11,30 +11,220 @@ a {
   color: $color_gossamer_approx;
 }
 
+.action {
+    display: block !important;
+    width: 150px;
+    height: 40px !important;
+    margin: 15px auto !important;
+}
+
+.date-container {
+    cursor: auto !important;
+}
+
+//------------------------- MONTH --------------------------------
+.header-month {
+    border: 1px solid #ddd;
+    height: 40px;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.column-month {
+  color: rgba(0, 0, 0, 0.54);
+  text-align: center;
+  width: 55px;
+}
+
+.body-month {
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-around;
+}
+
+.body-month:hover {
+  background: #eee;
+}
+
+.table-cell {
+  padding: 0px !important;
+}
+//------------------------- WEEK ---------------------------------
+.header-week {
+    border: 1px solid #ddd;
+    height: 55px;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-around;
+}
+
+.column-week {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 40px;
+}
+
+.event-column-week {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+.event-column-week:hover {
+  box-shadow: 0px 0px 5px 1px black;
+}
+
+.body-week {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-around;
+    height: 1340px;
+}
+
+.body-week:hover {
+  background: #eee;
+}
+
+
+.time {
+  width: 40px;
+}
+
+.current-time {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: green;
+}
+
+
+.dot-current-time {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: green;
+    margin-top: -4px;
+    margin-left: -5px;
+}
+
+.time > div {
+    width: 50px;
+    height: 50px;
+    border-left: 1px solid #ddd;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.time-divider {
+    width: 10000%;
+    height: 1px;
+    background: #ddd;
+}
+
+.today-week-day {
+    width: 45px;
+    height: 45px;
+    box-shadow: 0px 0px 5px 1px #333;
+    background: #009688;
+    color: white;
+    margin-top: -5px;
+    border-radius: 5px;
+    padding-top: 3px;
+}
+
+.week-day-number {
+    display: block;
+    margin: -3px;
+    font-size: 14pt;
+}
+
+
 //------------------------- AGENDA -------------------------------
 .agenda-wrapper {
-	width: 100%;
-}
-
-.md-block-expanded {
-	margin: 64px auto;
-}
-
-.description {
-	padding: 15px;
+  width: 100%;
 }
 
 .chip {
-	margin: 5px;
+  margin: 5px;
 }
 
 .loading-bar {
-	width: 110% !important;
-    top: -25px;
-    z-index: 1000;
-    left: -8px;
+    position: fixed !important;
+    width: 100% !important;
+    top: 40px;
+    z-index: 15;
+    left: 0px;
 }
 
-.event-selector {
+//------------------------- EVENTS --------------------------------
 
+.event-cell {
+  margin: 0 auto;
+  padding-bottom: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
+
+.deadline {
+  background: red;
+}
+
+.event {
+  background: green;
+}
+
+.lecture {
+  background: yellow;
+}
+.webinar {
+  background: cyan;
+}
+.workshop {
+  background: blue;
+}
+
+.day-number {
+  margin: 0;
+  font-size: 16pt;
+}
+
+//---------------------------------
+
+.today {
+    background: #009688 !important;
+}
+
+.box {
+  justify-content: space-around;
+  border: 1px solid #ddd;
+}
+
+@media (max-width: 576px) {
+
+  .table-cell {
+      width: 12vw !important;
+      height: 12vw !important;
+  }
+
+  .today {
+      background: #009688;
+  }
+    
+}
+
