@@ -410,25 +410,25 @@ export default class Week extends React.Component {
                         
                     <div className="header-week">
                         <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
-                        <div className={today === 'Mon' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Mon' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[0]}</span>Mon</p>
                         </div>
-                        <div className={today === 'Tue' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Tue' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[1]}</span>Tue</p>
                         </div>
-                        <div className={today === 'Wed' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Wed' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[2]}</span>Wed</p>
                         </div>
-                        <div className={today === 'Thu' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Thu' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[3]}</span>Thu</p>
                         </div>
-                        <div className={today === 'Fri' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Fri' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[4]}</span>Fri</p>
                         </div>
-                        <div className={today === 'Sat' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Sat' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[5]}</span>Sat</p>
                         </div>
-                        <div className={today === 'Sun' ? "column-week today-week-day" : "column-week"}>
+                        <div className={today === 'Sun' ? "column-week today-week-day today" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[6]}</span>Sun</p>
                         </div>
                     </div>
