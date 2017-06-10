@@ -1,27 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
 import Avatar from 'react-md/lib/Avatars';
-import List from 'react-md/lib/Lists/List';
-import ListItem from 'react-md/lib/Lists/ListItem';
 import ExpansionPanel from 'react-md/lib/ExpansionPanels';
-import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import Chip from 'react-md/lib/Chips';
 import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons/Button';
-import Divider from 'react-md/lib/Dividers';
-import TextField from 'react-md/lib/TextFields';
 import Toolbar from 'react-md/lib/Toolbars';
 
 import Card from '../eventCard/Card';
 
 export default class EventsList extends React.Component {
-  // static propTypes = {
-  //   focused: PropTypes.bool,
-  //   columnWidths: PropTypes.arrayOf(PropTypes.number),
-
-  //   mobile: PropTypes.bool.isRequired,
-  // };
 
   constructor(props) {
     super(props);
@@ -73,7 +61,7 @@ export default class EventsList extends React.Component {
   }
 
   render() {
-    const { formattedStartDate, tempStartDate, formattedEndDate, tempEndDate, minEndDate } = this.state;
+    const { tempStartDate, formattedEndDate, tempEndDate, minEndDate } = this.state;
     const { columnWidths, focused, mobile } = this.props;
 
     let padd;

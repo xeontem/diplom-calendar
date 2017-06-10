@@ -1,20 +1,10 @@
 import React from 'react';// eslint-disable-next-line
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import Divider from 'react-md/lib/Dividers';
 import LinearProgress from 'react-md/lib/Progress/LinearProgress';
 import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
 import EventsList from '../eventsList/eventsList';
 import SelectField from 'react-md/lib/SelectFields';
-import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
-import DataTable from 'react-md/lib/DataTables/DataTable';
-import TableBody from 'react-md/lib/DataTables/TableBody';
-import TableHeader from 'react-md/lib/DataTables/TableHeader';
-import TableRow from 'react-md/lib/DataTables/TableRow';
-import TableColumn from 'react-md/lib/DataTables/TableColumn';
-import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons';
-import Toolbar from 'react-md/lib/Toolbars';
-import Card from '../eventCard/Card';
 
 import Column from './column';
 
@@ -115,7 +105,6 @@ export default class Month extends React.Component {
         }
 
         let arrOfWeeks = [];
-        let weekCount = 0;
         let weekArr = [];
         let curMonthNumber = currentDate.getMonth();
         let nextDate = date;

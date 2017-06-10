@@ -121,7 +121,6 @@ export default class Week extends React.Component {
         }
 
         let arrOfWeeks = [];
-        let weekCount = 0;
         let weekArr = [];
         let curMonthNumber = currentDate.getMonth();
         let nextDate = date;
