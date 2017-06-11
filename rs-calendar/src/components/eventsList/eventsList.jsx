@@ -26,14 +26,6 @@ export default class EventsList extends React.Component {
     };
   }
 
-  componentDidMount() {
-    
-  }
-
-  componentWillUpdate() {
-    
-  }
-
   _expand = () => {
     if(this.props.event){
       let urls = [];
@@ -61,12 +53,13 @@ export default class EventsList extends React.Component {
   }
 
   render() {
-    const { tempStartDate, formattedEndDate, tempEndDate, minEndDate } = this.state;
+    // const { tempStartDate, formattedEndDate, tempEndDate, minEndDate } = this.state;
+    // const mobile = this.props.mobile;
     const { columnWidths, focused, mobile } = this.props;
-
-    let padd;
-    if (mobile) padd = { paddingRight: 25 };
-    else padd = {paddingRight: 0};
+    console.dir(columnWidths);
+    // let { columnWidths }
+    let icon = 'keyboard_arrow_down';
+    if (mobile) icon = null;
     
     let secLabel;
     if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
@@ -74,7 +67,7 @@ export default class EventsList extends React.Component {
     return (
       <div>
       <Dialog
-          id="fullPageExample"
+          id="fullPageDialog"
           visible={this.state.visible}
           pageX={this.state.pageX}
           pageY={this.state.pageY}
@@ -84,26 +77,26 @@ export default class EventsList extends React.Component {
         >
           <Toolbar
             colored
+            className={this.props.event.type}
             nav={<Button icon onClick={this._closeDialog}>close</Button>}
             actions={<Button flat label="OK" onClick={this._closeDialog} />}
-            title={`${this.props.event.type}: ${this.props.event.title}`}
+            title={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
             fixed
           />
           <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
         </Dialog>
       <ExpansionPanel
-        style={padd}
-        focused={focused}
-        columnWidths={columnWidths}
-        label={`${this.props.event.type}: ${this.props.event.title}`}
+        expandIconChildren={icon}
+        label={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
         secondaryLabel={secLabel}
+        headerClassName={this.props.event.type}
+        columnWidths={columnWidths}
         contentClassName="md-grid"
         cancelLabel="HIDE"
-        onCancel={this._resetDates}
         saveLabel="OPEN"
         onSave={this._openDialog}
         onExpandToggle={this._expand}
-        defaultExpanded={false}
+        closeOnSave={false}
       >
 
 

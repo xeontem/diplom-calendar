@@ -59,16 +59,17 @@ export default class EventsRow extends React.Component {
 		          aria-label="New Event"
 		        >
 		          <Toolbar
+		            className={this.props.event.type}
 		            colored
 		            nav={<Button icon onClick={this._closeDialog}>close</Button>}
 		            actions={<Button flat label="OK" onClick={this._closeDialog} />}
-		            title={`${this.props.event.type}: ${this.props.event.title}`}
+		            title={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
 		            fixed
 		          />
 		          <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
 		        </Dialog>
-			        <TableColumn>{this.props.event.type}</TableColumn>
-			        <TableColumn>{this.props.event.title}</TableColumn>
+			        <TableColumn>{this.props.event.type.toUpperCase()}</TableColumn>
+			        <TableColumn>{this.props.event.title.toUpperCase()}</TableColumn>
 			        <TableColumn>{this.props.event.description.slice(0, 45)+'...'}</TableColumn>
 			        <TableColumn>{this.props.event.location}</TableColumn>
 		        </TableRow>

@@ -39,12 +39,16 @@ export default class ExpandableMediaCard extends React.Component {
         ))}
         <Divider/>
         <div style={{marginLeft: 15}}>
-          <h3>Description:</h3>
+          <div style={{display: 'flex'}}>
+            <Button icon>description</Button>
+            <h3 style={{padding: 10}}>Description:</h3>
+          </div>
           <p>{this.props.event.description}</p>
         </div>
         <Divider/>
-        <div style={{marginLeft: 15}}>
-          <h3>{`Starts: ${new Date(this.props.event.start).toString().slice(4, 24)} Ends: ${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`}</h3>
+        <div style={{marginLeft: 15, display: 'flex'}}>
+          <Button icon>timelapse</Button>
+          <h3 style={{padding: 10}}>{`${new Date(this.props.event.start).toString().slice(4, 24)} - ${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`}</h3>
         </div>
         <Divider/>
         <CardActions expander>

@@ -189,21 +189,21 @@ a {
 }
 
 .deadline {
-  background: $md-pink-500;
+  background: $md-pink-500 !important;
 }
 
 .event {
-  background: $md-green-500;
+  background: $md-green-500 !important;
 }
 
 .lecture {
-  background: $md-secondary-color;
+  background: $md-secondary-color !important;
 }
 .webinar {
-  background: $md-deep-purple-500;
+  background: $md-orange-500 !important;
 }
 .workshop {
-  background: $md-primary-color;
+  background: $md-purple-500 !important;
 }
 
 .day-number {
@@ -225,6 +225,10 @@ a {
 .box {
   justify-content: space-around;
   border: 1px solid #ddd;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 @media (max-width: 576px) {

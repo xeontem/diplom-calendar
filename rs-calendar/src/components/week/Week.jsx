@@ -42,7 +42,7 @@ export default class Week extends React.Component {
                          {name: 'workshop', abbreviation: 'workshop'}],
 			events: [],
             filtered: [],
-			loaded: 1,
+			notLoaded: 1,
 			toasts: [{text: "events successfully loaded"}],
             value: 'All',
             from: 'All',
@@ -81,7 +81,7 @@ export default class Week extends React.Component {
                 appliedEventsMonth,
                 weekToShow,
                 curIndexOfWeek,
-				loaded: 0
+				notLoaded: 0
 			});
 		});
         }
@@ -170,13 +170,13 @@ export default class Week extends React.Component {
     _progressBarShower = () => {
         const mobile = typeof window.orientation !== 'undefined';
         let top = 47;
-        let opacity = this.state.loaded;
+        let opacity = this.state.notLoaded;
         if(mobile) top = 40;
         return {opacity, top};
     }
 
 	_snackBarShower = () => {
-		if(this.state.loaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
+		if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
 	}
 
 
