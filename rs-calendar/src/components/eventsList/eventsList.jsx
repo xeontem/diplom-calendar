@@ -53,11 +53,7 @@ export default class EventsList extends React.Component {
   }
 
   render() {
-    // const { tempStartDate, formattedEndDate, tempEndDate, minEndDate } = this.state;
-    // const mobile = this.props.mobile;
     const { columnWidths, focused, mobile } = this.props;
-    console.dir(columnWidths);
-    // let { columnWidths }
     let icon = 'keyboard_arrow_down';
     if (mobile) icon = null;
     

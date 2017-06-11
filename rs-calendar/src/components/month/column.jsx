@@ -26,7 +26,6 @@ export default class Column extends React.Component {
 	        .then(resp => Promise.all( resp.map(r => r.json()) ))
 	        .then(speakers => {
 	        	let notLoaded = false;
-	        	console.dir('speakers loaded');
 	            this.setState({speakers, notLoaded})
 	        });
 	    }
@@ -47,7 +46,7 @@ export default class Column extends React.Component {
 
 	render() {
 		return (
-			<Button floating className={ this.props.day.today ? 'today table-cell' : 'table-cell'} onClick={this._openDialog}>
+			<Button floating className={ this.props.day.today ? `today table-cell ${this.props.day.event ? this.props.day.event.type : null}` : `table-cell ${this.props.day.event ? this.props.day.event.type : null}`} onClick={this._openDialog}>
 			{this.props.day.event ?
 			<Dialog 
 				id={`calendarEvent${this.props.index}`}
@@ -69,7 +68,7 @@ export default class Column extends React.Component {
 	                <Card event={this.props.day.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
             </Dialog> : null}
                     <p className="day-number">{this.props.day.dayNumber}</p>
-                    {this.props.day.event ? <div className={`event-cell ${this.props.day.event.type}`}></div> : null}
+                    {this.props.day.event && this.props.day.today ? <div className={`event-cell ${this.props.day.event.type}`}></div> : null}
             </Button>					
 		)
 	}

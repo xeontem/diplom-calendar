@@ -28,7 +28,6 @@ export default class Column extends React.Component {
 	        .then(resp => Promise.all( resp.map(r => r.json()) ))
 	        .then(speakers => {
 	        	let notLoaded = false;
-	        	console.dir('speakers loaded');
 	            this.setState({speakers, notLoaded})
 	        });
 	    }
@@ -67,9 +66,6 @@ export default class Column extends React.Component {
 			height -= startMins * 0.9;
 			height += endMins * 0.9;
 			if(startDate !== endDate) height = 1340;
-			console.log(this.props.day.event.start);
-			console.log(`startHours: ${startHours}; startMins: ${startMins}; marginTop: ${marginTop}`);
-			console.log(`endHours: ${endHours}; endMins: ${endMins}; height: ${height}`);
 		}
 		return (
 			<div style={{marginTop, height}} className={this.props.day.event ? `${this.props.day.event.type} event-column-week` : 'event-column-week'} onClick={this._openDialog}>

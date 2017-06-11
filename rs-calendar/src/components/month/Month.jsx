@@ -49,7 +49,6 @@ export default class Month extends React.Component {
 	}
 	componentWillMount() {
         if(!this.state.events.length) {
-        console.log('fetching events');
 		let that = this;
 		fetch('http://128.199.53.150/events')
 		  .then(function(response) {
@@ -57,7 +56,6 @@ export default class Month extends React.Component {
 		    return response.json();
 		  }
 		}).then(function(events){
-            console.log('events successfully fetched');
             let appliedEventsMonth = that._applyEventsOnDates(events);
             let month = that._calculateMonthArr(that.state.dateToShow);
 			that.setState({
@@ -195,7 +193,6 @@ export default class Month extends React.Component {
         });
         let appliedEventsMonth = this._applyEventsOnDates(filtered);
         let month = this._calculateMonthArr(this.state.dateToShow);
-        // console.dir(appliedEventsMonth);
         this.setState({filtered, from, month, appliedEventsMonth});
     }
 
@@ -281,9 +278,7 @@ export default class Month extends React.Component {
 
     _changeMonth = (curMonth) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
-        console.log(`Previous date: ${dateToShow}`);
         dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
-        console.log(`Current date: ${dateToShow}`);
         dateToShow = new Date(dateToShow).valueOf();
         let month = this._calculateMonthArr(dateToShow);
         let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
@@ -293,6 +288,26 @@ export default class Month extends React.Component {
     _toggle = (value) => {
         if(this.state.toggleValue == value) value = 'All';
         this._filterByType(value);
+    }
+
+    _prevMonth = () => {
+        let curYear = this.state.curYear;
+        let dateToShow = this.state.dateToShow - 1000*60*60*24*30;
+        let curMonth = new Date(dateToShow).toString().slice(4, 7);
+        if(curMonth === "Dec") curYear--;
+        let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        this.setState({curYear, curMonth, dateToShow, month, appliedEventsMonth});
+    }
+
+    _nextMonth = () => {
+        let curYear = this.state.curYear;
+        let dateToShow = this.state.dateToShow + 1000*60*60*24*30;
+        let curMonth = new Date(dateToShow).toString().slice(4, 7);
+        if(curMonth === "Jan") curYear++;
+        let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        this.setState({curYear, curMonth, dateToShow, month, appliedEventsMonth});
     }
 
 	render() {
@@ -355,7 +370,11 @@ export default class Month extends React.Component {
                     />
                 </div>  
                 <div style={{maxWidth: 750, margin: 'auto'}}>
-                    <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}`} />
+                    <div className="navigation">
+                        <Button className="navigate-button" onClick={this._prevMonth} icon>navigate_before</Button>
+                        <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}`} />
+                        <Button className="navigate-button" onClick={this._nextMonth} icon>navigate_next</Button>
+                    </div>
                     <div className="header-week">
                         <div className="column-month">{mobile ? 'Mon' : 'Monday'}</div>
                         <div className="column-month">{mobile ? 'Tue' : 'Tuesday'}</div>

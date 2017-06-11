@@ -23,7 +23,6 @@ export default class Agenda extends React.Component {
 	}
 	componentDidMount() {
         if(!this.state.events.length) {
-            console.log('fetching events');
     		let that = this;
     		fetch('http://128.199.53.150/events')
     		  .then(function(response) {
@@ -31,7 +30,6 @@ export default class Agenda extends React.Component {
     		    return response.json();
     		  }
     		}).then(function(events){
-                console.log('events successfully fetched');
     			that.setState({
     				events,
                     filtered: events,

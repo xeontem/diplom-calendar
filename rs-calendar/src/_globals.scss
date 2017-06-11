@@ -16,6 +16,14 @@ a {
 
 }
 
+.navigation {
+  display: flex;
+}
+
+.navigate-button {
+  margin: 15px auto !important;
+}
+
 .md-text--theme-primary a {
   color: $md-primary-color;
 }
@@ -117,7 +125,7 @@ a {
     position: absolute;
     width: 100%;
     height: 1px;
-    background: $md-secondary-color;
+    background: $md-primary-color;
 }
 
 
@@ -126,7 +134,7 @@ a {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: $md-secondary-color;
+    background: $md-primary-color;
     margin-top: -4px;
     margin-left: -5px;
 }

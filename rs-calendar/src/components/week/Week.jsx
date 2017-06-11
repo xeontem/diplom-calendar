@@ -51,7 +51,6 @@ export default class Week extends React.Component {
 	}
 	componentWillMount() {
         if(!this.state.events.length) {
-		console.log('fetching events');
         let that = this;
 		fetch('http://128.199.53.150/events')
 		  .then(function(response) {
@@ -59,7 +58,6 @@ export default class Week extends React.Component {
 		    return response.json();
 		  }
 		}).then(function(events){
-            console.log('events successfully fetched');
             let appliedEventsMonth = that._applyEventsOnDates(events);
             let month = that._calculateMonthArr(that.state.dateToShow);
             let weekToShow;
@@ -323,12 +321,59 @@ export default class Week extends React.Component {
         this._filterByType(value);
     }
 
+    _prevMonth = (_prevWeek) => {
+        let curYear = this.state.curYear;
+        let dateToShow = this.state.dateToShow - 1000*60*60*24*30;
+        let curMonth = new Date(dateToShow).toString().slice(4, 7);
+        if(curMonth === "Dec") curYear--;
+        let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let weekToShow = this.state.weekToShow;
+        if(_prevWeek === '_prevWeek') {
+            weekToShow = appliedEventsMonth[appliedEventsMonth.length-1];
+            weekToShow.weekCounter = appliedEventsMonth.length-1;
+        }   
+        this.setState({weekToShow, curYear, curMonth, dateToShow, month, appliedEventsMonth});
+    }
+
+    _nextMonth = (_nextWeek) => {
+        let curYear = this.state.curYear;
+        let dateToShow = this.state.dateToShow + 1000*60*60*24*30;
+        let curMonth = new Date(dateToShow).toString().slice(4, 7);
+        if(curMonth === "Jan") curYear++;
+        let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let weekToShow = this.state.weekToShow;
+        if(_nextWeek === '_nextWeek') {
+            weekToShow = appliedEventsMonth[0];
+            weekToShow.weekCounter = 0;
+        }   
+        this.setState({weekToShow, curYear, curMonth, dateToShow, month, appliedEventsMonth});
+    }
+
+    _prevWeek = () => {
+        let weekToShow = this.state.weekToShow;
+        if(weekToShow.weekCounter === 0) this._prevMonth('_prevWeek');
+        else {
+            weekToShow.weekCounter--;
+            this.setState({weekToShow});
+        }
+    }
+
+    _nextWeek = () => {
+        let weekToShow = this.state.weekToShow;
+        if(weekToShow.weekCounter === this.state.appliedEventsMonth.length-1) this._nextMonth('_nextWeek');
+        else {
+            weekToShow.weekCounter++;
+            this.setState({weekToShow});
+        }
+    }
+
 	render() {
         let curTimeHours = (new Date).toString().slice(16, 18);
         let curTimeMins = (new Date).toString().slice(19, 21);
         let top = 34 + 55*curTimeHours;
         top += curTimeMins*0.9;
-        console.log(curTimeHours, curTimeMins);
         const mobile = typeof window.orientation !== 'undefined';
         let week = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
         let today = false;
@@ -406,7 +451,11 @@ export default class Week extends React.Component {
                     />
                 </div>  
                 <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
-                    <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}, ${this.state.weekToShow.weekCounter+1} week`} />
+                    <div className="navigation">
+                        <Button className="navigate-button" onClick={this._prevWeek} icon>navigate_before</Button>
+                        <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}, ${this.state.weekToShow.weekCounter+1} week`} />
+                        <Button className="navigate-button" onClick={this._nextWeek} icon>navigate_next</Button>
+                    </div>
                         
                     <div className="header-week">
                         <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
