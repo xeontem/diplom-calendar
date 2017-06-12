@@ -9,37 +9,37 @@ import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 import EventsList from '../eventsList/eventsList';
 
 export default class Agenda extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			events: [],
+    constructor(props) {
+        super(props);
+        this.state = {
+            events: [],
             filtered: [],
-			notLoaded: 1,
-			toasts: [{text: "events successfully loaded"}],
+            notLoaded: 1,
+            toasts: [{text: "events successfully loaded"}],
             value: 'All',
             from: 'All',
             to: 'All'
-		}
-	}
-	componentDidMount() {
-        if(!this.state.events.length) {
-    		let that = this;
-    		fetch('http://128.199.53.150/events')
-    		  .then(function(response) {
-    		  if(response.ok) {
-    		    return response.json();
-    		  }
-    		}).then(function(events){
-    			that.setState({
-    				events,
-                    filtered: events,
-    				notLoaded: 0
-    			});
-    		});
         }
-	}
+    }
+    componentDidMount() {
+        if(!this.state.events.length) {
+            let that = this;
+            fetch('http://128.199.53.150/events')
+                .then(function(response) {
+                    if(response.ok) {
+                    return response.json();
+                    }
+                }).then(function(events){
+                    that.setState({
+                        events,
+                        filtered: events,
+                        notLoaded: 0
+                    });
+                });
+        }
+    }
 
-	_progressBarShower = () => {
+    _progressBarShower = () => {
         const mobile = typeof window.orientation !== 'undefined';
         let top = 47;
         let opacity = this.state.notLoaded;
@@ -47,15 +47,15 @@ export default class Agenda extends React.Component {
         return {opacity, top};
     }
 
-	_snackBarShower = () => {
-		if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
-	}
+    _snackBarShower = () => {
+        if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
+    }
 
 
-  	_removeToast = () => {
-    	const [, ...toasts] = this.state.toasts;
-    	this.setState({ toasts });
-  	}
+    _removeToast = () => {
+        const [, ...toasts] = this.state.toasts;
+        this.setState({ toasts });
+    }
 
 
     _filterByFromDate = (from) => {
@@ -135,7 +135,6 @@ export default class Agenda extends React.Component {
         let filtered = this.state.events.filter((event) => {
             if(value === 'All') return true;
             return event.type === value});
-        //from filter
         filtered = filtered.filter((event) => {
             let year = event.start.slice(0, 4);
             let month = event.start.slice(5, 7);
@@ -145,7 +144,6 @@ export default class Agenda extends React.Component {
             if(month == monthFrom && day >= dayFrom) return true;
             return false;
         });
-        //to filter
         filtered = filtered.filter((event) => {
             let year = event.start.slice(0, 4);
             let month = event.start.slice(5, 7);
@@ -159,7 +157,7 @@ export default class Agenda extends React.Component {
         this.setState({filtered, value});
     }
 
-	render() {
+    render() {
         const stateItems = [{name: 'All', abbreviation: 'All'},
                             {name: 'deadline', abbreviation: 'deadline'},
                             {name: 'event', abbreviation: 'event'},
@@ -169,41 +167,41 @@ export default class Agenda extends React.Component {
         const mobile = typeof window.orientation !== 'undefined';
         return (
             <div className="agenda-wrapper">
-				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
+                <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
                 <div className="md-grid no-padding">
                     <DatePicker
                         id="local-ru-RU"
                         label="Select from date"
                         locales="ru-RU"
-				        className="md-cell"
+                        className="md-cell"
                         onChange={this._filterByFromDate}
-					/>
-					<DatePicker
-						id="local-ru-RU"
-				        label="Select to date"
-				        locales="ru-RU"
-				        className="md-cell"
+                    />
+                    <DatePicker
+                        id="local-ru-RU"
+                        label="Select to date"
+                        locales="ru-RU"
+                        className="md-cell"
                         onChange={this._filterByToDate}
-					/>
+                    />
                     <SelectField
-                      id="statesControlled"
-                      label="Select type of event"
-                      placeholder="event type"
-                      menuItems={stateItems}
-                      onChange={this._filterByType}
-                      errorText="A state is required"
-                      className="md-cell"
-                      itemLabel="name"
-                      itemValue="abbreviation"
+                        id="statesControlled"
+                        label="Select type of event"
+                        placeholder="event type"
+                        menuItems={stateItems}
+                        onChange={this._filterByType}
+                        errorText="A state is required"
+                        className="md-cell"
+                        itemLabel="name"
+                        itemValue="abbreviation"
                     />
                 </div>
-				<div>
-					<ExpansionList style={{ padding: 16 }}>
+                <div>
+                    <ExpansionList style={{ padding: 16 }}>
                         { this.state.filtered.map((event) => (<EventsList key={event.id} mobile={mobile} event={event}/>)) }
                     </ExpansionList>
-				</div>
-				{this._snackBarShower()}
-			</div>
-		)
-	}
+                </div>
+                {this._snackBarShower()}
+            </div>
+        )
+    }
 }

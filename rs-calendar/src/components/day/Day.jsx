@@ -33,19 +33,17 @@ export default class Agenda extends React.Component {
 
 	componentWillMount() {
         if(!this.state.events.length) {
-		let that = this;
-		fetch('http://128.199.53.150/events')
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(events){
-			that.setState({
-				events,
-                filtered: events,
-				notLoaded: 0
-			});
-		});
+    		let that = this;
+    		fetch('http://128.199.53.150/events')
+    		    .then(function(response) {
+    		        if(response.ok) return response.json();
+    		    }).then(function(events){
+        			that.setState({
+        				events,
+                        filtered: events,
+        				notLoaded: 0
+        		    });
+    		    });
         }
 	}
 
@@ -145,7 +143,6 @@ export default class Agenda extends React.Component {
         let filtered = this.state.events.filter((event) => {
             if(value === 'All') return true;
             return event.type === value});
-        //from filter
         filtered = filtered.filter((event) => {
             let year = event.start.slice(0, 4);
             let month = event.start.slice(5, 7);
@@ -190,31 +187,31 @@ export default class Agenda extends React.Component {
                         onChange={this._filterByToDate}
 					/>
                     <SelectField
-                      id="statesControlled"
-                      label="Select type of event"
-                      placeholder="Some State"
-                      menuItems={this.state.stateItems}
-                      onChange={this._filterByType}
-                      errorText="A state is required"
-                      className="md-cell"
-                      itemLabel="name"
-                      itemValue="abbreviation"
+                        id="statesControlled"
+                        label="Select type of event"
+                        placeholder="Some State"
+                        menuItems={this.state.stateItems}
+                        onChange={this._filterByType}
+                        errorText="A state is required"
+                        className="md-cell"
+                        itemLabel="name"
+                        itemValue="abbreviation"
                     />
                 </div>  
 				<div>
 					<DataTable plain onClick={this._showInfo}>
 				        <TableHeader>
-				          <TableRow>
-				            <TableColumn>type</TableColumn>
-                            <TableColumn>title</TableColumn>
-				            <TableColumn>description</TableColumn>
-				            <TableColumn>location</TableColumn>
-				          </TableRow>
+				            <TableRow>
+    				            <TableColumn>type</TableColumn>
+                                <TableColumn>title</TableColumn>
+    				            <TableColumn>description</TableColumn>
+    				            <TableColumn>location</TableColumn>
+				            </TableRow>
 				        </TableHeader>
 				        <TableBody>
 				          { this.state.filtered.map((event) => (<EventsRow key={event.id} mobile={mobile} event={event}/>)) }
 				        </TableBody>
-				     </DataTable>
+				    </DataTable>
 				</div>
 				{this._snackBarShower()}
 			</div>	

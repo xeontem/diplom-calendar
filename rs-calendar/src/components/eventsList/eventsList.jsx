@@ -11,112 +11,107 @@ import Card from '../eventCard/Card';
 
 export default class EventsList extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      speakers: [
-        {name: "Please wait",
-         src: ""
-        }
-      ],
-      start: false,
-      visible: false,
-      pageX: null,
-      pageY: null
-    };
-  }
-
-  _expand = () => {
-    if(this.props.event){
-      let urls = [];
-      this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
-      Promise.all(urls.map(url => fetch(url)))
-        .then(resp => Promise.all( resp.map(r => r.json()) ))
-        .then(speakers => {
-            this.setState({speakers})
-        });
+    constructor(props) {
+        super(props);
+        this.state = {
+            speakers: [
+                {name: "Please wait",
+                 src: ""
+                }
+            ],
+            start: false,
+            visible: false,
+            pageX: null,
+            pageY: null
+        };
     }
-  };
 
-  _openDialog = (e, pressed) => {
-      let { pageX, pageY } = e;
-      if (e.changedTouches) {
-        const [touch] = e.changedTouches;
-        pageX = touch.pageX;
-        pageY = touch.pageY;
-      }
-    this.setState({ visible: true, pageX, pageY });
-  }
+    _expand = () => {
+        if(this.props.event){
+            let urls = [];
+            this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
+            Promise.all(urls.map(url => fetch(url)))
+                .then(resp => Promise.all( resp.map(r => r.json()) ))
+                .then(speakers => {
+                        this.setState({speakers})
+                });
+        }
+    };
 
-  _closeDialog = () => {
-    this.setState({ visible: false });
-  }
+    _openDialog = (e, pressed) => {
+            let { pageX, pageY } = e;
+            if (e.changedTouches) {
+                const [touch] = e.changedTouches;
+                pageX = touch.pageX;
+                pageY = touch.pageY;
+            }
+        this.setState({ visible: true, pageX, pageY });
+    }
 
-  render() {
-    const { columnWidths, focused, mobile } = this.props;
-    let icon = 'keyboard_arrow_down';
-    if (mobile) icon = null;
-    
-    let secLabel;
-    if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
-    else secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)} Ends: ${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`
-    return (
-      <div>
-      <Dialog
-          id="fullPageDialog"
-          visible={this.state.visible}
-          pageX={this.state.pageX}
-          pageY={this.state.pageY}
-          onHide={this._closeDialog}
-          fullPage
-          aria-label="New Event"
-        >
-          <Toolbar
-            colored
-            className={this.props.event.type}
-            nav={<Button icon onClick={this._closeDialog}>close</Button>}
-            actions={<Button flat label="OK" onClick={this._closeDialog} />}
-            title={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
-            fixed
-          />
-          <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
-        </Dialog>
-      <ExpansionPanel
-        expandIconChildren={icon}
-        label={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
-        secondaryLabel={secLabel}
-        headerClassName={this.props.event.type}
-        columnWidths={columnWidths}
-        contentClassName="md-grid"
-        cancelLabel="HIDE"
-        saveLabel="OPEN"
-        onSave={this._openDialog}
-        onExpandToggle={this._expand}
-        closeOnSave={false}
-      >
+    _closeDialog = () => {
+        this.setState({ visible: false });
+    }
+
+    render() {
+        const { columnWidths, focused, mobile } = this.props;
+        let icon = 'keyboard_arrow_down';
+        if (mobile) icon = null;
+        
+        let secLabel;
+        if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
+        else secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)} Ends: ${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`
+        return (
+            <div>
+            <Dialog
+                    id="fullPageDialog"
+                    visible={this.state.visible}
+                    pageX={this.state.pageX}
+                    pageY={this.state.pageY}
+                    onHide={this._closeDialog}
+                    fullPage
+                    aria-label="New Event">
+                    <Toolbar
+                        colored
+                        className={this.props.event.type}
+                        nav={<Button icon onClick={this._closeDialog}>close</Button>}
+                        actions={<Button flat label="OK" onClick={this._closeDialog} />}
+                        title={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
+                        fixed/>
+                    <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
+                </Dialog>
+            <ExpansionPanel
+                expandIconChildren={icon}
+                label={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
+                secondaryLabel={secLabel}
+                headerClassName={this.props.event.type}
+                columnWidths={columnWidths}
+                contentClassName="md-grid"
+                cancelLabel="HIDE"
+                saveLabel="OPEN"
+                onSave={this._openDialog}
+                onExpandToggle={this._expand}
+                closeOnSave={false}>
 
 
-        <CSSTransitionGroup
-            component="section"
-            className="md-cell md-cell--7"
-            transitionName="opacity"
-            transitionEnterTimeout={1000}
-            transitionLeave={false}
-          >
-            <h5 className="md-subheading-1">Description:</h5>
-            <p className="md-body-1" key='0'>{this.props.event.description}</p>
-            {this.state.speakers.map((speaker, i) => (
-              <Chip
-              className="chip"
-                key={i}
-                label={speaker.name}
-                avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" random />}
-              />
-              ))}
-        </CSSTransitionGroup>
-      </ExpansionPanel>
-    </div>  
-    );
-  }
+                <CSSTransitionGroup
+                        component="section"
+                        className="md-cell md-cell--7"
+                        transitionName="opacity"
+                        transitionEnterTimeout={1000}
+                        transitionLeave={false}>
+                        <h5 className="md-subheading-1">Description:</h5>
+                        <p className="md-body-1" key='0'>{this.props.event.description}</p>
+                        {this.state.speakers.map((speaker, i) => (
+                            <Chip
+                                className="chip"
+                                key={i}
+                                label={speaker.name}
+                                avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" random />}/>
+                        ))}
+                </CSSTransitionGroup>
+            </ExpansionPanel>
+        </div>  
+        );
+    }
 }
-     
+         
