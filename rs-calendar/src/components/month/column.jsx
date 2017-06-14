@@ -46,7 +46,7 @@ export default class Column extends React.Component {
 
 	render() {
 		return (
-			<Button floating className={ this.props.day.today ? `today table-cell ${this.props.day.event ? this.props.day.event.type : null}` : `table-cell ${this.props.day.event ? this.props.day.event.type : null}`} onClick={this._openDialog}>
+			<Button floating className={ this.props.day.today ? `today table-cell ${this.props.day.event ? this.props.day.event.type : null}` : `table-cell ${!this.props.day.isCurrentMonth ? 'disabled-cell' : null} ${this.props.day.event ? this.props.day.event.type : null}`} onClick={this._openDialog}>
 			{this.props.day.event ?
 			<Dialog 
 				id={`calendarEvent${this.props.index}`}

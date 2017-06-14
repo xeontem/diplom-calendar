@@ -2,7 +2,6 @@ import React from 'react';// eslint-disable-next-line
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import LinearProgress from 'react-md/lib/Progress/LinearProgress';
 import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
-import EventsList from '../eventsList/eventsList';
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
@@ -30,7 +29,7 @@ export default class Month extends React.Component {
             avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
             curMonth: (new Date).toString().slice(4, 7),
             curYear: (new Date).getFullYear(),
-            month: this._calculateMonthArr(),
+            // month: this._calculateMonthArr(),
             appliedEventsMonth: this._calculateMonthArr(),
             stateItems: [{name: 'All', abbreviation: 'All'},
                          {name: 'deadline', abbreviation: 'deadline'},
@@ -69,7 +68,8 @@ export default class Month extends React.Component {
         }
 	}
 
-    _applyEventsOnDates(events, month = this.state.month) {
+    _applyEventsOnDates(events, date = Date.now()) {
+        let month = this._calculateMonthArr(date);
         events.map((event, eventIndex) => {
             let eventDate = new Date(event.start);
             month.map((week, weekIndex) => {
@@ -191,9 +191,9 @@ export default class Month extends React.Component {
             if(this.state.value === 'All') return true;
             return event.type === this.state.value;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, from, month, appliedEventsMonth});
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, from, appliedEventsMonth});
     }
 
     _filterByToDate = (to) => {
@@ -225,9 +225,9 @@ export default class Month extends React.Component {
             if(this.state.value === 'All') return true;
             return event.type === this.state.value;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, to, month, appliedEventsMonth});
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, to, appliedEventsMonth});
     }
 
     _filterByType = (value) => {
@@ -262,27 +262,27 @@ export default class Month extends React.Component {
             if(month == monthTo && day <= dayTo) return true;
             return false;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, value, toggleValue: value, month, appliedEventsMonth});
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, value, toggleValue: value, appliedEventsMonth});
     }
 
     _changeYear = (curYear) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
         dateToShow = new Date(dateToShow).valueOf();
-        let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
-        this.setState({curYear, dateToShow, month, appliedEventsMonth});
+        // let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        this.setState({curYear, dateToShow, appliedEventsMonth});
     }
 
     _changeMonth = (curMonth) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
         dateToShow = new Date(dateToShow).valueOf();
-        let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
-        this.setState({curMonth, dateToShow, month, appliedEventsMonth});
+        // let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        this.setState({curMonth, dateToShow, appliedEventsMonth});
     }
 
     _toggle = (value) => {
@@ -295,9 +295,9 @@ export default class Month extends React.Component {
         let dateToShow = this.state.dateToShow - 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Dec") curYear--;
-        let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
-        this.setState({curYear, curMonth, dateToShow, month, appliedEventsMonth});
+        // let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        this.setState({curYear, curMonth, dateToShow, appliedEventsMonth});
     }
 
     _nextMonth = () => {
@@ -305,9 +305,9 @@ export default class Month extends React.Component {
         let dateToShow = this.state.dateToShow + 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Jan") curYear++;
-        let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
-        this.setState({curYear, curMonth, dateToShow, month, appliedEventsMonth});
+        // let month = this._calculateMonthArr(dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        this.setState({curYear, curMonth, dateToShow, appliedEventsMonth});
     }
 
 	render() {
@@ -347,20 +347,10 @@ export default class Month extends React.Component {
                 <h3>Calendar Selector:</h3>
                 <div className="md-grid no-padding box">
                     <SelectField
-                      id="statesControlled1"
-                      label="Select year"
-                      placeholder="Some State"
-                      menuItems={this.state.avalYears}
-                      onChange={this._changeYear}
-                      errorText="A state is required"
-                      className="md-cell"
-                      itemLabel="name"
-                      itemValue="name"
-                    />
-                    <SelectField
                       id="statesControlled2"
                       label="Select month"
                       placeholder="Some State"
+                      value={this.state.curMonth}
                       menuItems={this.state.avalMonthes}
                       onChange={this._changeMonth}
                       errorText="A state is required"
@@ -368,11 +358,23 @@ export default class Month extends React.Component {
                       itemLabel="name"
                       itemValue="abbreviation"
                     />
+                    <SelectField
+                      id="statesControlled1"
+                      label="Select year"
+                      placeholder="Some State"
+                      value={this.state.curYear.toString()}
+                      menuItems={this.state.avalYears}
+                      onChange={this._changeYear}
+                      errorText="A state is required"
+                      className="md-cell"
+                      itemLabel="name"
+                      itemValue="name"
+                    />
                 </div>  
                 <div style={{maxWidth: 750, margin: 'auto'}}>
                     <div className="navigation">
                         <Button className="navigate-button" onClick={this._prevMonth} icon>navigate_before</Button>
-                        <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}`} />
+                        <Button raised className="action date-container" label={`${this.state.curMonth} ${this.state.curYear}`} />
                         <Button className="navigate-button" onClick={this._nextMonth} icon>navigate_next</Button>
                     </div>
                     <div className="header-week">

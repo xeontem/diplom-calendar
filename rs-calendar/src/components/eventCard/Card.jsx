@@ -3,6 +3,8 @@ import Card from 'react-md/lib/Cards/Card';
 import CardTitle from 'react-md/lib/Cards/CardTitle';
 import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
+import { ExpansionList, ExpansionPanel } from 'react-md/lib/ExpansionPanels';
 import Media, { MediaOverlay } from 'react-md/lib/Media';
 import Avatar from 'react-md/lib/Avatars';
 import Button from 'react-md/lib/Buttons';
@@ -15,7 +17,6 @@ export default class ExpandableMediaCard extends React.Component {
 	}
 
 	render() {
-		
 		let view = { maxWidth: '70%' };
 		if(this.props.mobile) view = { maxWidth: '95%' };
 
@@ -31,8 +32,8 @@ export default class ExpandableMediaCard extends React.Component {
 				<Divider/>
 				<div style={{marginLeft: 15, display: 'flex'}}>
 					<Button icon>timelapse</Button>
-					<p style={{padding: 16, margin: 0}}>{`${new Date(this.props.event.start).toString().slice(4, 24)} - `}</p>
-					<p style={{padding: 16, margin: 0}}>{`${new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(4, 24)}`}</p>
+					<p style={{padding: 16, margin: 0}}>{`${new Date(this.props.event.start).toString().slice(4, 24)}`}</p>
+					<p style={{padding: 16, margin: 0}}>{new Date(new Date(this.props.event.start).valueOf()+this.props.event.duration).toString().slice(4, 24)}</p>
 				</div>
 				<Divider/>
 				<Media>
@@ -44,30 +45,34 @@ export default class ExpandableMediaCard extends React.Component {
 					</MediaOverlay>
 				</Media>
 				{this.props.speakers.map((speaker, i) => (
-									<CardTitle
-										key={i}
-										title="Speaker"
-										subtitle={speaker.name}
-										avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" random />}
-									/>
+					<CardTitle
+						key={i}
+						title="Speaker"
+						subtitle={speaker.name}
+						avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" random />}
+					/>
 				))}
-				<Divider/>
-				<CardActions expander>
-					<Button flat label="Resources" />
-				</CardActions>
-				{this.props.event.resources.map((resource, i) => (
-									<CardText
-										key={i*20}
-										title="resources"
-										expandable>
+				<ExpansionList style={{ padding: 16 }}>
+					<ExpansionPanel
+		                label="Resourses"
+		                contentClassName="md-grid">
+		                <CSSTransitionGroup
+		                        component="section"
+		                        transitionName="opacity"
+		                        transitionEnterTimeout={1000}
+		                        transitionLeave={false}>
+								{this.props.event.resources.map((resource, i) => (
+									<div key={i}>
 										<h4>Type: {resource.type}</h4>
 										<p>{resource.description}</p>
 										<Button className="md-cell--right" flat label="Link" href={resource.resource} target="_blank"/>
 										<Divider/>
-									</CardText>
-									))}
+									</div>
+								))}
+		                </CSSTransitionGroup>
+		            </ExpansionPanel>
+	            </ExpansionList>
 				<Button
-					style={{marginRight: 20}}
 					tooltipPosition="top"
 					tooltipLabel="send feedback"
 					href="mailto:xeontem@gmail.com"

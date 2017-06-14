@@ -30,7 +30,7 @@ a {
 
 .action {
     display: block !important;
-    width: 150px;
+    width: 160px;
     height: 40px !important;
     margin: 15px auto !important;
 }
@@ -51,9 +51,11 @@ a {
 }
 
 .column-month {
-  color: rgba(0, 0, 0, 0.54);
-  text-align: center;
-  width: 55px;
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 75px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .body-month {
@@ -71,6 +73,9 @@ a {
 
 .table-cell {
   padding: 0px !important;
+}
+.disabled-cell {
+  opacity: 0.5;
 }
 //------------------------- WEEK ---------------------------------
 .header-week {
@@ -97,7 +102,7 @@ a {
     cursor: pointer;
     transition: all 0.5s;
 }
-.event-column-week:hover {
+.event-column-week:hover, .event-column-day:hover {
   box-shadow: 0px 0px 5px 1px black;
 }
 
@@ -162,12 +167,69 @@ a {
     padding-top: 3px;
 }
 
+.another-month {
+  // background: grey !important;
+}
+
+.disabled p{
+  color: grey !important;
+}
+
 .week-day-number {
     display: block;
     margin: -3px;
     font-size: 14pt;
 }
 
+//------------------------- DAY ----------------------------------
+
+.header-day {
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    height: 55px;
+    /* padding: 10px 0; */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.body-day {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    height: 1340px;
+}
+
+.event-column-day {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 20%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.freedom {
+    position: absolute;
+    width: 180px;
+    margin: 0 36%;
+    display: flex;
+    flex-direction: column;
+}
+
+.agenda {
+    margin-right: 35%;
+    font-size: 14pt;
+}
 
 //------------------------- AGENDA -------------------------------
 .agenda-wrapper {

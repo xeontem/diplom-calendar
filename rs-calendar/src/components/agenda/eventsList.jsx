@@ -14,11 +14,7 @@ export default class EventsList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            speakers: [
-                {name: "Please wait",
-                 src: ""
-                }
-            ],
+            speakers: [{name: "Please wait", src: ""}],
             start: false,
             visible: false,
             pageX: null,
@@ -40,7 +36,7 @@ export default class EventsList extends React.Component {
 
     _openDialog = (e, pressed) => {
             let { pageX, pageY } = e;
-            if (e.changedTouches) {
+            if (e.changedTouches) { 
                 const [touch] = e.changedTouches;
                 pageX = touch.pageX;
                 pageY = touch.pageY;

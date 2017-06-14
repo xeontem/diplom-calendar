@@ -30,9 +30,8 @@ export default class Week extends React.Component {
             avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
             curMonth: (new Date).toString().slice(4, 7),
             curYear: (new Date).getFullYear(),
-            month: this._calculateMonthArr(),
             appliedEventsMonth: this._calculateMonthArr(),
-			weekToShow: this._calculateMonthArr(Date.now(), true),
+			// weekToShow: this._calculateMonthArr(Date.now(), true),
             curIndexOfWeek: 0,
             stateItems: [{name: 'All', abbreviation: 'All'},
                          {name: 'deadline', abbreviation: 'deadline'},
@@ -50,6 +49,16 @@ export default class Week extends React.Component {
 		}
 	}
 	componentWillMount() {
+        if(!this.state.weekToShow) {
+            let weekToShow = [];
+            this.state.appliedEventsMonth.map((week, i) => {
+                    if(week.curWeek) {
+                        weekToShow = week.map((day) => day);
+                        weekToShow.weekCounter = i;
+                    }
+                });
+            this.setState({weekToShow});
+        }
         if(!this.state.events.length) {
         let that = this;
 		fetch('http://128.199.53.150/events')
@@ -59,7 +68,6 @@ export default class Week extends React.Component {
 		  }
 		}).then(function(events){
             let appliedEventsMonth = that._applyEventsOnDates(events);
-            let month = that._calculateMonthArr(that.state.dateToShow);
             let weekToShow;
             let curIndexOfWeek;
             let avalWeeks = [];
@@ -75,7 +83,6 @@ export default class Week extends React.Component {
 				events,
                 avalWeeks,
                 filtered: events,
-                month,
                 appliedEventsMonth,
                 weekToShow,
                 curIndexOfWeek,
@@ -85,7 +92,8 @@ export default class Week extends React.Component {
         }
 	}
 
-    _applyEventsOnDates(events, month = this.state.month) {
+    _applyEventsOnDates(events, date = Date.now()) {
+        let month = this._calculateMonthArr(date);
         events.map((event, eventIndex) => {
             let eventDate = new Date(event.start);
             month.map((week, weekIndex) => {
@@ -212,9 +220,9 @@ export default class Week extends React.Component {
             if(this.state.value === 'All') return true;
             return event.type === this.state.value;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, from, month, appliedEventsMonth});
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, from, appliedEventsMonth});
     }
 
     _filterByToDate = (to) => {
@@ -246,9 +254,10 @@ export default class Week extends React.Component {
             if(this.state.value === 'All') return true;
             return event.type === this.state.value;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, to, month, appliedEventsMonth});
+
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, to, appliedEventsMonth});
     }
 
     _filterByType = (value) => {
@@ -283,9 +292,10 @@ export default class Week extends React.Component {
             if(month == monthTo && day <= dayTo) return true;
             return false;
         });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered);
-        let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, value, toggleValue: value, month, appliedEventsMonth});
+        console.log(this.state.dateToShow);
+        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+        // let month = this._calculateMonthArr(this.state.dateToShow);
+        this.setState({filtered, value, toggleValue: value, appliedEventsMonth});
     }
 
     _changeYear = (curYear) => {
@@ -293,7 +303,7 @@ export default class Week extends React.Component {
         dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
         dateToShow = new Date(dateToShow).valueOf();
         let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
         let avalWeeks = [];
         for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
         this.setState({curYear, dateToShow, month, appliedEventsMonth, avalWeeks});
@@ -304,7 +314,7 @@ export default class Week extends React.Component {
         dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
         dateToShow = new Date(dateToShow).valueOf();
         let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
         let avalWeeks = [];
         for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
         this.setState({curMonth, dateToShow, month, appliedEventsMonth, avalWeeks});
@@ -327,7 +337,7 @@ export default class Week extends React.Component {
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Dec") curYear--;
         let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
         let weekToShow = this.state.weekToShow;
         if(_prevWeek === '_prevWeek') {
             weekToShow = appliedEventsMonth[appliedEventsMonth.length-1];
@@ -342,7 +352,7 @@ export default class Week extends React.Component {
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Jan") curYear++;
         let month = this._calculateMonthArr(dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, month);
+        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
         let weekToShow = this.state.weekToShow;
         if(_nextWeek === '_nextWeek') {
             weekToShow = appliedEventsMonth[0];
@@ -376,12 +386,16 @@ export default class Week extends React.Component {
         top += curTimeMins*0.9;
         const mobile = typeof window.orientation !== 'undefined';
         let week = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
+        console.log(this.state.weekToShow.weekCounter);
         let today = false;
+        let isInCurMonth = [];
         let NumDayArr = [];
         for(let i = 0; i < week.length; i++){
+            isInCurMonth.push({isCurrentMonth: week[i].isCurrentMonth, weekday: week[i].weekday});
             NumDayArr.push(week[i].dayNumber)
             if(week[i].today) today = (new Date).toString().slice(0, 3);
         }
+        console.dir(isInCurMonth);
 		return (
 			<div className="agenda-wrapper">
 				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
@@ -417,20 +431,10 @@ export default class Week extends React.Component {
                 <h3>Calendar Selector:</h3>
                 <div className="md-grid no-padding box">
                     <SelectField
-                      id="statesControlled1"
-                      label="Select year"
-                      placeholder="Some State"
-                      menuItems={this.state.avalYears}
-                      onChange={this._changeYear}
-                      errorText="A state is required"
-                      className="md-cell"
-                      itemLabel="name"
-                      itemValue="name"
-                    />
-                    <SelectField
                       id="statesControlled2"
                       label="Select month"
                       placeholder="Some State"
+                      value={this.state.curMonth}
                       menuItems={this.state.avalMonthes}
                       onChange={this._changeMonth}
                       errorText="A state is required"
@@ -440,8 +444,20 @@ export default class Week extends React.Component {
                     />
                     <SelectField
                       id="statesControlled1"
+                      label="Select year"
+                      placeholder="Some State"
+                      value={this.state.curYear.toString()}
+                      menuItems={this.state.avalYears}
+                      onChange={this._changeYear}
+                      errorText="A state is required"
+                      className="md-cell"
+                    />
+                    <SelectField
+                      id="statesControlled1"
                       label="Select week"
                       placeholder="Some State"
+
+                      value={this.state.weekToShow.weekCounter}
                       menuItems={this.state.avalWeeks}
                       onChange={this._changeWeek}
                       errorText="A state is required"
@@ -453,31 +469,31 @@ export default class Week extends React.Component {
                 <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
                     <div className="navigation">
                         <Button className="navigate-button" onClick={this._prevWeek} icon>navigate_before</Button>
-                        <Button raised className="action date-container" label={`${this.state.curYear} ${this.state.curMonth}, ${this.state.weekToShow.weekCounter+1} week`} />
+                        <Button raised className="action date-container" label={`${this.state.curMonth} ${this.state.curYear}, ${this.state.weekToShow.weekCounter+1} week`} />
                         <Button className="navigate-button" onClick={this._nextWeek} icon>navigate_next</Button>
                     </div>
                         
                     <div className="header-week">
                         <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
-                        <div className={today === 'Mon' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Mon' ? "column-week today-week-day today" : !isInCurMonth[0].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[0]}</span>Mon</p>
                         </div>
-                        <div className={today === 'Tue' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Tue' ? "column-week today-week-day today" : !isInCurMonth[1].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[1]}</span>Tue</p>
                         </div>
-                        <div className={today === 'Wed' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Wed' ? "column-week today-week-day today" : !isInCurMonth[2].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[2]}</span>Wed</p>
                         </div>
-                        <div className={today === 'Thu' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Thu' ? "column-week today-week-day today" : !isInCurMonth[3].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[3]}</span>Thu</p>
                         </div>
-                        <div className={today === 'Fri' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Fri' ? "column-week today-week-day today" : !isInCurMonth[4].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[4]}</span>Fri</p>
                         </div>
-                        <div className={today === 'Sat' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Sat' ? "column-week today-week-day today" : !isInCurMonth[5].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[5]}</span>Sat</p>
                         </div>
-                        <div className={today === 'Sun' ? "column-week today-week-day today" : "column-week"}>
+                        <div className={today === 'Sun' ? "column-week today-week-day today" : !isInCurMonth[6].isCurrentMonth ? "disabled column-week" : "column-week"}>
                             <p><span className="week-day-number">{NumDayArr[6]}</span>Sun</p>
                         </div>
                     </div>

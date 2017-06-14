@@ -7,7 +7,8 @@ import inboxListItems from './inboxListItems';
 import Month from './components/month/Month';
 import Week from './components/week/Week';
 import Day from './components/day/Day';
-import Agenda from './components/agenda/Agenda.jsx';
+import Table from './components/table/Table';
+import Agenda from './components/agenda/Agenda';
 
 import gitLogo from './github-logo.svg';
 import './App.css';
@@ -43,6 +44,10 @@ export default class App extends PureComponent {
                 this.title = "Day";
                 return;
             }
+            case "Table": {
+                this.title = "Table";
+                return;
+            }
             case "Agenda": {
                 this.title = "Agenda";
                 return;
@@ -74,6 +79,7 @@ export default class App extends PureComponent {
                 <Route path="/week" component={Week} />
                 <Route path="/day" component={Day} />
                 <Route path="/agenda" component={Agenda} />
+                <Route path="/table" component={Table} />
             </Switch>
             
             </NavigationDrawer>

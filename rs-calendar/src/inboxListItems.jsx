@@ -18,9 +18,14 @@ export default [{
   leftIcon: <FontIcon>content_paste</FontIcon>,
   active: false,
 }, {
+  key: 'Table',
+  primaryText: <Link to="/table">Table</Link>,
+  leftIcon: <FontIcon>list</FontIcon>,
+  active: false,
+}, {
   key: 'Agenda',
   primaryText: <Link to="/agenda">Agenda</Link>,
-  leftIcon: <FontIcon>list</FontIcon>,
+  leftIcon: <FontIcon>view_agenda</FontIcon>,
   active: false,
 }, { key: 'divider', divider: true }
 ];
