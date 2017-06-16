@@ -5,8 +5,10 @@ import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
-import Row from './column';
-
+import Column from './column';
+import ColumnAdmin from './columnAdmin';
+import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
+import globalScope from '../../globalScope';
 
 
 export default class Week extends React.Component {
@@ -28,10 +30,10 @@ export default class Week extends React.Component {
                           {name: 'November', abbreviation: 'Nov'},
                           {name: 'December', abbreviation: 'Dec'}],
             avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
+            eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
             curMonth: (new Date).toString().slice(4, 7),
             curYear: (new Date).getFullYear(),
             appliedEventsMonth: this._calculateMonthArr(),
-			// weekToShow: this._calculateMonthArr(Date.now(), true),
             curIndexOfWeek: 0,
             stateItems: [{name: 'All', abbreviation: 'All'},
                          {name: 'deadline', abbreviation: 'deadline'},
@@ -41,14 +43,19 @@ export default class Week extends React.Component {
                          {name: 'workshop', abbreviation: 'workshop'}],
 			events: [],
             filtered: [],
-			notLoaded: 1,
+			fetching: true,
 			toasts: [{text: "events successfully loaded"}],
             value: 'All',
             from: 'All',
-            to: 'All'
+            to: 'All',
+            top: 0
 		}
+        this._filterByType = _filterByType.bind(this);
+        this._filterByToDate = _filterByToDate.bind(this);
+        this._filterByFromDate = _filterByFromDate.bind(this);
 	}
 	componentWillMount() {
+        this.setState({top: 0});
         if(!this.state.weekToShow) {
             let weekToShow = [];
             this.state.appliedEventsMonth.map((week, i) => {
@@ -86,11 +93,23 @@ export default class Week extends React.Component {
                 appliedEventsMonth,
                 weekToShow,
                 curIndexOfWeek,
-				notLoaded: 0
+				fetching: false
 			});
 		});
         }
 	}
+
+    componentDidMount() {
+        setTimeout(this._slideDown, 1000);
+    }
+
+    _slideDown = () => {
+        let curTimeHours = (new Date).toString().slice(16, 18);
+        let curTimeMins = (new Date).toString().slice(19, 21);
+        let top = 34 + 55*curTimeHours;
+        top += curTimeMins*0.9;
+        this.setState({top});
+    }
 
     _applyEventsOnDates(events, date = Date.now()) {
         let month = this._calculateMonthArr(date);
@@ -191,113 +210,6 @@ export default class Week extends React.Component {
     	this.setState({ toasts });
   	}
 
-    _filterByFromDate = (from) => {
-        let yearFrom = from.slice(6, 10);
-        let monthFrom = from.slice(3, 5);
-        let dayFrom = from.slice(0, 2);
-        let yearTo = this.state.to.slice(6, 10);
-        let monthTo = this.state.to.slice(3, 5);
-        let dayTo = this.state.to.slice(0, 2);
-
-        let filtered = this.state.events.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(year >= yearFrom && month > monthFrom) return true;
-            if(month == monthFrom && day >= dayFrom) return true;
-            return false;      
-        });
-        filtered = filtered.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(this.state.to === 'All') return true;
-            if(year <= yearTo && month < monthTo) return true;
-            if(month == monthTo && day <= dayTo) return true;
-            return false;
-        });
-        filtered = filtered.filter((event) => {
-            if(this.state.value === 'All') return true;
-            return event.type === this.state.value;
-        });
-        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
-        // let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, from, appliedEventsMonth});
-    }
-
-    _filterByToDate = (to) => {
-        let yearFrom = this.state.from.slice(6, 10);
-        let monthFrom = this.state.from.slice(3, 5);
-        let dayFrom = this.state.from.slice(0, 2);
-        let yearTo = to.slice(6, 10);
-        let monthTo = to.slice(3, 5);
-        let dayTo = to.slice(0, 2);
-
-        let filtered = this.state.events.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(this.state.from === 'All') return true;
-            if(year >= yearFrom && month > monthFrom) return true;
-            if(month == monthFrom && day >= dayFrom) return true;
-            return false;      
-        });
-        filtered = filtered.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(year <= yearTo && month < monthTo) return true;
-            if(month == monthTo && day <= dayTo) return true;
-            return false;
-        });
-        filtered = filtered.filter((event) => {
-            if(this.state.value === 'All') return true;
-            return event.type === this.state.value;
-        });
-
-        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
-        // let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, to, appliedEventsMonth});
-    }
-
-    _filterByType = (value) => {
-
-        let yearFrom = this.state.from.slice(6, 10);
-        let monthFrom = this.state.from.slice(3, 5);
-        let dayFrom = this.state.from.slice(0, 2);
-        let yearTo = this.state.to.slice(6, 10);
-        let monthTo = this.state.to.slice(3, 5);
-        let dayTo = this.state.to.slice(0, 2);
-        
-        let filtered = this.state.events.filter((event) => {
-            if(value === 'All') return true;
-            return event.type === value});
-        //from filter
-        filtered = filtered.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(this.state.from === 'All') return true;
-            if(year >= yearFrom && month > monthFrom) return true;
-            if(month == monthFrom && day >= dayFrom) return true;
-            return false;
-        });
-        //to filter
-        filtered = filtered.filter((event) => {
-            let year = event.start.slice(0, 4);
-            let month = event.start.slice(5, 7);
-            let day = event.start.slice(8, 10);
-            if(this.state.to === 'All') return true;
-            if(year <= yearTo && month < monthTo) return true;
-            if(month == monthTo && day <= dayTo) return true;
-            return false;
-        });
-        console.log(this.state.dateToShow);
-        let appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
-        // let month = this._calculateMonthArr(this.state.dateToShow);
-        this.setState({filtered, value, toggleValue: value, appliedEventsMonth});
-    }
-
     _changeYear = (curYear) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
@@ -380,13 +292,12 @@ export default class Week extends React.Component {
     }
 
 	render() {
-        let curTimeHours = (new Date).toString().slice(16, 18);
-        let curTimeMins = (new Date).toString().slice(19, 21);
-        let top = 34 + 55*curTimeHours;
-        top += curTimeMins*0.9;
+        // let curTimeHours = (new Date).toString().slice(16, 18);
+        // let curTimeMins = (new Date).toString().slice(19, 21);
+        // let top = 34 + 55*curTimeHours;
+        // top += curTimeMins*0.9;
         const mobile = typeof window.orientation !== 'undefined';
         let week = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
-        console.log(this.state.weekToShow.weekCounter);
         let today = false;
         let isInCurMonth = [];
         let NumDayArr = [];
@@ -395,10 +306,10 @@ export default class Week extends React.Component {
             NumDayArr.push(week[i].dayNumber)
             if(week[i].today) today = (new Date).toString().slice(0, 3);
         }
-        console.dir(isInCurMonth);
 		return (
 			<div className="agenda-wrapper">
-				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
+				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
+                {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
                     <DatePicker
@@ -407,6 +318,7 @@ export default class Week extends React.Component {
                         locales="ru-RU"
                         className="md-cell"
                         onChange={this._filterByFromDate}
+                        autoOk
                     />
                     <DatePicker
                         id="local-ru-RU"
@@ -414,6 +326,7 @@ export default class Week extends React.Component {
                         locales="ru-RU"
                         className="md-cell"
                         onChange={this._filterByToDate}
+                        autoOk
                     />
                     <SelectField
                       id="statesControlled"
@@ -499,13 +412,17 @@ export default class Week extends React.Component {
                     </div>
                     <div className="body-week">
                         <div className="time">
-                            <section style={{top}} className="current-time">
+                            <section style={{top: this.state.top}} className="current-time">
                                 <div className="dot-current-time"></div>
                             </section>
                             {(new Array(24).fill(0)).map((val, i) => <div key={i}>{i < 10 ? `0${i}:00` : `${i}:00`}<div className="time-divider"></div></div>)}
                         </div>
                         {this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].map((day, index) => 
-                        <Row  key={index*30} day={day} index={index} mobile={mobile}/>)}
+                            day.event ? globalScope.isAdmin ? 
+                                <ColumnAdmin  eventTypes={this.state.eventTypes} key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
+                                <Column  key={index*30} day={day} index={index} mobile={mobile}/> :
+                                <div key={index*30} style={{width: 40}} ></div>
+                        )}
                     </div>
                 </div>
                 <h3>Legend:</h3>
@@ -516,7 +433,14 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.toggleValue === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.toggleValue === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {this._snackBarShower()}
+                {globalScope.isAdmin ? <Button
+                    tooltipPosition="top"
+                    tooltipLabel="add event"
+                    onClick={this._rerender}
+                    floating
+                    secondary
+                    fixed>add
+                </Button> : null}
             </div>  
         )
     }

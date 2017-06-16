@@ -16,6 +16,18 @@ a {
 
 }
 
+.admin-true {
+  display: inline-flex;
+  color: $md-lime-a-400;
+}
+
+.admin-false {
+  display: inline-flex;
+  color: grey;
+}
+
+
+
 .navigation {
   display: flex;
 }
@@ -79,6 +91,7 @@ a {
 }
 //------------------------- WEEK ---------------------------------
 .header-week {
+    margin-bottom: -1px;
     border: 1px solid #ddd;
     height: 55px;
     padding: 10px 0;
@@ -131,6 +144,8 @@ a {
     width: 100%;
     height: 1px;
     background: $md-primary-color;
+    transition: all 2s;
+    transition-timing-function: cubic-bezier(0.82, 0.05, 0.26, 1.17);
 }
 
 
@@ -299,6 +314,67 @@ a {
 
 .pointer {
   cursor: pointer;
+}
+
+//---------------------- ADMIN MENU -----------------------
+
+.container {
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-selector {
+  // margin: 10px;
+}
+
+.text-title {
+    // font-size: 20px !important;
+}
+
+.title-selector hr {
+  display: none;
+}
+
+.title-selector div {
+  margin: 0;
+}
+
+.text-title hr {
+  background: white !important;
+}
+
+.text-title input, .text-title i {
+  font-size: 20px;
+}
+
+.title-selector span {
+  font-size: 20px;
+}
+
+.name-field {
+  margin: 0;
+  color: white;
+  font-size: 20px;
+}
+
+.resource-field {
+    margin: 17px 0;
+    font-size: 20px;
+}
+
+section:first-child {
+  width: 100%;
+}
+
+.location-wrapper > div:first-child {
+  width: 100%;
+} 
+
+.container-resource {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
 @media (max-width: 576px) {

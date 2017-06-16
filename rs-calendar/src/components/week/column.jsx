@@ -87,7 +87,7 @@ export default class Column extends React.Component {
 			               fixed
 			            />
 			            {this._loadSpeakers()}
-		                <Card event={this.props.day.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
+	                	<Card event={this.props.day.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
 	            </Dialog> : null}
             </div>					
 		)

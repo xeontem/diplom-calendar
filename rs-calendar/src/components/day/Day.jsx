@@ -6,9 +6,12 @@ import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 import FontIcon from 'react-md/lib/FontIcons';
 
-import Row from './column';
+import Column from './column';
+import ColumnAdmin from './columnAdmin';
 import smile from './legosmile.svg';
-import scroll from './scroll';
+import scroll from '../../instruments/scroll';
+import initResize from '../../instruments/initResize';
+import globalScope from '../../globalScope';
 
 
 export default class Week extends React.Component {
@@ -30,38 +33,32 @@ export default class Week extends React.Component {
                           {name: 'November', abbreviation: 'Nov'},
                           {name: 'December', abbreviation: 'Dec'}],
             avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
+            eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
             curMonth: (new Date).toString().slice(4, 7),
             curYear: (new Date).getFullYear(),
             appliedEventsMonth: this._calculateMonthArr(),
 			dayToShow: 0,
-            backup: {},
             stateItems: [{name: 'All', abbreviation: 'All'},
                          {name: 'deadline', abbreviation: 'deadline'},
                          {name: 'event', abbreviation: 'event'},
                          {name: 'lecture', abbreviation: 'lecture'},
                          {name: 'webinar', abbreviation: 'webinar'},
                          {name: 'workshop', abbreviation: 'workshop'}],
-			events: [],
+			todayEvents: [],
             filtered: [],
-			notLoaded: 1,
+			fetching: true,
 			toasts: [{text: "events successfully loaded"}],
             value: 'All',
+            top: 0
 		}
-	}
 
-
-    componentWillMount() {
         let [avalDays, dayToShow] = this._defineListOfDays(this.state.appliedEventsMonth, true);
-        this.setState({avalDays, dayToShow});
-        if(!this.state.events.length) {
-        let that = this;
+        this.state.avalDays = avalDays;
+        this.state.dayToShow = dayToShow;
         fetch('http://128.199.53.150/events')
-          .then(function(response) {
-          if(response.ok) {
-            return response.json();
-          }
-        }).then(function(events){
-            let appliedEventsMonth = that._applyEventsOnDates(events);
+          .then(response => response.json())
+          .then(events => {
+            let [appliedEventsMonth, initEvents] = this._applyEventsOnDates(events);
             let curIndexOfWeek;
             let avalDays = [];
             for(let i = 0; i < appliedEventsMonth.length; i++) {
@@ -69,19 +66,28 @@ export default class Week extends React.Component {
                     avalDays.push({dayNumber: j, weekNumber: i});
                 }
             }
-            that.setState({
-                events,
+            this.setState({
+                todayEvents: initEvents,
                 filtered: events,
                 appliedEventsMonth,
                 curIndexOfWeek,
-                notLoaded: 0
+                fetching: false
             });
+            setTimeout(initResize, 1000);
         });
-        }
-    }
+	}
 
     componentDidMount() {
         scroll();
+        setTimeout(this._slideDown, 1000);
+    }
+
+    _slideDown = () => {
+        let curTimeHours = (new Date).toString().slice(16, 18);
+        let curTimeMins = (new Date).toString().slice(19, 21);
+        let top = 34 + 55*curTimeHours;
+        top += curTimeMins*0.9;
+        this.setState({top});
     }
     
     _defineListOfDays(month, firstInit) {
@@ -98,16 +104,18 @@ export default class Week extends React.Component {
 
     _applyEventsOnDates(events, date = Date.now()) {
         let month = this._calculateMonthArr(date);
+        let initEvents = [];
         events.map((event, eventIndex) => {
             let eventDate = new Date(event.start);
             month.map((day, weekIndex) => {
                     if(eventDate.toString().slice(0, 15) == day.curDate.toString().slice(0, 15)){
+                        if(day.today) initEvents.push(event);
                         if(!day.events) day.events = [];
                         day.events.push(event);
                     };
             })    
         });
-        return month;
+        return [month, initEvents];
     }
 
     _calculateMonthArr(date = Date.now()) {
@@ -154,19 +162,6 @@ export default class Week extends React.Component {
         }
     }
 
-    _progressBarShower = () => {
-        const mobile = typeof window.orientation !== 'undefined';
-        let top = 47;
-        let opacity = this.state.notLoaded;
-        if(mobile) top = 40;
-        return {opacity, top};
-    }
-
-	_snackBarShower = () => {
-		if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
-	}
-
-
   	_removeToast = () => {
     	const [, ...toasts] = this.state.toasts;
     	this.setState({ toasts: [] });
@@ -174,35 +169,43 @@ export default class Week extends React.Component {
 
     _filterByType = (value) => {
         let day = this.state.appliedEventsMonth[this.state.dayToShow];
+        let todayEvents = [];
         if(day.events) {
-            day.events = this.state.backup.events.filter((event) => {
+            todayEvents = day.events.filter((event) => {
                 if(value === 'All') return true;
                 return event.type === value});
         }
 
-        this.setState({value});
+        this.setState({value, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _changeYear = (curYear) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
         dateToShow = new Date(dateToShow).valueOf();
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        let [appliedEventsMonth, todayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
         // let avalWeeks = [];
         // for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
         let [avalDays, dayToShow] = this._defineListOfDays(appliedEventsMonth);
-        this.setState({avalDays, dayToShow, curYear, dateToShow, appliedEventsMonth});
+        // console.dir(appliedEventsMonth);
+        // console.dir(dayToShow);
+        todayEvents = appliedEventsMonth[dayToShow].events;
+        this.setState({avalDays, dayToShow, curYear, dateToShow, appliedEventsMonth, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _changeMonth = (curMonth) => {
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
         dateToShow = new Date(dateToShow).valueOf();
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        let [appliedEventsMonth, todayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
         // let avalWeeks = [];
         // for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
         let [avalDays, dayToShow] = this._defineListOfDays(appliedEventsMonth);
-        this.setState({avalDays, dayToShow, curMonth, dateToShow, appliedEventsMonth});
+        todayEvents = appliedEventsMonth[dayToShow].events;
+        this.setState({avalDays, dayToShow, curMonth, dateToShow, appliedEventsMonth, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _changeDay = (selectedDay) => {
@@ -219,13 +222,15 @@ export default class Week extends React.Component {
         let dateToShow = this.state.dateToShow - 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Dec") curYear--;
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        let [appliedEventsMonth, todayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
         // let dayToShow = this.state.dayToShow;
         let [avalDays, dayToShow] = this._defineListOfDays(appliedEventsMonth); 
         if(_prevDay === '_prevDay') {
             dayToShow = appliedEventsMonth.length-1;
         }
-        this.setState({avalDays, dayToShow, curYear, curMonth, dateToShow, appliedEventsMonth});
+        todayEvents = appliedEventsMonth[dayToShow].events;
+        this.setState({avalDays, dayToShow, curYear, curMonth, dateToShow, appliedEventsMonth, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _nextMonth = (_nextDay) => {
@@ -233,13 +238,15 @@ export default class Week extends React.Component {
         let dateToShow = this.state.dateToShow + 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
         if(curMonth === "Jan") curYear++;
-        let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+        let [appliedEventsMonth, todayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
         // let dayToShow = this.state.dayToShow;
         let [avalDays, dayToShow] = this._defineListOfDays(appliedEventsMonth);
         if(_nextDay === '_nextDay') {
             dayToShow = 0;
         }   
-        this.setState({avalDays, dayToShow, curYear, curMonth, dateToShow, appliedEventsMonth});
+        todayEvents = appliedEventsMonth[dayToShow].events;
+        this.setState({avalDays, dayToShow, curYear, curMonth, dateToShow, appliedEventsMonth, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _prevDay = () => {
@@ -251,9 +258,11 @@ export default class Week extends React.Component {
         }
         else dayToShow--;
         let day = this.state.appliedEventsMonth[dayToShow];
-        let backup = this.state.backup;
-        if(day.events) backup.events = day.events.map((event) => event); 
-        this.setState({dayToShow, backup});
+        let todayEvents = this.state.todayEvents;
+        if(day.events) todayEvents = day.events.map((event) => event);
+        else  todayEvents = [];
+        this.setState({dayToShow, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
     _nextDay = () => {
@@ -265,21 +274,32 @@ export default class Week extends React.Component {
         }
         else dayToShow++;
         let day = this.state.appliedEventsMonth[dayToShow];
-        let backup = this.state.backup;
-        if(day.events) backup.events = day.events.map((event) => event); 
-        this.setState({dayToShow, backup});
+        let todayEvents = this.state.todayEvents;
+        if(day.events) todayEvents = day.events.map((event) => event);
+        else  todayEvents = []; 
+        this.setState({dayToShow, todayEvents});
+        setTimeout(initResize, 1000);
     }
 
 	render() {
-        let curTimeHours = (new Date).toString().slice(16, 18);
-        let curTimeMins = (new Date).toString().slice(19, 21);
-        let top = 34 + 55*curTimeHours;
-        top += curTimeMins*0.9;
+        // let curTimeHours = (new Date).toString().slice(16, 18);
+        // let curTimeMins = (new Date).toString().slice(19, 21);
+        // let top = 34 + 55*curTimeHours;
+        // top += curTimeMins*0.9;
         const mobile = typeof window.orientation !== 'undefined';
         let dayToShow = this.state.appliedEventsMonth[this.state.dayToShow];
-		return (
+        return (
 			<div className="agenda-wrapper">
-				<LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={this._progressBarShower()} />
+                {globalScope.isAdmin ? <Button
+                    tooltipPosition="top"
+                    tooltipLabel="add event"
+                    onClick={this._rerender}
+                    floating
+                    secondary
+                    fixed>add
+                </Button> : null}
+				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
+                {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
                     <SelectField
@@ -345,13 +365,20 @@ export default class Week extends React.Component {
                     </div>
                     <div className="body-day">
                         <div className="time">
-                            <section style={{top}} className="current-time">
+                            <section style={{top: this.state.top}} className="current-time">
                                 <div className="dot-current-time"></div>
                             </section>
                             {(new Array(24).fill(0)).map((val, i) => <div key={i}>{i < 10 ? `0${i}:00` : `${i}:00`}<div className="time-divider"></div></div>)}
                         </div>
-                        {dayToShow.events ? dayToShow.events.map((event, index) => 
-                        <Row  key={index*30} day={dayToShow} event={event} index={index} mobile={mobile}/>) : <div className="freedom"><p style={{fontSize: '16pt'}}>You are free today!</p><img style={{margin: '0 auto', width: 100}} src={smile}/></div>}
+                        {this.state.todayEvents.length ? globalScope.isAdmin ? 
+                            this.state.todayEvents.map((event, index) => 
+                                <ColumnAdmin key={index*30} day={dayToShow} event={event} eventTypes={this.state.eventTypes} index={index} mobile={mobile}/>) :
+                            this.state.todayEvents.map((event, index) => 
+                                <Column key={index*30} day={dayToShow} event={event} eventTypes={this.state.eventTypes} index={index} mobile={mobile}/>) :
+                            <div className="freedom">
+                                <p style={{fontSize: '16pt'}}>You are free today!</p>
+                                <img style={{margin: '0 auto', width: 100}} src={smile}/>
+                            </div>}
                     </div>
                 </div>
                 <h3>Legend:</h3>
@@ -362,7 +389,6 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.value === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.value === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {this._snackBarShower()}
             </div>  
         )
     }
