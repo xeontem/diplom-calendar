@@ -8,13 +8,16 @@ import TextField from 'react-md/lib/TextFields';
 
 
 import CardAdmin from '../eventCard/CardAdmin';
+import globalScope from '../../globalScope';
 import { _loadSpeakers } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
 
 export default class Column extends React.Component {
 	constructor(props) {
 		super(props);
+		console.dir(this);
 		this.state = {
+			event: this.props.event, 
 			type: this.props.event.type,
 			title: this.props.event.title,
 			speakers: [{name: "Please wait"}],
@@ -42,19 +45,34 @@ export default class Column extends React.Component {
     }
 
     _closeDiscard = () => {
-    	this.props.event = eventBackupGet();
-    	tempEventSet(eventBackupGet());
-    	// let speakers = speakersBackupGet();
-        
-        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility/*, speakers */});
-    	// console.log('this.props.event');
-        // console.dir(this.props.event);
+
+	    let filtered = this.props.month.state.filtered.slice(0, eventBackupGet().eventIndex);
+	    filtered.push(eventBackupGet());
+	    filtered = filtered.concat(this.props.month.state.filtered.slice(eventBackupGet().eventIndex+1));
+	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
+  		
+  		// clear backup container
+  		let empty = {};
+  		eventBackupSet(empty);
+	    
+        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+	    this.props.month.setState({appliedEventsMonth, filtered});
     }
 
     _closeSave = () => {
-    	let speakers = speakersTempGet();
-        this.setState({ visible: false, speakers, promptVisibility: !this.state.promptVisibility});
-        // console.dir(this.props.event);
+
+    	let filtered = this.props.month.state.filtered.slice(0, tempEventGet().eventIndex);
+	    filtered.push(tempEventGet());
+	    filtered = filtered.concat(this.props.month.state.filtered.slice(tempEventGet().eventIndex+1));
+	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
+	    
+	    // clear backup container
+  		let empty = {};
+  		tempEventSet(empty);
+
+  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+	    this.props.month.setState({appliedEventsMonth, filtered});
+
     }
 
 
@@ -105,8 +123,9 @@ export default class Column extends React.Component {
 
 		return (
 			<Button 
-				className={ `${this.props.event.type} table-cell ${this.props.day.today ? 'today' : this.props.day.isCurrentMonth ? null : 'disabled-cell'}`}
+				className={ `${this.props.day.event.type} table-cell ${this.props.day.today ? 'today' : this.props.day.isCurrentMonth ? null : 'disabled-cell'}`}
 				onClick={this._openDialog}
+				draggable="true"
 				floating>
 					
 					<Dialog 
@@ -124,7 +143,7 @@ export default class Column extends React.Component {
 				               fixed
 				            >
 				            <div className="container">
-				            {this.props.mobile ? null : <p className="name-field">Type:</p>}
+				            {!this.props.mobile && <p className="name-field">Type:</p>}
 					            <SelectField
 					            	className="title-selector"
 								    key="titleMenu"
@@ -133,7 +152,7 @@ export default class Column extends React.Component {
 								    onChange={this._changeType}
 								    menuItems={this.props.eventTypes}
 								/>
-							{this.props.mobile ? null : <p className="name-field">Title:</p>}
+							{!this.props.mobile && <p className="name-field">Title:</p>}
 								<TextField
 									style={{fontSize: 20}}
 								    className="md-cell md-cell--bottom text-title"
@@ -147,10 +166,10 @@ export default class Column extends React.Component {
 							</div>     
 							</Toolbar>	
 							{dialog}
-			                <CardAdmin event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
+			                <CardAdmin eventIndex={this.props.eventIndex} event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
 		            </Dialog>
                     <p className="day-number">{this.props.day.dayNumber}</p>
-                    {this.props.event && this.props.day.today ? <div className={`event-cell ${this.props.event.type}`}></div> : null}
+                    {this.props.event && this.props.day.today && <div className={`event-cell ${this.props.event.type}`}></div>}
             </Button>
 		)
 	}

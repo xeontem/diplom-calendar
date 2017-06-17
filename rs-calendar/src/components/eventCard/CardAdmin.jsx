@@ -14,20 +14,25 @@ import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import TimePicker from 'react-md/lib/Pickers/TimePickerContainer';
 import SelectField from 'react-md/lib/SelectFields';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import deleteAvatar from './delete.png';
 
+let defaultLocation = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d698.4331681038012!2d27.68178244677689!3d53.92748365509798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcebc7c83cb35%3A0xc659f43cf70964d5!2zdnVs0ZbRgWEgQWthZNC1bdGWa2EgS3VwctC1dtGWxI1hIDEvMiwgTWluc2sgMjIwMTQx!5e0!3m2!1sen!2sby!4v1496747626981';
+let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
 export default class ExpandableMediaCard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			avatars: [],
 			description: this.props.event.description,
 			start: this.props.event.start,
 			end: new Date(this.props.event.start).valueOf()+this.props.event.duration,
-			defaultLocation: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d698.4331681038012!2d27.68178244677689!3d53.92748365509798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcebc7c83cb35%3A0xc659f43cf70964d5!2zdnVs0ZbRgWEgQWthZNC1bdGWa2EgS3VwctC1dtGWxI1hIDEvMiwgTWluc2sgMjIwMTQx!5e0!3m2!1sen!2sby!4v1496747626981",
+			showingLocation: this.props.event.showingLocation || defaultLocation,
 			location: this.props.event.location,
 			speakers: this.props.speakers,
 			avalSpeakers: [],
 			resources: this.props.event.resources
 		}
+		console.log(this.state.showingLocation);
 		this._backupData();
 		// initial mutable copy of event
 		let tempEvent = this.props.event;
@@ -71,9 +76,15 @@ export default class ExpandableMediaCard extends React.Component {
 				}
 			} else eventBackup[key] = this.props.event[key];
 		}
+		// store index of event in backupped event that appllied when press cancel button
+		eventBackup.eventIndex = this.props.eventIndex;
 		eventBackupSet(eventBackup);
+		// store index of event in temp event that appllied when press save button
+		let temp = {};
+		temp.eventIndex = this.props.eventIndex;
+		tempEventSet(temp);
 		// console.log('event backupped');
-		// console.dir(eventBackupGet());
+		// console.dir(eventBackupGet().eventIndex);
 	}
 
 	componentWillMount() {
@@ -106,7 +117,7 @@ export default class ExpandableMediaCard extends React.Component {
 		curDate.setMonth(dateMonth);
 		curDate.setFullYear(dateYear);
 		// console.log(curDate);
-		
+
 		let tempEvent = tempEventGet();
     	tempEvent.start = curDate;
     	tempEventSet(tempEvent);
@@ -132,8 +143,11 @@ export default class ExpandableMediaCard extends React.Component {
 		this.setState({location});
 	}
 
-	_changeDefaultLocation = () => {
-		this.setState({defaultLocation: `https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=${this.state.location}`});
+	_changeShowingLocation = (location) => {
+		let tempEvent = tempEventGet();
+    	tempEvent.showingLocation = uriAPI + location;
+    	tempEventSet(tempEvent);
+		this.setState({showingLocation: uriAPI + location});
 	}
 
 	_changeResources = (index, type) => {
@@ -161,6 +175,10 @@ export default class ExpandableMediaCard extends React.Component {
 		let resources = this.state.resources;
 		resources[index].resource = resource;
 		this.setState({resources});
+	}
+
+	_addResource = () => {
+
 	}
 
 	_addSpeaker = (id) => {
@@ -218,6 +236,18 @@ export default class ExpandableMediaCard extends React.Component {
 	_showTempEvent = () => {
 		// console.dir(eventBackupGet());
 		// console.dir(this.props.event);
+	}
+
+	_onMouseEnter = (i) => {
+		let avatars = this.state.avatars;
+		avatars[i] = deleteAvatar;
+		this.setState({avatars});
+	}
+
+	_onMouseLeave = (i) => {
+		let avatars = this.state.avatars;
+		avatars[i] = this.state.speakers[i].avatar;
+		this.setState({avatars});
 	}
 
 	render() {
@@ -284,22 +314,24 @@ export default class ExpandableMediaCard extends React.Component {
 				</div>
 				<Divider/>
 				<Media>
-					<iframe src={this.state.defaultLocation} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
+					<iframe src={this.state.showingLocation} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
 					<MediaOverlay>
 						<CardTitle	className="location-wrapper" title="Location" subtitle={locationNode}>
-							<Button className="md-cell--right" onClick={this._changeDefaultLocation} icon>place</Button>
+							<Button className="md-cell--right" onClick={this._changeShowingLocation.bind(this, this.state.location)} icon>place</Button>
 						</CardTitle>
 					</MediaOverlay>
 				</Media>
 				<div className="md-grid">
-				{this.state.speakers.map((speaker, i) => (
+				{this.state.speakers.map((speaker, i) => {
+					this.state.avatars.push(speaker.avatar);
+					return ( 
 					<CardTitle
 						key={i}
 						title="Speaker"
 						subtitle={speaker.name}
-						avatar={<Avatar src={speaker.avatar} alt="Avat" role="presentation" onClick={this._removeSpeaker.bind(this, i)} random />}
+						avatar={<Avatar style={{cursor: 'pointer'}}src={this.state.avatars[i]} alt="Avat" role="presentation" onMouseEnter={this._onMouseEnter.bind(this, i)} onMouseLeave={this._onMouseLeave.bind(this, i)} onClick={this._removeSpeaker.bind(this, i)} random/>}
 					/>
-				))}
+				)})}
 				<SelectField
                       id="statesControlled"
                       label="Add speaker"
@@ -314,7 +346,11 @@ export default class ExpandableMediaCard extends React.Component {
 				<ExpansionList style={{ padding: 16 }}>
 					<ExpansionPanel
 		                label="Resourses"
-		                contentClassName="md-grid expander">
+		                contentClassName="md-grid expander"
+		                closeOnSave={false}
+		                onSave={this._addResource}
+		                saveLabel="ADD"
+		                cancelLabel="HIDE">
 		                <CSSTransitionGroup
 		                        component="section"
 		                        transitionName="opacity"

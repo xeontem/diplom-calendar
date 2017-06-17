@@ -4,6 +4,7 @@
   "private": true,
   "description": "rs-calendar-by-xeontem",
   "dependencies": {
+    "modernizr": "^3.5.0",
     "node-sass": "^4.5.2",
     "npm-run-all": "^4.0.2",
     "react": "^15.5.4",

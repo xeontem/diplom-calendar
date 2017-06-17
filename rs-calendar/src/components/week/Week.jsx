@@ -9,11 +9,13 @@ import Column from './column';
 import ColumnAdmin from './columnAdmin';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
-
+import { _loadEvents } from '../../instruments/fetching';
 
 export default class Week extends React.Component {
 	constructor(props) {
 		super(props);
+        let weekToShow = [];
+        weekToShow.weekCounter = 0;
 		this.state = {
             dateToShow: Date.now(),
             avalWeeks: [],
@@ -34,6 +36,7 @@ export default class Week extends React.Component {
             curMonth: (new Date).toString().slice(4, 7),
             curYear: (new Date).getFullYear(),
             appliedEventsMonth: this._calculateMonthArr(),
+            weekToShow, 
             curIndexOfWeek: 0,
             stateItems: [{name: 'All', abbreviation: 'All'},
                          {name: 'deadline', abbreviation: 'deadline'},
@@ -53,28 +56,10 @@ export default class Week extends React.Component {
         this._filterByType = _filterByType.bind(this);
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
-	}
-	componentWillMount() {
-        this.setState({top: 0});
-        if(!this.state.weekToShow) {
-            let weekToShow = [];
-            this.state.appliedEventsMonth.map((week, i) => {
-                    if(week.curWeek) {
-                        weekToShow = week.map((day) => day);
-                        weekToShow.weekCounter = i;
-                    }
-                });
-            this.setState({weekToShow});
-        }
-        if(!this.state.events.length) {
-        let that = this;
-		fetch('http://128.199.53.150/events')
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(events){
-            let appliedEventsMonth = that._applyEventsOnDates(events);
+
+        _loadEvents.apply(this)
+            .then(events => {
+            let appliedEventsMonth = this._applyEventsOnDates(events);
             let weekToShow;
             let curIndexOfWeek;
             let avalWeeks = [];
@@ -86,21 +71,29 @@ export default class Week extends React.Component {
                 }
                 avalWeeks.push({name: i, abbreviation: i+1});
             }
-			that.setState({
-				events,
-                avalWeeks,
-                filtered: events,
-                appliedEventsMonth,
-                weekToShow,
-                curIndexOfWeek,
-				fetching: false
-			});
-		});
-        }
+            this.state.events,
+            this.state.avalWeeks = avalWeeks;
+            this.state.filtered = events;
+            this.state.appliedEventsMonth = appliedEventsMonth;
+            this.state.weekToShow =weekToShow;
+            this.state.curIndexOfWeek = curIndexOfWeek;
+            this.state.fetching = false;
+            return appliedEventsMonth;
+        }).then( appliedEventsMonth => {
+            console.dir(appliedEventsMonth);
+            let weekToShow = [];
+            appliedEventsMonth.map((week, i) => {
+                    if(week.curWeek) {
+                        weekToShow = week.map((day) => day);
+                        weekToShow.weekCounter = i;
+                    }
+                });
+            this.setState({weekToShow});
+        });
 	}
-
+	
     componentDidMount() {
-        setTimeout(this._slideDown, 1000);
+        setTimeout(this._slideDown, 500);
     }
 
     _slideDown = () => {
@@ -433,14 +426,14 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.toggleValue === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.toggleValue === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {globalScope.isAdmin ? <Button
+                {globalScope.isAdmin && <Button
                     tooltipPosition="top"
                     tooltipLabel="add event"
                     onClick={this._rerender}
                     floating
                     secondary
                     fixed>add
-                </Button> : null}
+                </Button>}
             </div>  
         )
     }

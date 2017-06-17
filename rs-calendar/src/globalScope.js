@@ -1,3 +1,4 @@
 export default {
-    isAdmin: false
+    isAdmin: false,
+    discard: false
 }

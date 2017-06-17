@@ -101,8 +101,6 @@ export default class EventsList extends React.Component {
                     </Dialog>;
         }
         const { columnWidths, focused, mobile } = this.props;
-        let icon = 'keyboard_arrow_down';
-        if (mobile) icon = null;
         
         let secLabel;
         if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
@@ -124,7 +122,7 @@ export default class EventsList extends React.Component {
                        fixed
                     >
                     <div className="container">
-                    {this.props.mobile ? null : <p className="name-field">Type:</p>}
+                    {!this.props.mobile && <p className="name-field">Type:</p>}
                         <SelectField
                             className="title-selector"
                             key="titleMenu"
@@ -133,7 +131,7 @@ export default class EventsList extends React.Component {
                             onChange={this._changeType}
                             menuItems={this.props.eventTypes}
                         />
-                    {this.props.mobile ? null : <p className="name-field">Title:</p>}
+                    {!this.props.mobile && <p className="name-field">Title:</p>}
                         <TextField
                             style={{fontSize: 20}}
                             className="md-cell md-cell--bottom text-title"
@@ -150,7 +148,7 @@ export default class EventsList extends React.Component {
                     <CardAdmin event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
             </Dialog>
             <ExpansionPanel
-                expandIconChildren={icon}
+                expandIconChildren={!mobile && 'keyboard_arrow_down'}
                 label={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
                 secondaryLabel={secLabel}
                 headerClassName={this.props.event.type}

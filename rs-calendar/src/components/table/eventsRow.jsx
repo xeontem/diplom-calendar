@@ -6,6 +6,7 @@ import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons/Button';
 
 import Card from '../eventCard/Card';
+import { _loadSpeakers } from '../../instruments/fetching';
 
 export default class EventsRow extends React.Component {
 	constructor(props) {
@@ -17,16 +18,7 @@ export default class EventsRow extends React.Component {
 	      	pageX: null,
 	      	pageY: null
 	    };
-	}
-
-	componentDidMount() {
-	    if(this.props.event){
-	      	let urls = [];
-	      	this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
-	      	Promise.all(urls.map(url => fetch(url)))
-	        	.then(resp => Promise.all( resp.map(r => r.json()) ))
-	        	.then(speakers => {this.setState({speakers})});
-	    }
+	    this._loadSpeakers = _loadSpeakers.bind(this);
 	}
 
 	_openDialog = (e, pressed) => {

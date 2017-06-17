@@ -73,7 +73,7 @@ export default class Week extends React.Component {
                 curIndexOfWeek,
                 fetching: false
             });
-            setTimeout(initResize, 1000);
+            setTimeout(initResize, 500);
         });
 	}
 
@@ -290,14 +290,7 @@ export default class Week extends React.Component {
         let dayToShow = this.state.appliedEventsMonth[this.state.dayToShow];
         return (
 			<div className="agenda-wrapper">
-                {globalScope.isAdmin ? <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button> : null}
+                
 				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
@@ -389,6 +382,14 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.value === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.value === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
+                {globalScope.isAdmin && <Button
+                    tooltipPosition="top"
+                    tooltipLabel="add event"
+                    onClick={this._rerender}
+                    floating
+                    secondary
+                    fixed>add
+                </Button>}
             </div>  
         )
     }

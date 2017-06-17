@@ -11,6 +11,7 @@ import ColumnAdmin from './columnAdmin';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
+import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
 
 export default class Month extends React.Component {
 	constructor(props) {
@@ -45,28 +46,46 @@ export default class Month extends React.Component {
         this._filterByType = _filterByType.bind(this);
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
-        _loadEvents.apply(this);
+        
+        _loadEvents.apply(this)
+            .then(events => {
+                let appliedEventsMonth = this._applyEventsOnDates(events);
+                this.setState({
+                    events,
+                    filtered: events,
+                    appliedEventsMonth,
+                    fetching: false
+                });    
+        });
 	}
-	componentWillMount() {
-        // alert('componentWillMount');
-        if(!this.state.events.length) {
-		let that = this;
-		fetch('http://128.199.53.150/events')
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(events){
-            let appliedEventsMonth = that._applyEventsOnDates(events);
-			that.setState({
-				events,
-                filtered: events,
-                appliedEventsMonth,
-				notLoaded: 0
-			});
-		});
-        }
-	}
+	
+    componentWillUpdate(nextProps, nextState) {
+        // alert('willupdate');
+        // console.log('----------------this.props----------------------');
+        // console.dir(this.props);
+        // console.log('----------------nextProps----------------------');
+        // console.dir(nextProps);
+        // console.log('----------------this.state----------------------');
+        // console.dir(this.state);
+        // console.log('----------------this.nextState----------------------');
+        // console.dir(nextState);
+        // console.dir(globalScope);
+        // if(globalScope.discard) {
+
+            // let tempEvent = tempEventGet();
+            // tempEvent.speakers = this.props.event.speakers.slice(0, index);
+            // tempEvent.speakers = tempEvent.speakers.concat(this.props.event.speakers.slice(index+1));
+            // tempEventSet(tempEvent);
+
+            // let arr = this.state.filtered.slice(0, eventBackupGet().eventIndex);
+            // arr.push(eventBackupGet());
+            // arr = arr.concat(this.state.filtered.slice(eventBackupGet().eventIndex+1));
+            // console.dir(this.state.filtered[eventBackupGet().eventIndex]);
+            // console.dir(arr[eventBackupGet().eventIndex]);
+            // this.setState({filtered: arr});
+            // globalScope.discard = false;
+        // }
+    }
 
     _applyEventsOnDates(events, date = Date.now()) {
         // alert('_applyEventsOnDates');
@@ -77,6 +96,7 @@ export default class Month extends React.Component {
                 week.map((day, dayIndex) => {
                     if(eventDate.toString().slice(0, 15) == day.curDate.toString().slice(0, 15)){
                         day.event = event;
+                        day.eventIndex = eventIndex;
                     };
                 })
             })    
@@ -218,14 +238,14 @@ export default class Month extends React.Component {
         const mobile = typeof window.orientation !== 'undefined';
 		return (
 			<div className="agenda-wrapper">
-                {globalScope.isAdmin ? <Button
+                {globalScope.isAdmin && <Button
                     tooltipPosition="top"
                     tooltipLabel="add event"
                     onClick={this._rerender}
                     floating
                     secondary
                     fixed>add
-                </Button> : null}
+                </Button>}
 				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
@@ -304,8 +324,10 @@ export default class Month extends React.Component {
                             {week.map((day, index) => 
                                 day.event ? globalScope.isAdmin ?
                                     <ColumnAdmin
+                                        month={this}
                                         eventTypes={this.state.eventTypes}
                                         key={index*30}
+                                        eventIndex={day.eventIndex}
                                         day={day}
                                         event={day.event}
                                         index={index}
@@ -317,7 +339,7 @@ export default class Month extends React.Component {
                                         index={index}
                                         mobile={mobile}/>    
                                     : <Button 
-                                            className={`table-cell ${day.today ? 'today' : day.isCurrentMonth ? null : 'disabled-cell'}`} 
+                                            className={`table-cell ${day.today ? 'today' : !day.isCurrentMonth && 'disabled-cell'}`} 
                                             key={index*30}
                                             floating 
                                             ><p className="day-number">{day.dayNumber}</p>

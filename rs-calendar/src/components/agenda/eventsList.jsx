@@ -50,8 +50,8 @@ export default class EventsList extends React.Component {
 
     render() {
         const { columnWidths, focused, mobile } = this.props;
-        let icon = 'keyboard_arrow_down';
-        if (mobile) icon = null;
+        // let icon = 'keyboard_arrow_down';
+        // if (mobile) icon = null;
         
         let secLabel;
         if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;
@@ -76,7 +76,7 @@ export default class EventsList extends React.Component {
                     <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
                 </Dialog>
             <ExpansionPanel
-                expandIconChildren={icon}
+                expandIconChildren={!mobile && 'keyboard_arrow_down'}
                 label={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
                 secondaryLabel={secLabel}
                 headerClassName={this.props.event.type}

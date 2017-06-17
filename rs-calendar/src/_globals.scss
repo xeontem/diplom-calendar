@@ -377,6 +377,26 @@ section:first-child {
     width: 100%;
 }
 
+.speaker-container {
+  position: relative;
+}
+
+.speaker-avatar:hover {
+  opacity: 0;
+}
+
+.minus {
+width: 25px;
+    height: 5px;
+    background: red;
+    position: absolute;
+    top: 18px;
+    z-index: 0;
+    left: 7px;
+}
+
+
+
 @media (max-width: 576px) {
 
   .table-cell {

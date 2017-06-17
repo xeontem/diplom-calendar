@@ -27,7 +27,14 @@ export default class Agenda extends React.Component {
         this._filterByType = _filterByType.bind(this);
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
-        _loadEvents.apply(this);
+        _loadEvents.apply(this)
+            .then(events => {
+                this.setState({
+                    events,
+                    filtered: events,
+                    fetching: false
+                });
+            });
     }
 
     _removeToast = () => {
@@ -39,14 +46,14 @@ export default class Agenda extends React.Component {
         const mobile = typeof window.orientation !== 'undefined';
         return (
             <div className="agenda-wrapper">
-                {globalScope.isAdmin ? <Button
+                {globalScope.isAdmin && <Button
                     tooltipPosition="top"
                     tooltipLabel="add event"
                     onClick={this._rerender}
                     floating
                     secondary
                     fixed>add
-                </Button> : null}
+                </Button>}
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <div className="md-grid no-padding">

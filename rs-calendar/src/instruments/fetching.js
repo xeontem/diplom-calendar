@@ -7,14 +7,6 @@ export function _loadSpeakers() {
 }
 
 export function _loadEvents() {
-            let that = this;
-            fetch('http://128.199.53.150/events')
-                .then(response => response.json())
-                .then(events =>{
-                    that.setState({
-                        events: events,
-                        filtered: events,
-                        fetching: false
-                    });
-                });
+            return fetch('http://128.199.53.150/events')
+                .then(response => response.json());
 }
