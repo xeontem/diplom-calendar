@@ -21,8 +21,7 @@ export default class Column extends React.Component {
             pageX: null,
             pageY: null,
 		}
-		this._loadSpeakers = _loadSpeakers.bind(this);
-		this._loadSpeakers();
+		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
 	_openDialog = (e, pressed, speakers) => {
@@ -36,19 +35,26 @@ export default class Column extends React.Component {
     }
 
     _closeDiscard = () => {
-    	this.props.event = eventBackupGet();
-    	tempEventSet(eventBackupGet());
-    	// let speakers = speakersBackupGet();
-        
-        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility/*, speakers */});
-    	// console.log('this.props.event');
-        // console.dir(this.props.event);
+    	console.dir(eventBackupGet());
+	    let filtered = this.props.day.state.filtered.slice(0, eventBackupGet().eventIndex);
+	    filtered.push(eventBackupGet());
+	    filtered = filtered.concat(this.props.day.state.filtered.slice(eventBackupGet().eventIndex+1));
+	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered);
+	    let day = appliedEventsMonth[this.props.day.state.dayIndex];
+
+	    this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
+	    this.props.day.setState({filtered, day});
     }
 
     _closeSave = () => {
-    	let speakers = speakersTempGet();
-        this.setState({ visible: false, speakers, promptVisibility: !this.state.promptVisibility});
-        // console.dir(this.props.event);
+    	let filtered = this.props.day.state.filtered.slice(0, tempEventGet().eventIndex);
+	    filtered.push(tempEventGet());
+	    filtered = filtered.concat(this.props.day.state.filtered.slice(tempEventGet().eventIndex+1));
+	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered);
+	    let day = appliedEventsMonth[this.props.day.state.dayIndex];
+  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
+	    this.props.day.setState({filtered, day});
+
     }
 
 
@@ -71,26 +77,18 @@ export default class Column extends React.Component {
     }
 
 	render() {
-		let startHours;
-		let startMins;
-		let marginTop = 0;
-		let endHours;
-		let endMins;
-		let height = 0;
-		if(this.props.event) {
-			startHours = new Date(this.props.event.start).toString().slice(16, 18);
-			startMins = new Date(this.props.event.start).toString().slice(19, 21);
-			marginTop = 24 + 55 * startHours;
+		let	startHours = new Date(this.props.event.start).getHours();
+		let	startMins = new Date(this.props.event.start).getMinutes();
+		let	marginTop = 24 + 55 * startHours;
 			marginTop += startMins * 0.9;
-			endHours = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(16, 18);
-			endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(19, 21);
-			let startDate = this.props.event.start.slice(9, 10);
-			let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(9, 10);
-			height = (endHours - startHours) * 55;
+		let	endHours = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getHours();
+		let	endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getMinutes();
+		let startDate = new Date(this.props.event.start).getDate();
+		let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getDate();
+		let	height = (endHours - startHours) * 55;
 			height -= startMins * 0.9;
 			height += endMins * 0.9;
 			if(startDate !== endDate) height = 1340;
-		}
 		let actions = [<Button flat label="Cancel" onClick={this._closeDiscard} />, <Button flat label="Save" onClick={this._closeSave} />];
 		let dialog = null;
 		if(this.props.mobile) {
@@ -156,7 +154,13 @@ export default class Column extends React.Component {
 							</div>     
 							</Toolbar>	
 							{dialog}
-			                <CardAdmin event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
+							<CardAdmin
+								eventIndex={this.props.eventIndex}
+								event={this.props.event}
+								speakers={this.state.speakers}
+								speakersReady={this.state.speakersReady}
+								mobile={this.props.mobile}
+							/> 
 		            </Dialog>
             </div>					
 		)

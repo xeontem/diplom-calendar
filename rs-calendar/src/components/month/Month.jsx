@@ -47,7 +47,7 @@ export default class Month extends React.Component {
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
         
-        _loadEvents.apply(this)
+        _loadEvents.call(this, 'http://128.199.53.150/events')
             .then(events => {
                 let appliedEventsMonth = this._applyEventsOnDates(events);
                 this.setState({
@@ -56,37 +56,9 @@ export default class Month extends React.Component {
                     appliedEventsMonth,
                     fetching: false
                 });    
-        });
+            });
 	}
 	
-    componentWillUpdate(nextProps, nextState) {
-        // alert('willupdate');
-        // console.log('----------------this.props----------------------');
-        // console.dir(this.props);
-        // console.log('----------------nextProps----------------------');
-        // console.dir(nextProps);
-        // console.log('----------------this.state----------------------');
-        // console.dir(this.state);
-        // console.log('----------------this.nextState----------------------');
-        // console.dir(nextState);
-        // console.dir(globalScope);
-        // if(globalScope.discard) {
-
-            // let tempEvent = tempEventGet();
-            // tempEvent.speakers = this.props.event.speakers.slice(0, index);
-            // tempEvent.speakers = tempEvent.speakers.concat(this.props.event.speakers.slice(index+1));
-            // tempEventSet(tempEvent);
-
-            // let arr = this.state.filtered.slice(0, eventBackupGet().eventIndex);
-            // arr.push(eventBackupGet());
-            // arr = arr.concat(this.state.filtered.slice(eventBackupGet().eventIndex+1));
-            // console.dir(this.state.filtered[eventBackupGet().eventIndex]);
-            // console.dir(arr[eventBackupGet().eventIndex]);
-            // this.setState({filtered: arr});
-            // globalScope.discard = false;
-        // }
-    }
-
     _applyEventsOnDates(events, date = Date.now()) {
         // alert('_applyEventsOnDates');
         let month = this._calculateMonthArr(date);
@@ -356,7 +328,6 @@ export default class Month extends React.Component {
                     <Button raised className={this.state.toggleValue === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.toggleValue === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {this._snackBarShower()}
             </div>  
         )
     }

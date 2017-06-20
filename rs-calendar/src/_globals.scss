@@ -394,6 +394,25 @@ width: 25px;
     z-index: 0;
     left: 7px;
 }
+.drag-up {
+  position: absolute;
+  top: 0px;
+  width: 40px;
+  height: 15px;
+  background: red;
+  border-radius: 5px;
+  cursor: n-resize;
+}
+
+.drag-down {
+    position: absolute;
+    width: 40px;
+    height: 15px;
+    bottom: 0px;
+    border-radius: 5px;
+    background: red;
+    cursor: n-resize;
+}
 
 
 

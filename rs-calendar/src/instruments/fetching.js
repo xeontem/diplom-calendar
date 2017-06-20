@@ -1,12 +1,12 @@
-export function _loadSpeakers() {
+export function _loadEvents(url) {
+            return fetch(url)
+                .then(response => response.json());
+}
+
+export function _loadSpeakers(speakersIDs) {
             let urls = [];
-            this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
+            speakersIDs.map(id => urls.push('http://128.199.53.150/trainers/' + id));
             Promise.all(urls.map(url => fetch(url)))
                 .then(resp => Promise.all( resp.map(r => r.json()) ))
                 .then(speakers => this.setState({speakers, speakersReady: true}));
-}
-
-export function _loadEvents() {
-            return fetch('http://128.199.53.150/events')
-                .then(response => response.json());
 }

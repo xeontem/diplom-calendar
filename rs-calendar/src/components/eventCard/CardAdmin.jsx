@@ -1,8 +1,6 @@
 import React from 'react';
 import Card from 'react-md/lib/Cards/Card';
 import CardTitle from 'react-md/lib/Cards/CardTitle';
-import CardActions from 'react-md/lib/Cards/CardActions';
-import CardText from 'react-md/lib/Cards/CardText';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
 import { ExpansionList, ExpansionPanel } from 'react-md/lib/ExpansionPanels';
 import Media, { MediaOverlay } from 'react-md/lib/Media';
@@ -14,6 +12,7 @@ import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import TimePicker from 'react-md/lib/Pickers/TimePickerContainer';
 import SelectField from 'react-md/lib/SelectFields';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import { _loadEvents } from '../../instruments/fetching';
 import deleteAvatar from './delete.png';
 
 let defaultLocation = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d698.4331681038012!2d27.68178244677689!3d53.92748365509798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcebc7c83cb35%3A0xc659f43cf70964d5!2zdnVs0ZbRgWEgQWthZNC1bdGWa2EgS3VwctC1dtGWxI1hIDEvMiwgTWluc2sgMjIwMTQx!5e0!3m2!1sen!2sby!4v1496747626981';
@@ -24,31 +23,35 @@ export default class ExpandableMediaCard extends React.Component {
 		this.state = {
 			avatars: [],
 			description: this.props.event.description,
-			start: this.props.event.start,
-			end: new Date(this.props.event.start).valueOf()+this.props.event.duration,
+			start: new Date(this.props.event.start),
+			end: new Date(new Date(this.props.event.start).valueOf() + new Date(this.props.event.duration).valueOf()),
 			showingLocation: this.props.event.showingLocation || defaultLocation,
 			location: this.props.event.location,
 			speakers: this.props.speakers,
 			avalSpeakers: [],
 			resources: this.props.event.resources
 		}
-		console.log(this.state.showingLocation);
 		this._backupData();
+		console.dir(this.state);
 		// initial mutable copy of event
-		let tempEvent = this.props.event;
-		tempEventSet(tempEvent);
+		let temp = this.props.event;
+		temp.eventIndex = this.props.eventIndex;
+		tempEventSet(temp);
 
 		// initial mutable copy of speakers
-		let tempSpeakers = this.props.speakers;
-		speakersTempSet(tempSpeakers);
+		speakersTempSet(this.props.speakers);
+
+		_loadEvents.call(this, 'http://128.199.53.150/trainers')
+		  .then(avalSpeakers => {
+			avalSpeakers = avalSpeakers.slice(0, 10);
+			avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
+			this.setState({avalSpeakers});
+		});
 	}
 
 	_backupData = () => {
 		if(this.props.speakersReady){
-			// console.log('this.props.speakers');
-			// console.dir(this.props.speakers);
-			// backup ready arr of speakers for discard changes
-			let speakersBackup = speakersBackupGet();
+			let speakersBackup = [];
 			for(let i = 0; i < this.props.speakers.length; i++) {
 				speakersBackup[i] = {};
 				for(let key in this.props.speakers[i]) {
@@ -56,13 +59,9 @@ export default class ExpandableMediaCard extends React.Component {
 				}
 			}
 			speakersBackupSet(speakersBackup);
-			// console.log('ready speakers backupped');
-			// console.dir(speakersBackupGet());
 		}
 		// backup event for discard changes
-		let eventBackup = eventBackupGet();
-			// console.log('backup this.props.event');
-			// console.dir(this.props.event);
+		let eventBackup = {};
 		for(let key in this.props.event) {
 			if(this.props.event[key].push) {
 				eventBackup[key] = [];
@@ -79,27 +78,8 @@ export default class ExpandableMediaCard extends React.Component {
 		// store index of event in backupped event that appllied when press cancel button
 		eventBackup.eventIndex = this.props.eventIndex;
 		eventBackupSet(eventBackup);
-		// store index of event in temp event that appllied when press save button
-		let temp = {};
-		temp.eventIndex = this.props.eventIndex;
-		tempEventSet(temp);
-		// console.log('event backupped');
-		// console.dir(eventBackupGet().eventIndex);
 	}
 
-	componentWillMount() {
-		let that = this;
-		fetch('http://128.199.53.150/trainers')
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(avalSpeakers){
-			avalSpeakers = avalSpeakers.slice(0, 10);
-			avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
-			that.setState({avalSpeakers});
-		});
-	}
 	_changeDescription = (description) => {
 		let tempEvent = tempEventGet();
     	tempEvent.description = description;
@@ -111,8 +91,7 @@ export default class ExpandableMediaCard extends React.Component {
 		let dateDay = date.slice(0, 2);
 		let dateMonth = date.slice(3, 5)-1;
 		let dateYear = date.slice(6);
-		let curDate = this.props.event.start;
-		curDate = new Date(curDate);
+		let curDate = new Date(this.state.start.valueOf());
 		curDate.setDate(dateDay);
 		curDate.setMonth(dateMonth);
 		curDate.setFullYear(dateYear);
@@ -125,15 +104,60 @@ export default class ExpandableMediaCard extends React.Component {
 	}
 
 	_changeFromTime = (time) => {
-		// console.log(time);
+
+		let colonIndex = time.indexOf(':');
+		let hours = Number(time.slice(0, colonIndex));
+		let minutes = Number(time.slice(colonIndex+1));
+		console.log('hours: ',hours,'minutes: ',minutes);
+		let curDate = new Date(this.state.start.valueOf());
+		curDate.setHours(hours);
+		curDate.setMinutes(minutes);
+		let tempEvent = tempEventGet();
+    	tempEvent.start = curDate;
+    	tempEventSet(tempEvent);
+    	console.log(curDate);
+		this.setState({start: curDate});
 	}
 
 	_changeToDate = (date) => {
-		// console.log(date);
+		let dateDay = date.slice(0, 2);
+		let dateMonth = date.slice(3, 5)-1;
+		let dateYear = date.slice(6);
+
+		let curDate = new Date(this.state.end.valueOf());
+		curDate.setDate(dateDay);
+		curDate.setMonth(dateMonth);
+		curDate.setFullYear(dateYear);
+		let duration = curDate - this.state.start;
+		if(curDate < this.state.start) {
+			alert('Set end Date more than start');
+			return;
+		} 
+		let tempEvent = tempEventGet();
+    	tempEvent.duration = duration;
+    	tempEventSet(tempEvent);
+    	let end = new Date(curDate.valueOf() + duration.valueOf());
+		this.setState({end});
 	}
 
 	_changeToTime = (time) => {
-		// console.log(time);
+		let colonIndex = time.indexOf(':');
+		let hours = Number(time.slice(0, colonIndex));
+		let minutes = Number(time.slice(colonIndex+1));
+		console.log('hours: ',hours,'minutes: ',minutes);
+		let curDate = new Date(this.state.end.valueOf());
+		curDate.setHours(hours);
+		curDate.setMinutes(minutes);
+		let duration = curDate - this.state.start;
+		if(curDate < this.state.start) {
+			alert('Set end Date more than start');
+			return;
+		} 
+		let tempEvent = tempEventGet();
+    	tempEvent.duration = duration;
+    	tempEventSet(tempEvent);
+    	let end = new Date(curDate.valueOf() + duration.valueOf());
+		this.setState({end});
 	}
 
 	_changeLocation = (location) => {
@@ -217,7 +241,8 @@ export default class ExpandableMediaCard extends React.Component {
 		event.speakers = event.speakers.concat(this.props.event.speakers.slice(index+1));
 		console.log('event');
 		console.dir(this.props.event);
-		// ready arr ofspeakers
+
+		// ready arr of speakers
 		let tempSpeakers = speakersTempGet();
     	tempSpeakers = this.state.speakers.slice(0, index);
     	tempSpeakers = tempSpeakers.concat(this.state.speakers.slice(index+1));
@@ -283,7 +308,7 @@ export default class ExpandableMediaCard extends React.Component {
 					<DatePicker
                         id="local-ru-RU"
                         className="md-cell"
-                        label={`${new Date(this.state.start).getDate()}.${new Date(this.state.start).getMonth() > 9 ? null : '0'}${new Date(this.state.start).getMonth()+1}.${new Date(this.state.start).getFullYear()}`}
+                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 && '0'}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
                         locales="ru-RU"
                         onChange={this._changeFromDate}
                         autoOk
@@ -291,14 +316,14 @@ export default class ExpandableMediaCard extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${new Date(this.state.start).getHours()}:${new Date(this.state.start).getMinutes()}`}
+				      label={`${this.state.start.getHours()}:${this.state.start.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeFromTime}
 				      autoOk
 				    />
                     <DatePicker
                         id="local-ru-RU"
-                        label={`${new Date(this.state.end).getDate()}.${new Date(this.state.end).getMonth() > 9 ? null : '0'}${new Date(this.state.end).getMonth()+1}.${new Date(this.state.end).getFullYear()}`}
+                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 && '0'}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
                         locales="ru-RU"
                         className="md-cell"
                         onChange={this._changeToDate}
@@ -307,7 +332,7 @@ export default class ExpandableMediaCard extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${new Date(this.state.end).getHours()}:${new Date(this.state.end).getMinutes()}`}
+				      label={`${this.state.end.getHours()}:${this.state.end.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeToTime}
 				    />

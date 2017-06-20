@@ -47,26 +47,18 @@ export default class Column extends React.Component {
     }
 
 	render() {
-		let startHours;
-		let startMins;
-		let marginTop = 0;
-		let endHours;
-		let endMins;
-		let height = 0;
-		if(this.props.day.event) {
-			startHours = new Date(this.props.day.event.start).toString().slice(16, 18);
-			startMins = new Date(this.props.day.event.start).toString().slice(19, 21);
-			marginTop = 24 + 55 * startHours;
+		let	startHours = new Date(this.props.event.start).getHours();
+		let	startMins = new Date(this.props.event.start).getMinutes();
+		let	marginTop = 24 + 55 * startHours;
 			marginTop += startMins * 0.9;
-			endHours = new Date(Number(new Date(this.props.day.event.start)) + Number(new Date(this.props.day.event.duration))).toString().slice(16, 18);
-			endMins = new Date(Number(new Date(this.props.day.event.start)) + Number(new Date(this.props.day.event.duration))).toString().slice(19, 21);
-			let startDate = this.props.day.event.start.slice(9, 10);
-			let endDate = new Date(Number(new Date(this.props.day.event.start)) + Number(new Date(this.props.day.event.duration))).toString().slice(9, 10);
-			height = (endHours - startHours) * 55;
+		let	endHours = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getHours();
+		let	endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getMinutes();
+		let startDate = new Date(this.props.event.start).getDate();
+		let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getDate();
+		let	height = (endHours - startHours) * 55;
 			height -= startMins * 0.9;
 			height += endMins * 0.9;
 			if(startDate !== endDate) height = 1340;
-		}
 		return (
 			<div style={{marginTop, height}} className={this.props.day.event ? `${this.props.day.event.type} event-column-week` : 'event-column-week'} onClick={this._openDialog}>
 				{this.props.day.event ?

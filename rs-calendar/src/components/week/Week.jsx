@@ -57,7 +57,7 @@ export default class Week extends React.Component {
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
 
-        _loadEvents.apply(this)
+        _loadEvents.call(this, 'http://128.199.53.150/events')
             .then(events => {
             let appliedEventsMonth = this._applyEventsOnDates(events);
             let weekToShow;
@@ -71,7 +71,7 @@ export default class Week extends React.Component {
                 }
                 avalWeeks.push({name: i, abbreviation: i+1});
             }
-            this.state.events,
+            this.state.events = events;
             this.state.avalWeeks = avalWeeks;
             this.state.filtered = events;
             this.state.appliedEventsMonth = appliedEventsMonth;
@@ -112,6 +112,7 @@ export default class Week extends React.Component {
                 week.map((day, dayIndex) => {
                     if(eventDate.toString().slice(0, 15) == day.curDate.toString().slice(0, 15)){
                         day.event = event;
+                        day.eventIndex = eventIndex;
                     };
                 })
             })    
@@ -412,8 +413,8 @@ export default class Week extends React.Component {
                         </div>
                         {this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].map((day, index) => 
                             day.event ? globalScope.isAdmin ? 
-                                <ColumnAdmin  eventTypes={this.state.eventTypes} key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
-                                <Column  key={index*30} day={day} index={index} mobile={mobile}/> :
+                                <ColumnAdmin  week={this} eventIndex={day.eventIndex} eventTypes={this.state.eventTypes} key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
+                                <Column  key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
                                 <div key={index*30} style={{width: 40}} ></div>
                         )}
                     </div>

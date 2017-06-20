@@ -15,7 +15,6 @@ import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBac
 export default class Column extends React.Component {
 	constructor(props) {
 		super(props);
-		console.dir(this);
 		this.state = {
 			event: this.props.event, 
 			type: this.props.event.type,
@@ -24,12 +23,10 @@ export default class Column extends React.Component {
 			visible: false,
             pageX: null,
             pageY: null,
-            notLoaded: true,
             speakersReady: false,
             promptVisibility: false
 		}
-		this._loadSpeakers = _loadSpeakers.bind(this);
-		this._loadSpeakers();
+		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
 	_openDialog = (e, pressed) => {
@@ -51,11 +48,17 @@ export default class Column extends React.Component {
 	    filtered = filtered.concat(this.props.month.state.filtered.slice(eventBackupGet().eventIndex+1));
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
   		
-  		// clear backup container
-  		let empty = {};
-  		eventBackupSet(empty);
-	    
-        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+  		// // clear backup container
+  		// let tempEvent = {};
+  		// let eventBackup = {};
+  		// let speakersBackup = {};
+  		// let speakersTemp = {};
+	   //  tempEventSet(tempEvent);
+  		// eventBackupSet(eventBackup);
+  		// speakersBackupSet(speakersBackup);
+  		// speakersTempSet(speakersTemp);
+
+        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersBackupGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});
     }
 
@@ -66,11 +69,17 @@ export default class Column extends React.Component {
 	    filtered = filtered.concat(this.props.month.state.filtered.slice(tempEventGet().eventIndex+1));
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
 	    
-	    // clear backup container
-  		let empty = {};
-  		tempEventSet(empty);
+	   //  // clear backup container
+  		// let tempEvent = {};
+  		// let eventBackup = {};
+  		// let speakersBackup = {};
+  		// let speakersTemp = {};
+	   //  tempEventSet(tempEvent);
+  		// eventBackupSet(eventBackup);
+  		// speakersBackupSet(speakersBackup);
+  		// speakersTempSet(speakersTemp);
 
-  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});
 
     }
