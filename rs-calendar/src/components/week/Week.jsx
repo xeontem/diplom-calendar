@@ -7,9 +7,11 @@ import Button from 'react-md/lib/Buttons';
 
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
+import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
+import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
 
 export default class Week extends React.Component {
 	constructor(props) {
@@ -302,7 +304,8 @@ export default class Week extends React.Component {
         }
 		return (
 			<div className="agenda-wrapper">
-				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
+				{globalScope.isAdmin && <CardAdminEmpty week={this} _closeSave={_closeSaveWeek} eventTypes={this.state.eventTypes} mobile={mobile}/> }
+                {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
@@ -427,14 +430,6 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.toggleValue === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.toggleValue === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {globalScope.isAdmin && <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button>}
             </div>  
         )
     }

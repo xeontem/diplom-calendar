@@ -8,11 +8,12 @@ import FontIcon from 'react-md/lib/FontIcons';
 
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
+import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import smile from './legosmile.svg';
 import scroll from '../../instruments/scroll';
 import initResize from '../../instruments/initResize';
 import globalScope from '../../globalScope';
-
+import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
 
 export default class Week extends React.Component {
     constructor(props) {
@@ -285,7 +286,7 @@ export default class Week extends React.Component {
         console.dir(this.state.day);
         return (
             <div className="agenda-wrapper">
-                
+                {globalScope.isAdmin && <CardAdminEmpty day={this} _closeSave={_closeSaveDay} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
@@ -377,14 +378,6 @@ export default class Week extends React.Component {
                     <Button raised className={this.state.value === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
                     <Button raised className={this.state.value === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
-                {globalScope.isAdmin && <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button>}
             </div>  
         )
     }

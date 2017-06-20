@@ -8,7 +8,7 @@ import TextField from 'react-md/lib/TextFields';
 
 import CardAdmin from '../eventCard/CardAdmin';
 import { _loadSpeakers } from '../../instruments/fetching';
-import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 
 let initialClientY = 0;
 export default class Column extends React.Component {

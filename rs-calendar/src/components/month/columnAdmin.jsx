@@ -10,7 +10,7 @@ import TextField from 'react-md/lib/TextFields';
 import CardAdmin from '../eventCard/CardAdmin';
 import globalScope from '../../globalScope';
 import { _loadSpeakers } from '../../instruments/fetching';
-import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 
 export default class Column extends React.Component {
 	constructor(props) {

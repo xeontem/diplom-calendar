@@ -13,7 +13,7 @@ import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
 import CardAdmin from '../eventCard/CardAdmin';
 import { _loadSpeakers } from '../../instruments/fetching';
-import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 
 export default class EventsRow extends React.Component {
 

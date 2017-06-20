@@ -7,16 +7,18 @@ import Button from 'react-md/lib/Buttons';
 
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
+import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
-import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
-
+// import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
+import { _closeSaveMonth } from '../../instruments/emptyEventOpenClose';
 export default class Month extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+            addNew: false,
             dateToShow: Date.now(),
             avalMonthes: [{name: 'January', abbreviation: 'Jan'},
                           {name: 'February', abbreviation: 'Feb'},
@@ -203,21 +205,14 @@ export default class Month extends React.Component {
         this.setState({curYear, curMonth, dateToShow, appliedEventsMonth});
     }
 
-    _rerender = () => {this._filterByType('All')}
+    _rerender = () => {this.setState({addNew: true})}
 
 	render() {
         // alert('render month');
         const mobile = typeof window.orientation !== 'undefined';
 		return (
 			<div className="agenda-wrapper">
-                {globalScope.isAdmin && <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button>}
+                {globalScope.isAdmin && <CardAdminEmpty month={this} _closeSave={_closeSaveMonth} eventTypes={this.state.eventTypes} mobile={mobile}/> }
 				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>

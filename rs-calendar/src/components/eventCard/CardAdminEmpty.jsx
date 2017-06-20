@@ -1,46 +1,64 @@
 import React from 'react';
-import Card from 'react-md/lib/Cards/Card';
-import CardTitle from 'react-md/lib/Cards/CardTitle';
-import CSSTransitionGroup from 'react-addons-css-transition-group';
-import { ExpansionList, ExpansionPanel } from 'react-md/lib/ExpansionPanels';
-import Media, { MediaOverlay } from 'react-md/lib/Media';
-import Avatar from 'react-md/lib/Avatars';
+import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons';
-import Divider from 'react-md/lib/Dividers';
+import Toolbar from 'react-md/lib/Toolbars';
+import TableColumn from 'react-md/lib/DataTables/TableColumn';
+import SelectField from 'react-md/lib/SelectFields';
 import TextField from 'react-md/lib/TextFields';
+import Card from 'react-md/lib/Cards/Card';
+import Divider from 'react-md/lib/Dividers';
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
 import TimePicker from 'react-md/lib/Pickers/TimePickerContainer';
-import SelectField from 'react-md/lib/SelectFields';
-import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
-import { _loadEvents } from '../../instruments/fetching';
-import deleteAvatar from './delete.png';
+import Media, { MediaOverlay } from 'react-md/lib/Media';
+import CardTitle from 'react-md/lib/Cards/CardTitle';
+import Avatar from 'react-md/lib/Avatars';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
+import { ExpansionList, ExpansionPanel } from 'react-md/lib/ExpansionPanels';
+import { tempEventGet, tempEventSet } from '../../instruments/eventsBackup';
 
-let defaultLocation = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d698.4331681038012!2d27.68178244677689!3d53.92748365509798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcebc7c83cb35%3A0xc659f43cf70964d5!2zdnVs0ZbRgWEgQWthZNC1bdGWa2EgS3VwctC1dtGWxI1hIDEvMiwgTWluc2sgMjIwMTQx!5e0!3m2!1sen!2sby!4v1496747626981';
+import globalScope from '../../globalScope';
+import { _loadEvents } from '../../instruments/fetching';
+import deleteAvatar from '../eventCard/delete.png';
+
 let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
-export default class ExpandableMediaCard extends React.Component {
+let defaultLocation = '';
+
+export default class Column extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			type: this.props.eventTypes[1],
+			title: '',
+			description: 'description...',
+			duration: 0,
+			id: 0,
+			location: 'location...',
+			resources: [{type: ''}],
+			speakers: [],
+			speakersReadyArr: [],
+			start: new Date,
 			avatars: [],
-			description: this.props.event.description,
-			start: new Date(this.props.event.start),
-			end: new Date(new Date(this.props.event.start).valueOf() + new Date(this.props.event.duration).valueOf()),
-			showingLocation: this.props.event.showingLocation || defaultLocation,
-			location: this.props.event.location,
-			speakers: this.props.speakers,
-			avalSpeakers: [],
-			resources: this.props.event.resources
+			end: new Date,
+			showingLocation: defaultLocation,
+			avalSpeakers: [], 
+			visible: false,
+            pageX: null,
+            pageY: null,
+            speakersReady: false,
+            promptVisibility: false
 		}
-		this._backupData();
-		console.dir(this.state);
-		// initial mutable copy of event
-		let temp = this.props.event;
-		temp.eventIndex = this.props.eventIndex;
-		tempEventSet(temp);
+		
+		this._closeSave = this.props._closeSave.bind(this);
 
-		// initial mutable copy of speakers
-		speakersTempSet(this.props.speakers);
-
+		tempEventSet({type: this.state.type,
+					  title: this.state.title,
+					  description: this.state.description,
+					  duration: this.state.duration,
+					  id: this.state.id,
+					  location: this.state.location,
+					  resources: this.state.resources,
+					  speakers: this.state.speakers,
+					  start: this.state.start});
 		_loadEvents.call(this, 'http://128.199.53.150/trainers')
 		  .then(avalSpeakers => {
 			avalSpeakers = avalSpeakers.slice(0, 10);
@@ -49,38 +67,36 @@ export default class ExpandableMediaCard extends React.Component {
 		});
 	}
 
-	_backupData = () => {
-		if(this.props.speakersReady){
-			let speakersBackup = [];
-			for(let i = 0; i < this.props.speakers.length; i++) {
-				speakersBackup[i] = {};
-				for(let key in this.props.speakers[i]) {
-					speakersBackup[i][key] = this.props.speakers[i][key];
-				}
-			}
-			speakersBackupSet(speakersBackup);
-		}
-		// backup event for discard changes
-		let eventBackup = {};
-		for(let key in this.props.event) {
-			if(this.props.event[key].push) {
-				eventBackup[key] = [];
-				for(let i = 0; i < this.props.event[key].length; i++) {
-					if(Object.prototype.toString.call(this.props.event[key][i]).slice(8, -1) === "Object") {
-						eventBackup[key][i] = {};
-						if(!this.props.event[key][i].toUpperCase) for(let resourceKey in this.props.event[key][i]) {
-							eventBackup[key][i][resourceKey] = this.props.event[key][i][resourceKey];
-						}
-					} else eventBackup[key][i] = this.props.event[key][i];
-				}
-			} else eventBackup[key] = this.props.event[key];
-		}
-		// store index of event in backupped event that appllied when press cancel button
-		eventBackup.eventIndex = this.props.eventIndex;
-		eventBackupSet(eventBackup);
-	}
+	_openDialog = (e, pressed) => {
+        let { pageX, pageY } = e;
+        if (e.changedTouches) {
+            const [touch] = e.changedTouches;
+            pageX = touch.pageX;
+            pageY = touch.pageY;
+        }
+        this.setState({ visible: true, pageX, pageY });
+    }
 
-	_changeDescription = (description) => {
+    _closeDiscard = () => {
+
+  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+    }
+
+    _changeType = (type) => {
+    	let tempEvent = tempEventGet();
+    	tempEvent.type = type;
+    	tempEventSet(tempEvent);
+    	this.setState({type});
+    }
+
+    _changeTitle = (title) => {
+    	let tempEvent = tempEventGet();
+    	tempEvent.title = title;
+    	tempEventSet(tempEvent);
+    	this.setState({title});
+    }
+    
+    _changeDescription = (description) => {
 		let tempEvent = tempEventGet();
     	tempEvent.description = description;
     	tempEventSet(tempEvent);
@@ -95,11 +111,10 @@ export default class ExpandableMediaCard extends React.Component {
 		curDate.setDate(dateDay);
 		curDate.setMonth(dateMonth);
 		curDate.setFullYear(dateYear);
-		// console.log(curDate);
 
 		let tempEvent = tempEventGet();
-    	tempEvent.start = curDate;
-    	tempEventSet(tempEvent);
+		tempEvent.start = new Date(curDate);
+		tempEventSet(tempEvent);
 		this.setState({start: curDate});
 	}
 
@@ -108,14 +123,13 @@ export default class ExpandableMediaCard extends React.Component {
 		let colonIndex = time.indexOf(':');
 		let hours = Number(time.slice(0, colonIndex));
 		let minutes = Number(time.slice(colonIndex+1));
-		console.log('hours: ',hours,'minutes: ',minutes);
 		let curDate = new Date(this.state.start.valueOf());
 		curDate.setHours(hours);
 		curDate.setMinutes(minutes);
+
 		let tempEvent = tempEventGet();
-    	tempEvent.start = curDate;
-    	tempEventSet(tempEvent);
-    	console.log(curDate);
+		tempEvent.start = new Date(curDate);
+		tempEventSet(tempEvent);
 		this.setState({start: curDate});
 	}
 
@@ -133,11 +147,12 @@ export default class ExpandableMediaCard extends React.Component {
 			alert('Set end Date more than start');
 			return;
 		} 
-		let tempEvent = tempEventGet();
-    	tempEvent.duration = duration;
-    	tempEventSet(tempEvent);
     	let end = new Date(curDate.valueOf() + duration.valueOf());
-		this.setState({end});
+
+    	let tempEvent = tempEventGet();
+		tempEvent.duration = duration;
+		tempEventSet(tempEvent);
+		this.setState({end, duration});
 	}
 
 	_changeToTime = (time) => {
@@ -153,11 +168,12 @@ export default class ExpandableMediaCard extends React.Component {
 			alert('Set end Date more than start');
 			return;
 		} 
-		let tempEvent = tempEventGet();
-    	tempEvent.duration = duration;
-    	tempEventSet(tempEvent);
     	let end = new Date(curDate.valueOf() + duration.valueOf());
-		this.setState({end});
+
+    	let tempEvent = tempEventGet();
+		tempEvent.duration = duration;
+		tempEventSet(tempEvent);
+		this.setState({end, duration});
 	}
 
 	_changeLocation = (location) => {
@@ -206,64 +222,35 @@ export default class ExpandableMediaCard extends React.Component {
 	}
 
 	_addSpeaker = (id) => {
-		let tempEvent = tempEventGet();
-    	tempEvent.speakers.push(id);
-    	tempEventSet(tempEvent);
-
-		let that = this;
 		fetch(`http://128.199.53.150/trainers/${id}`)
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(speaker){
-			// let tempSpeakers = speakersTempGet();
-			// tempSpeakers.push(speaker);
-			// speakersTempSet(tempSpeakers);
-
-			let speakers = that.state.speakers;
-			speakers.push(speaker);
-			that.setState({speakers});
+		  .then(response=> response.json())
+		  .then(speaker => {
+			let speakersReadyArr = this.state.speakersReadyArr;
+			let speakers = this.state.speakers;
+			speakers.push(id);
+			speakersReadyArr.push(speaker);
+			this.setState({speakersReadyArr, speakers});
 		});
 	}
 
 	_removeSpeaker =(index) => {
 		// arr of id speakers
-		let tempEvent = tempEventGet();
-		tempEvent.speakers = this.props.event.speakers.slice(0, index);
-		tempEvent.speakers = tempEvent.speakers.concat(this.props.event.speakers.slice(index+1));
-		tempEventSet(tempEvent);
-		console.log('tempEventGet');
-		console.dir(tempEventGet());
-
-		let event = this.props.event;
-		event.speakers = this.props.event.speakers.slice(0, index);
-		event.speakers = event.speakers.concat(this.props.event.speakers.slice(index+1));
-		console.log('event');
-		console.dir(this.props.event);
+		// let event = this.state.event;
+		let speakers = this.state.speakers.slice(0, index);
+		speakers = speakers.concat(this.state.speakers.slice(index+1));
 
 		// ready arr of speakers
-		let tempSpeakers = speakersTempGet();
-    	tempSpeakers = this.state.speakers.slice(0, index);
-    	tempSpeakers = tempSpeakers.concat(this.state.speakers.slice(index+1));
-    	speakersTempSet(tempSpeakers);
-    	console.log('speakersTempSet(tempSpeakers);');
-		console.dir(speakersTempGet());
-		
-    	let speakers = this.state.speakers;
-		speakers = this.state.speakers.slice(0, index);
-		speakers = speakers.concat(this.state.speakers.slice(index+1));
-		this.setState({speakers});
-		console.log('this.setState({speakers});');
-		console.dir(this.state.speakers);
+    	let speakersReadyArr = this.state.speakersReadyArr;
+		speakersReadyArr = this.state.speakersReadyArr.slice(0, index);
+		speakersReadyArr = speakersReadyArr.concat(this.state.speakersReadyArr.slice(index+1));
+		this.setState({speakersReadyArr, speakers});
 	}
 
-	_showTempEvent = () => {
-		// console.dir(eventBackupGet());
-		// console.dir(this.props.event);
-	}
+    _togglePropmpt = () => {
+    	this.setState({ promptVisibility: !this.state.promptVisibility });
+    }
 
-	_onMouseEnter = (i) => {
+    _onMouseEnter = (i) => {
 		let avatars = this.state.avatars;
 		avatars[i] = deleteAvatar;
 		this.setState({avatars});
@@ -276,8 +263,32 @@ export default class ExpandableMediaCard extends React.Component {
 	}
 
 	render() {
-		
-		let locationNode = <TextField
+		let actions = [<Button flat label="Cancel" onClick={this._closeDiscard} />, <Button flat label="Save" onClick={this._closeSave} />];
+		let dialog = null;
+		if(this.props.mobile) {
+			actions = [<Button flat label="Back" onClick={this._togglePropmpt} />];
+			dialog = <Dialog
+			          id="promptaction"
+			          visible={this.state.promptVisibility}
+			          title="Save changes?"
+			          aria-labelledby="promptdescription"
+			          modal
+			          actions={[{
+			            onClick: this._closeSave,
+			            primary: true,
+			            label: 'Save',
+			          }, {
+			            onClick: this._closeDiscard,
+			            primary: false,
+			            label: 'Discard',
+			          }]}
+			        >
+			          <p id="promptdescription" className="md-color--secondary-text">
+			            Save changes?
+			          </p>
+			        </Dialog>;
+    	}
+    	let locationNode = <TextField
 							    id="_changeLocation"
 							    value={this.state.location}
 							    rows={1}
@@ -288,7 +299,46 @@ export default class ExpandableMediaCard extends React.Component {
 		if(this.props.mobile) view = { maxWidth: '95%' };
 
 		return (
-			<Card style={view} className="md-block-expanded md-block-centered">
+			<Button tooltipPosition="top" tooltipLabel="add event" onClick={this._openDialog} floating secondary fixed>
+					<Dialog 
+						id={`calendarEvent${this.props.index}`}
+		                visible={this.state.visible}
+		       			pageX={this.state.pageX}
+		                pageY={this.state.pageY}
+		                onHide={this._closeDialog}
+		                fullPage
+		                aria-label="New Event">
+				            <Toolbar
+				               className={`md-cell--right ${this.state.type}`}
+				               colored
+				               actions={actions}
+				               fixed
+				            >
+				            <div className="container">
+				            {!this.props.mobile && <p className="name-field">Type:</p>}
+					            <SelectField
+					            	className="title-selector"
+								    key="titleMenu"
+								    id={`titleItem${this.props.index}`}
+								    value={this.state.type}
+								    onChange={this._changeType}
+								    menuItems={this.props.eventTypes}
+								/>
+							{!this.props.mobile && <p className="name-field">Title:</p>}
+								<TextField
+									style={{fontSize: 20}}
+								    className="md-cell md-cell--bottom text-title"
+							        id="singleRightTitle"
+								    value={this.state.title}
+								    onChange={this._changeTitle}
+								    size={8}
+								    customSize="title"
+								    lineDirection="right"
+							      />
+							</div>     
+							</Toolbar>	
+							{dialog}
+			    <Card style={view} className="md-block-expanded md-block-centered">
 				<div style={{marginLeft: 15, marginTop: 80}}>
 					<div style={{display: 'flex'}}>
 						<Button icon>description</Button>
@@ -348,7 +398,7 @@ export default class ExpandableMediaCard extends React.Component {
 					</MediaOverlay>
 				</Media>
 				<div className="md-grid">
-				{this.state.speakers.map((speaker, i) => {
+				{this.state.speakersReadyArr.map((speaker, i) => {
 					this.state.avatars.push(speaker.avatar);
 					return ( 
 					<CardTitle
@@ -423,12 +473,16 @@ export default class ExpandableMediaCard extends React.Component {
 				<Button
 					tooltipPosition="top"
 					tooltipLabel="send feedback"
-					onClick={this._showTempEvent}
+					href="mailto:xeontem@gmail.com"
 					floating
 					secondary
 					fixed>mail_outline
 				</Button>
 			</Card>
-	)}
+
+		            </Dialog>
+		            add
+            </Button>
+		)
+	}
 }
-					// href="mailto:xeontem@gmail.com"
