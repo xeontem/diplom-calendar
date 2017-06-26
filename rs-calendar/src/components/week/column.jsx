@@ -55,13 +55,11 @@ export default class Column extends React.Component {
 		let	endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getMinutes();
 		let startDate = new Date(this.props.event.start).getDate();
 		let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getDate();
-		let	height = (endHours - startHours) * 55;
-			height -= startMins * 0.9;
-			height += endMins * 0.9;
-			if(startDate !== endDate) height = 1340;
+		let	marginBottom = 28 + (23 - endHours) * 55;
+			marginBottom -= endMins * 0.9;
+			if(startDate !== endDate) marginBottom = -20;
 		return (
-			<div style={{marginTop, height}} className={this.props.day.event ? `${this.props.day.event.type} event-column-week` : 'event-column-week'} onClick={this._openDialog}>
-				{this.props.day.event ?
+			<div style={{marginTop, marginBottom}} className={this.props.day.event ? `${this.props.day.event.type} event-column-week` : 'event-column-week'} onClick={this._openDialog}>
 				<Dialog 
 					id={`calendarEvent${this.props.index}`}
 	                visible={this.state.visible}
@@ -80,7 +78,7 @@ export default class Column extends React.Component {
 			            />
 			            {this._loadSpeakers()}
 	                	<Card event={this.props.day.event} speakers={this.state.speakers} mobile={this.props.mobile}/>
-	            </Dialog> : null}
+	            </Dialog>
             </div>					
 		)
 	}

@@ -29,7 +29,8 @@ export default class ExpandableMediaCard extends React.Component {
 			location: this.props.event.location,
 			speakers: this.props.speakers,
 			avalSpeakers: [],
-			resources: this.props.event.resources
+			resources: this.props.event.resources,
+			duration: this.props.event.duration
 		}
 		this._backupData();
 		console.dir(this.state);
@@ -100,7 +101,8 @@ export default class ExpandableMediaCard extends React.Component {
 		let tempEvent = tempEventGet();
     	tempEvent.start = curDate;
     	tempEventSet(tempEvent);
-		this.setState({start: curDate});
+    	let end = new Date(curDate.valueOf() + this.state.duration);
+		this.setState({start: curDate, end});
 	}
 
 	_changeFromTime = (time) => {
@@ -115,8 +117,9 @@ export default class ExpandableMediaCard extends React.Component {
 		let tempEvent = tempEventGet();
     	tempEvent.start = curDate;
     	tempEventSet(tempEvent);
+    	let end = new Date(curDate.valueOf() + this.state.duration);
     	console.log(curDate);
-		this.setState({start: curDate});
+		this.setState({start: curDate, end});
 	}
 
 	_changeToDate = (date) => {
@@ -128,16 +131,17 @@ export default class ExpandableMediaCard extends React.Component {
 		curDate.setDate(dateDay);
 		curDate.setMonth(dateMonth);
 		curDate.setFullYear(dateYear);
-		let duration = curDate - this.state.start;
+		let duration = (curDate - new Date(this.state.start)).valueOf();
 		if(curDate < this.state.start) {
 			alert('Set end Date more than start');
 			return;
 		} 
 		let tempEvent = tempEventGet();
     	tempEvent.duration = duration;
+    	
     	tempEventSet(tempEvent);
-    	let end = new Date(curDate.valueOf() + duration.valueOf());
-		this.setState({end});
+    	let end = new Date(curDate.valueOf() + duration);
+		this.setState({end, duration});
 	}
 
 	_changeToTime = (time) => {
@@ -148,7 +152,7 @@ export default class ExpandableMediaCard extends React.Component {
 		let curDate = new Date(this.state.end.valueOf());
 		curDate.setHours(hours);
 		curDate.setMinutes(minutes);
-		let duration = curDate - this.state.start;
+		let duration = (curDate - new Date(this.state.start)).valueOf();
 		if(curDate < this.state.start) {
 			alert('Set end Date more than start');
 			return;
@@ -156,8 +160,8 @@ export default class ExpandableMediaCard extends React.Component {
 		let tempEvent = tempEventGet();
     	tempEvent.duration = duration;
     	tempEventSet(tempEvent);
-    	let end = new Date(curDate.valueOf() + duration.valueOf());
-		this.setState({end});
+    	let end = new Date(curDate.valueOf() + duration);
+		this.setState({end, duration});
 	}
 
 	_changeLocation = (location) => {
@@ -308,7 +312,7 @@ export default class ExpandableMediaCard extends React.Component {
 					<DatePicker
                         id="local-ru-RU"
                         className="md-cell"
-                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 && '0'}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
+                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 ? '0': ''}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
                         locales="ru-RU"
                         onChange={this._changeFromDate}
                         autoOk
@@ -316,14 +320,14 @@ export default class ExpandableMediaCard extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${this.state.start.getHours()}:${this.state.start.getMinutes()}`}
+				      label={`${this.state.start.getHours() < 10 ? '0' : ''}${this.state.start.getHours()}:${this.state.start.getMinutes() < 10 ? '0' : ''}${this.state.start.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeFromTime}
 				      autoOk
 				    />
                     <DatePicker
                         id="local-ru-RU"
-                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 && '0'}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
+                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 ? '0' : ''}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
                         locales="ru-RU"
                         className="md-cell"
                         onChange={this._changeToDate}
@@ -332,7 +336,7 @@ export default class ExpandableMediaCard extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${this.state.end.getHours()}:${this.state.end.getMinutes()}`}
+				      label={`${this.state.end.getHours() < 10 ? '0' : ''}${this.state.end.getHours()}:${this.state.end.getMinutes() < 10 ? '0' : ''}${this.state.end.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeToTime}
 				      autoOk

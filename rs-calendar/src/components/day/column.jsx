@@ -52,7 +52,7 @@ export default class Column extends React.Component {
 		let marginTop = 0;
 		let endHours;
 		let endMins;
-		let height = 0;
+		let marginBottom = 0;
 		if(this.props.event) {
 			startHours = new Date(this.props.event.start).toString().slice(16, 18);
 			startMins = new Date(this.props.event.start).toString().slice(19, 21);
@@ -62,13 +62,12 @@ export default class Column extends React.Component {
 			endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(19, 21);
 			let startDate = this.props.event.start.slice(9, 10);
 			let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).toString().slice(9, 10);
-			height = (endHours - startHours) * 55;
-			height -= startMins * 0.9;
-			height += endMins * 0.9;
-			if(startDate !== endDate) height = 1340;
+			marginBottom = 28 + (23 - endHours) * 55;
+			marginBottom -= endMins * 0.9;
+			if(startDate !== endDate) marginBottom = -20;
 		}
 		return (
-			<div style={{marginTop, height}} className={this.props.event ? `${this.props.event.type} event-column-day` : 'event-column-day'} onClick={this._openDialog}>
+			<div style={{marginTop, marginBottom}} className={this.props.event ? `${this.props.event.type} event-column-day` : 'event-column-day'} onClick={this._openDialog}>
 				{this.props.event ?
 				<Dialog 
 					id={`calendarEvent${this.props.index}`}

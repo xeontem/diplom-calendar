@@ -50,6 +50,37 @@ export default class Column extends React.Component {
 		
 		this._closeSave = this.props._closeSave.bind(this);
 
+		
+	}
+
+	_openDialog = (e, pressed) => {
+        let { pageX, pageY } = e;
+        if (e.changedTouches) {
+            const [touch] = e.changedTouches;
+            pageX = touch.pageX;
+            pageY = touch.pageY;
+        }
+        this.setState({
+			type: this.props.eventTypes[1],
+			title: '',
+			description: 'description...',
+			duration: 0,
+			id: 0,
+			location: 'location...',
+			resources: [{type: ''}],
+			speakers: [],
+			speakersReadyArr: [],
+			start: new Date,
+			avatars: [],
+			end: new Date,
+			showingLocation: defaultLocation,
+			avalSpeakers: [], 
+			visible: true,
+            pageX,
+            pageY,
+            speakersReady: false,
+            promptVisibility: false
+		});
 		tempEventSet({type: this.state.type,
 					  title: this.state.title,
 					  description: this.state.description,
@@ -65,21 +96,14 @@ export default class Column extends React.Component {
 			avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
 			this.setState({avalSpeakers});
 		});
-	}
-
-	_openDialog = (e, pressed) => {
-        let { pageX, pageY } = e;
-        if (e.changedTouches) {
-            const [touch] = e.changedTouches;
-            pageX = touch.pageX;
-            pageY = touch.pageY;
-        }
-        this.setState({ visible: true, pageX, pageY });
+        // this.setState({ visible: true, pageX, pageY });
     }
 
     _closeDiscard = () => {
-
-  		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility});
+    	let empty = {};
+    	tempEventSet(empty);
+    	defaultLocation = '';
+  		this.setState({	visible: false, pageX: null, pageY: null, speakersReady: false, promptVisibility: !this.state.promptVisibility });
     }
 
     _changeType = (type) => {
@@ -358,7 +382,7 @@ export default class Column extends React.Component {
 					<DatePicker
                         id="local-ru-RU"
                         className="md-cell"
-                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 && '0'}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
+                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 ? '0': ''}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
                         locales="ru-RU"
                         onChange={this._changeFromDate}
                         autoOk
@@ -366,14 +390,14 @@ export default class Column extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${this.state.start.getHours()}:${this.state.start.getMinutes()}`}
+				      label={`${this.state.start.getHours() < 10 ? '0' : ''}${this.state.start.getHours()}:${this.state.start.getMinutes() < 10 ? '0' : ''}${this.state.start.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeFromTime}
 				      autoOk
 				    />
                     <DatePicker
                         id="local-ru-RU"
-                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 && '0'}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
+                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 ? '0' : ''}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
                         locales="ru-RU"
                         className="md-cell"
                         onChange={this._changeToDate}
@@ -382,7 +406,7 @@ export default class Column extends React.Component {
                     <TimePicker
 				      id="appointmentPortrait"
 				      className="md-cell"
-				      label={`${this.state.end.getHours()}:${this.state.end.getMinutes()}`}
+				      label={`${this.state.end.getHours() < 10 ? '0' : ''}${this.state.end.getHours()}:${this.state.end.getMinutes() < 10 ? '0' : ''}${this.state.end.getMinutes()}`}
 				      displayMode="portrait"
 				      onChange={this._changeToTime}
 				      autoOk

@@ -5,10 +5,12 @@ import Toolbar from 'react-md/lib/Toolbars';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 import SelectField from 'react-md/lib/SelectFields';
 import TextField from 'react-md/lib/TextFields';
+import FontIcon from 'react-md/lib/FontIcons';
 
 import CardAdmin from '../eventCard/CardAdmin';
 import { _loadSpeakers } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
+import { setStartTime, setEndTime } from '../../instruments/initResize';
 
 export default class Column extends React.Component {
 	constructor(props) {
@@ -85,10 +87,9 @@ export default class Column extends React.Component {
 		let	endMins = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getMinutes();
 		let startDate = new Date(this.props.event.start).getDate();
 		let endDate = new Date(Number(new Date(this.props.event.start)) + Number(new Date(this.props.event.duration))).getDate();
-		let	height = (endHours - startHours) * 55;
-			height -= startMins * 0.9;
-			height += endMins * 0.9;
-			if(startDate !== endDate) height = 1340;
+		let	marginBottom = 28 + (23 - endHours) * 55;
+			marginBottom -= endMins * 0.9;
+			if(startDate !== endDate) marginBottom = -20;
 		let actions = [<Button flat label="Cancel" onClick={this._closeDiscard} />, <Button flat label="Save" onClick={this._closeSave} />];
 		let dialog = null;
 		if(this.props.mobile) {
@@ -115,7 +116,12 @@ export default class Column extends React.Component {
 			        </Dialog>;
     	}
 		return (
-			<div style={{marginTop, height}} className={`${this.props.event.type} event-column-day`} onClick={this._openDialog}>
+			<div style={{marginTop, marginBottom}} className={`${this.props.event.type} event-column-day`} onClick={this._openDialog}>
+				<div style={{position: 'relative', height: '100%'}}>
+				<div className="drag-up" onMouseDown={setStartTime} onTouchStart={setStartTime} onClick={(e)=>{e.stopPropagation()}}>
+				</div>
+				<FontIcon className="drag-up-icon">fast_rewind</FontIcon>
+
 				<Dialog 
 						id={`calendarEvent${this.props.index}`}
 		                visible={this.state.visible}
@@ -162,6 +168,9 @@ export default class Column extends React.Component {
 								mobile={this.props.mobile}
 							/> 
 		            </Dialog>
+		            <div className="drag-down" onMouseDown={setEndTime} onTouchStart={setEndTime} onClick={(e)=>{e.stopPropagation()}}></div>
+		            <FontIcon className="drag-down-icon">fast_rewind</FontIcon>
+		            </div>
             </div>					
 		)
 	}

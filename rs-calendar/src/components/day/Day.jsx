@@ -11,7 +11,6 @@ import ColumnAdmin from './columnAdmin';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import smile from './legosmile.svg';
 import scroll from '../../instruments/scroll';
-import initResize from '../../instruments/initResize';
 import globalScope from '../../globalScope';
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
 
@@ -53,9 +52,6 @@ export default class Week extends React.Component {
             top: 0
         }
 
-        // let [avalDays, dayIndex] = this._defineListOfDays(this.state.appliedEventsMonth, true);
-        // this.state.avalDays = avalDays;
-        // this.state.dayIndex = dayIndex;
         fetch('http://128.199.53.150/events')
           .then(response => response.json())
           .then(events => {
@@ -69,7 +65,6 @@ export default class Week extends React.Component {
                 appliedEventsMonth,
                 fetching: false
             });
-            setTimeout(initResize, 500);
         });
     }
 
@@ -91,15 +86,18 @@ export default class Week extends React.Component {
         let avaldays = [];
         let backupDayEvents = [];
         month.map((day, dayIndex) => {
-            if(date.getFullYear() === day.date.getFullYear() &&
-                   date.getMonth() === day.date.getMonth() &&
-                   date.getDate() === day.date.getDate()) {
-                       backupDayEvents = day.events.slice();
-
-            }
             avaldays.push(dayIndex + 1);
             events.map((event, eventIndex) => {
+                
                 let eventDate = new Date(event.start);
+                
+                if(date.getFullYear() === eventDate.getFullYear() &&
+                       date.getMonth() === eventDate.getMonth() &&
+                       date.getDate() === eventDate.getDate()) {
+                           backupDayEvents.push(event);
+
+                }
+                
                 if(eventDate.getFullYear() === day.date.getFullYear() &&
                    eventDate.getMonth() === day.date.getMonth() &&
                    eventDate.getDate() === day.date.getDate()) {
@@ -110,6 +108,7 @@ export default class Week extends React.Component {
                 };
             })    
         });
+        console.dir(backupDayEvents);
         return [month, avaldays, backupDayEvents];
     }
 
@@ -129,7 +128,6 @@ export default class Week extends React.Component {
             monthArr.push({weekday, date: curDate, today});
             monthDayNum++;
             date.setDate(monthDayNum);
-            console.log(date);
             monthNumber = date.getMonth();
         }
         return monthArr;
@@ -178,7 +176,6 @@ export default class Week extends React.Component {
         }
 
         this.setState({day, value});
-        setTimeout(initResize, 1000);
     }
 
     _changeYear = (curYear) => {
@@ -193,7 +190,6 @@ export default class Week extends React.Component {
         let dayIndex = backupDayNumber;
         let day = appliedEventsMonth[dayIndex];
         this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
-        setTimeout(initResize, 1000);
     }
 
     _changeMonth = (curMonth) => {
@@ -208,7 +204,6 @@ export default class Week extends React.Component {
         let dayIndex = backupDayNumber;
         let day = appliedEventsMonth[dayIndex];
         this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
-        setTimeout(initResize, 1000);
     }
 
     _changeDay = (selectedDay) => {
@@ -229,18 +224,15 @@ export default class Week extends React.Component {
         let dayIndex = appliedEventsMonth.length-1;
         let day = appliedEventsMonth[dayIndex];
         this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
-        setTimeout(initResize, 1000);
     }
 
     _nextMonth = (_nextDay) => {
         let dateToShow = new Date(this.state.day.date.toString());
         dateToShow.setDate(this.state.dayIndex+2);
-        console.log(this.state.dayIndex+2);
         let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
         let dayIndex = 0;
         let day = appliedEventsMonth[dayIndex];
         this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
-        setTimeout(initResize, 1000);
     }
 
     _prevDay = () => {
@@ -254,7 +246,6 @@ export default class Week extends React.Component {
         let backupDayEvents = [];
         if(day.events) backupDayEvents = day.events.slice();
         this.setState({dayIndex, day, backupDayEvents});
-        setTimeout(initResize, 1000);
     }
 
     _nextDay = () => {
@@ -268,14 +259,10 @@ export default class Week extends React.Component {
         let backupDayEvents = [];
         if(day.events) backupDayEvents = day.events.slice();
         this.setState({dayIndex, day, backupDayEvents});
-        setTimeout(initResize, 1000);
     }
 
     render() {
-        // let curTimeHours = (new Date).toString().slice(16, 18);
-        // let curTimeMins = (new Date).toString().slice(19, 21);
-        // let top = 34 + 55*curTimeHours;
-        // top += curTimeMins*0.9;
+        
         const mobile = typeof window.orientation !== 'undefined';
         let todayEvents = [];
         let eventIndexes = [];
@@ -283,7 +270,6 @@ export default class Week extends React.Component {
             todayEvents = this.state.day.events;
             eventIndexes = this.state.day.eventIndexes;
         }
-        console.dir(this.state.day);
         return (
             <div className="agenda-wrapper">
                 {globalScope.isAdmin && <CardAdminEmpty day={this} _closeSave={_closeSaveDay} eventTypes={this.state.eventTypes} mobile={mobile}/> }

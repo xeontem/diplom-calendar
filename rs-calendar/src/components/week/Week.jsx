@@ -288,10 +288,6 @@ export default class Week extends React.Component {
     }
 
 	render() {
-        // let curTimeHours = (new Date).toString().slice(16, 18);
-        // let curTimeMins = (new Date).toString().slice(19, 21);
-        // let top = 34 + 55*curTimeHours;
-        // top += curTimeMins*0.9;
         const mobile = typeof window.orientation !== 'undefined';
         let week = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
         let today = false;
