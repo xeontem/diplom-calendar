@@ -87,7 +87,7 @@ export default class Agenda extends React.Component {
                 <div>
                     <ExpansionList style={{ padding: 16 }}>
                         { globalScope.isAdmin ?
-                            this.state.filtered.map((event) => (<EventsListAdmin key={event.id} mobile={mobile} event={event} eventTypes={this.state.eventTypes}/>)) :
+                            this.state.filtered.map((event, index) => (<EventsListAdmin key={event.id} eventIndex={index} mobile={mobile} event={event} agenda={this} eventTypes={this.state.eventTypes}/>)) :
                             this.state.filtered.map((event) => (<EventsList key={event.id} mobile={mobile} event={event}/>))}
                     </ExpansionList>
                 </div>

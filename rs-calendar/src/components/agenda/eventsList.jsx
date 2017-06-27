@@ -32,7 +32,7 @@ export default class EventsList extends React.Component {
                         this.setState({speakers})
                 });
         }
-    };
+    }
 
     _openDialog = (e, pressed) => {
             let { pageX, pageY } = e;

@@ -42,19 +42,20 @@ export default class EventsRow extends React.Component {
     }
 
     _closeDiscard = () => {
-        this.props.event = eventBackupGet();
-        tempEventSet(eventBackupGet());
-        // let speakers = speakersBackupGet();
-        
-        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility/*, speakers */});
-        // console.log('this.props.event');
-        // console.dir(this.props.event);
+        let filtered = this.props.table.state.filtered.slice(0, eventBackupGet().eventIndex);
+        filtered.push(eventBackupGet());
+        filtered = filtered.concat(this.props.table.state.filtered.slice(eventBackupGet().eventIndex+1));
+        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersBackupGet()});
+        this.props.table.setState({filtered});
     }
 
     _closeSave = () => {
-        let speakers = speakersTempGet();
-        this.setState({ visible: false, speakers, promptVisibility: !this.state.promptVisibility});
-        // console.dir(this.props.event);
+        let filtered = this.props.table.state.filtered.slice(0, tempEventGet().eventIndex);
+        filtered.push(tempEventGet());
+        filtered = filtered.concat(this.props.table.state.filtered.slice(tempEventGet().eventIndex+1));
+        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
+        this.props.table.setState({filtered});
+
     }
 
 
@@ -142,7 +143,7 @@ export default class EventsRow extends React.Component {
                     </div>     
                     </Toolbar>  
                     {dialog}
-                    <CardAdmin event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
+                    <CardAdmin event={this.props.event} eventIndex={this.props.eventIndex} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
             </Dialog>
 		        <TableColumn>{this.props.event.type.toUpperCase()}</TableColumn>
 		        <TableColumn>{this.props.event.title.toUpperCase()}</TableColumn>

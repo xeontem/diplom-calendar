@@ -103,7 +103,7 @@ export default class Agenda extends React.Component {
 				        </TableHeader>
 				        <TableBody>
 				          { globalScope.isAdmin ?
-                                this.state.filtered.map((event) => (<EventsRowAdmin key={event.id} mobile={mobile} event={event} eventTypes={this.state.eventTypes}/>)) :
+                                this.state.filtered.map((event, index) => (<EventsRowAdmin key={event.id} table={this} mobile={mobile} event={event} eventIndex={index} eventTypes={this.state.eventTypes}/>)) :
                                 this.state.filtered.map((event) => (<EventsRow key={event.id} mobile={mobile} event={event}/>))}
 				        </TableBody>
 				    </DataTable>

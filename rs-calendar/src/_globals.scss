@@ -147,7 +147,7 @@ a {
     background: $md-primary-color;
     transition: all 2s;
     transition-timing-function: cubic-bezier(0.82, 0.05, 0.26, 1.17);
-    z-index: 1000;
+    z-index: 10;
 }
 
 
@@ -438,6 +438,25 @@ width: 25px;
     font-size: 32pt !important;
     color: white !important;
 }
+
+.show-changed-starttime {
+    position: absolute;
+    top: -38px;
+    height: 20px;
+    transition: all 0.5s;
+    left: 0;
+    right: 0;
+}
+
+.show-changed-endtime {
+    position: absolute;
+    bottom: -21px;
+    height: 20px;
+    transition: all 0.5s;
+    left: 0;
+    right: 0;
+}
+
 
 
 

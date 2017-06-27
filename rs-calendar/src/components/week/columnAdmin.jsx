@@ -22,6 +22,8 @@ export default class Column extends React.Component {
             pageX: null,
             pageY: null
 		}
+		this.setStartTime = setStartTime.bind(this);
+		this.setEndTime = setEndTime.bind(this);
 		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
@@ -80,7 +82,7 @@ export default class Column extends React.Component {
     
 
 	render() {
-		console.log(new Date(this.props.event.start).getMinutes());
+		console.log(this.props.event);
 		let	startHours = new Date(this.props.event.start).getHours();
 		let	startMins = new Date(this.props.event.start).getMinutes();
 		let	marginTop = 24 + 55 * startHours;
@@ -120,7 +122,8 @@ export default class Column extends React.Component {
 		return (
 			<div style={{marginTop, marginBottom}} className={`${this.props.event.type} event-column-week`} onClick={this._openDialog}>
 				<div style={{position: 'relative', height: '100%'}}>
-				<div className="drag-up" onMouseDown={setStartTime} onTouchStart={setStartTime} onClick={(e)=>{e.stopPropagation()}}></div>
+				<div className="drag-up" onMouseDown={this.setStartTime} onTouchStart={this.setStartTime} onClick={(e)=>{e.stopPropagation()}}></div>
+				<div className="show-changed-starttime"></div>
 				<FontIcon className="drag-up-icon">fast_rewind</FontIcon>
 				<Dialog 
 						id={`calendarEvent${this.props.index}`}
@@ -162,8 +165,9 @@ export default class Column extends React.Component {
 							{dialog}
 							<CardAdmin eventIndex={this.props.eventIndex} event={this.props.event} speakers={this.state.speakers} speakersReady={this.state.speakersReady} mobile={this.props.mobile}/> 
 		            </Dialog>
-		            <div className="drag-down" onMouseDown={setEndTime} onTouchStart={setEndTime} onClick={(e)=>{e.stopPropagation()}}></div>
+		            <div className="drag-down" onMouseDown={this.setEndTime} onTouchStart={this.setEndTime} onClick={(e)=>{e.stopPropagation()}}></div>
 		            <FontIcon className="drag-down-icon">fast_rewind</FontIcon>
+		            <div className="show-changed-endtime"></div>
 		            </div>
             </div>					
 		)

@@ -33,7 +33,7 @@ export default class ExpandableMediaCard extends React.Component {
 			duration: this.props.event.duration
 		}
 		this._backupData();
-		console.dir(this.state);
+		// console.dir(this.state);
 		// initial mutable copy of event
 		let temp = this.props.event;
 		temp.eventIndex = this.props.eventIndex;
@@ -64,7 +64,7 @@ export default class ExpandableMediaCard extends React.Component {
 		// backup event for discard changes
 		let eventBackup = {};
 		for(let key in this.props.event) {
-			if(this.props.event[key].push) {
+			if(this.props.event[key] && this.props.event[key].push) {
 				eventBackup[key] = [];
 				for(let i = 0; i < this.props.event[key].length; i++) {
 					if(Object.prototype.toString.call(this.props.event[key][i]).slice(8, -1) === "Object") {
