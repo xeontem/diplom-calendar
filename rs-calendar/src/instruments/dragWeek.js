@@ -3,8 +3,6 @@ let initElementEventIndex = 0;
 
 export function handleDragStart(e) {
   e.target.style.opacity = '0.4';  // this / e.target is the source node.
-  e.target.style.width = '45px';
-  e.target.style.height = '45px';
   initElementEvent = this.props.day.event;
   initElementEventIndex = this.props.eventIndex;
 }
@@ -21,20 +19,12 @@ export function handleDragOver(e) {
 
 export function handleDragEnter(e) {
   // this / e.target is the current hover target.
-  if(e.target.tagName === "BUTTON") e.target.classList.add('over');
-  if(e.target.className === "day-number") {
-    // alert('day');
-    e.target.parentElement.parentElement.classList.add('over-fromP');
-  }
+  e.target.classList.add('over');
 }
 
 export function handleDragLeave(e) {
     // e.target.style.opacity = '1';
   e.target.classList.remove('over');  // this / e.target is previous target element.
-  if(e.target.className === "day-number") {
-    // alert('day');
-    e.target.parentElement.parentElement.classList.remove('over-fromP');
-  }
   // if(e.target.className === "day-number") e.target.parentElement.parentElement.classList.remove('over');
 }
 
@@ -46,18 +36,16 @@ export function handleDrop(e) {
   }
   initElementEvent.start = this.props.day.curDate;
 
-  let filtered = this.props.month.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(this.props.month.state.filtered.slice(initElementEventIndex+1));
+  let filtered = this.props.week.state.filtered.slice(0, initElementEventIndex);
+  filtered = filtered.concat(this.props.week.state.filtered.slice(initElementEventIndex+1));
   filtered.push(initElementEvent);
-  let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-  this.props.month.setState({appliedEventsMonth, filtered});
+  let appliedEventsMonth = this.props.week._applyEventsOnDates(filtered, this.props.week.state.dateToShow);
+  this.props.week.setState({appliedEventsMonth, filtered});
   return false;
 }
 
 export function handleDragEnd(e) {
   // this/e.target is the source node.
   e.target.style.opacity = '1';
-  e.target.style.width = '56px';
-  e.target.style.height = '56px';
   // e.target.classList.remove('over');
 }

@@ -11,6 +11,7 @@ import CardAdmin from '../eventCard/CardAdmin';
 import { _loadSpeakers } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 import { setStartTime, setEndTime } from '../../instruments/initResize';
+import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
 
 let initialClientY = 0;
 export default class Column extends React.Component {
@@ -24,6 +25,14 @@ export default class Column extends React.Component {
 		}
 		this.setStartTime = setStartTime.bind(this);
 		this.setEndTime = setEndTime.bind(this);
+
+		this.handleDragStart = handleDragStart.bind(this);
+		this.handleDragEnter = handleDragEnter.bind(this);
+		this.handleDragLeave = handleDragLeave.bind(this);
+		this.handleDragOver = handleDragOver.bind(this);
+		this.handleDrop = handleDrop.bind(this);
+		this.handleDragEnd = handleDragEnd.bind(this);
+
 		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
@@ -82,7 +91,6 @@ export default class Column extends React.Component {
     
 
 	render() {
-		console.log(this.props.event);
 		let	startHours = new Date(this.props.event.start).getHours();
 		let	startMins = new Date(this.props.event.start).getMinutes();
 		let	marginTop = 24 + 55 * startHours;
@@ -120,8 +128,19 @@ export default class Column extends React.Component {
 			        </Dialog>;
     	}
 		return (
-			<div style={{marginTop, marginBottom}} className={`${this.props.event.type} event-column-week`} onClick={this._openDialog}>
-				<div style={{position: 'relative', height: '100%'}}>
+			<div 
+				style={{marginTop, marginBottom}}
+				className={`${this.props.event.type} event-column-week`}
+				onDragStart={this.handleDragStart}
+				onDragEnter={this.handleDragEnter}
+				onDragLeave={this.handleDragLeave}
+				onDragOver={this.handleDragOver}
+				onDrop={this.handleDrop}
+				onDragEnd={this.handleDragEnd}
+				onClick={this._openDialog}
+				draggable="true">
+
+				<div style={{borderRadius: '5px', position: 'relative', height: '100%'}}>
 				<div className="drag-up" onMouseDown={this.setStartTime} onTouchStart={this.setStartTime} onClick={(e)=>{e.stopPropagation()}}></div>
 				<div className="show-changed-starttime"></div>
 				<FontIcon className="drag-up-icon">fast_rewind</FontIcon>

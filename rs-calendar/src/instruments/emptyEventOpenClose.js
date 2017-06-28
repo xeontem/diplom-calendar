@@ -3,6 +3,8 @@ let defaultLocation = '';
 
 export function _closeSaveMonth() {
     let filtered = this.props.month.state.filtered.slice();
+    let events = this.props.month.state.events.slice();
+    events.push(tempEventGet());
     filtered.push(tempEventGet());
     let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
     defaultLocation = '';
@@ -27,13 +29,15 @@ export function _closeSaveMonth() {
             speakersReady: false,
             promptVisibility: !this.state.promptVisibility
         });
-    this.props.month.setState({appliedEventsMonth, filtered});
+    this.props.month.setState({appliedEventsMonth, filtered, events});
     let empty = {};
     tempEventSet(empty);
 }
 
 export function _closeSaveWeek() {
     let filtered = this.props.week.state.filtered.slice();
+    let events = this.props.week.state.events.slice();
+    events.push(tempEventGet());
     filtered.push(tempEventGet());
     let appliedEventsMonth = this.props.week._applyEventsOnDates(filtered, this.props.week.state.dateToShow);
     defaultLocation = '';
@@ -58,7 +62,7 @@ export function _closeSaveWeek() {
             speakersReady: false,
             promptVisibility: !this.state.promptVisibility
         });
-    this.props.week.setState({appliedEventsMonth, filtered});
+    this.props.week.setState({appliedEventsMonth, filtered, events});
     let empty = {};
     tempEventSet(empty);
 }
@@ -66,7 +70,9 @@ export function _closeSaveWeek() {
 export function _closeSaveDay() {
     let filtered = this.props.day.state.filtered.slice();
     filtered.push(tempEventGet());
-    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered);
+
+    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered, this.props.day.state.day.date);
+    backupDayEvents.push(tempEventGet());
     let day = appliedEventsMonth[this.props.day.state.dayIndex];
     defaultLocation = '';
     this.setState({
@@ -90,15 +96,16 @@ export function _closeSaveDay() {
             speakersReady: false,
             promptVisibility: !this.state.promptVisibility
         });
-    this.props.day.setState({filtered, day});
+    this.props.day.setState({backupDayEvents, filtered, day});
     let empty = {};
     tempEventSet(empty);
 }
 
-export function _closeSaveTable() {
-    let filtered = this.props.month.state.filtered.slice();
+export function _closeSaveTableAgenda() {
+    let filtered = this.props.table.state.filtered.slice();
+    let events = this.props.table.state.events.slice();
+    events.push(tempEventGet());
     filtered.push(tempEventGet());
-    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
     defaultLocation = '';
     this.setState({
             type: this.props.eventTypes[1],
@@ -121,38 +128,7 @@ export function _closeSaveTable() {
             speakersReady: false,
             promptVisibility: !this.state.promptVisibility
         });
-    this.props.month.setState({appliedEventsMonth, filtered});
-    let empty = {};
-    tempEventSet(empty);
-}
-
-export function _closeSaveAgenda() {
-    let filtered = this.props.month.state.filtered.slice();
-    filtered.push(tempEventGet());
-    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-    defaultLocation = '';
-    this.setState({
-            type: this.props.eventTypes[1],
-            title: '',
-            description: 'description...',
-            duration: 0,
-            id: 0,
-            location: 'location...',
-            resources: [{type: ''}],
-            speakers: [],
-            speakersReadyArr: [],
-            start: new Date,
-            avatars: [],
-            end: new Date,
-            showingLocation: defaultLocation,
-            avalSpeakers: [], 
-            visible: false,
-            pageX: null,
-            pageY: null,
-            speakersReady: false,
-            promptVisibility: !this.state.promptVisibility
-        });
-    this.props.month.setState({appliedEventsMonth, filtered});
+    this.props.table.setState({events, filtered});
     let empty = {};
     tempEventSet(empty);
 }

@@ -39,11 +39,10 @@ export default class Column extends React.Component {
     }
 
     _closeDiscard = () => {
-    	console.dir(eventBackupGet());
 	    let filtered = this.props.day.state.filtered.slice(0, eventBackupGet().eventIndex);
 	    filtered.push(eventBackupGet());
 	    filtered = filtered.concat(this.props.day.state.filtered.slice(eventBackupGet().eventIndex+1));
-	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered);
+	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered, this.props.day.state.day.date);
 	    let day = appliedEventsMonth[this.props.day.state.dayIndex];
 
 	    this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
@@ -54,7 +53,7 @@ export default class Column extends React.Component {
     	let filtered = this.props.day.state.filtered.slice(0, tempEventGet().eventIndex);
 	    filtered.push(tempEventGet());
 	    filtered = filtered.concat(this.props.day.state.filtered.slice(tempEventGet().eventIndex+1));
-	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered);
+	    let [appliedEventsMonth, avalDays, backupDayEvents] = this.props.day._applyEventsOnDates(filtered, this.props.day.state.day.date);
 	    let day = appliedEventsMonth[this.props.day.state.dayIndex];
   		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.day.setState({filtered, day});

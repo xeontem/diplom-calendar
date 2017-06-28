@@ -12,11 +12,13 @@ import Button from 'react-md/lib/Buttons';
 
 import EventsRow from './eventsRow';
 import EventsRowAdmin from './eventsRowAdmin';
+import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import globalScope from '../../globalScope';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _loadEvents } from '../../instruments/fetching';
+import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
-export default class Agenda extends React.Component {
+export default class Table extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -51,14 +53,7 @@ export default class Agenda extends React.Component {
         let mobile = typeof window.orientation !== 'undefined';
 		return (
 			<div className="agenda-wrapper">
-                {globalScope.isAdmin && <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button>}
+                {globalScope.isAdmin && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
 				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
 				<div className="md-grid no-padding">	
@@ -103,8 +98,8 @@ export default class Agenda extends React.Component {
 				        </TableHeader>
 				        <TableBody>
 				          { globalScope.isAdmin ?
-                                this.state.filtered.map((event, index) => (<EventsRowAdmin key={event.id} table={this} mobile={mobile} event={event} eventIndex={index} eventTypes={this.state.eventTypes}/>)) :
-                                this.state.filtered.map((event) => (<EventsRow key={event.id} mobile={mobile} event={event}/>))}
+                                this.state.filtered.map((event, index) => (<EventsRowAdmin key={index + parseInt(Math.random()*30, 10)+event.id} table={this} mobile={mobile} event={event} eventIndex={index} eventTypes={this.state.eventTypes}/>)) :
+                                this.state.filtered.map((event, index) => (<EventsRow key={index + parseInt(Math.random()*30, 10)+event.id} mobile={mobile} event={event}/>))}
 				        </TableBody>
 				    </DataTable>
 				</div>

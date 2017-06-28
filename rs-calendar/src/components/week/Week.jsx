@@ -7,6 +7,7 @@ import Button from 'react-md/lib/Buttons';
 
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
+import EmptyColumn from './emptyColumn';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
@@ -82,7 +83,6 @@ export default class Week extends React.Component {
             this.state.fetching = false;
             return appliedEventsMonth;
         }).then( appliedEventsMonth => {
-            console.dir(appliedEventsMonth);
             let weekToShow = [];
             appliedEventsMonth.map((week, i) => {
                     if(week.curWeek) {
@@ -414,7 +414,7 @@ export default class Week extends React.Component {
                             day.event ? globalScope.isAdmin ? 
                                 <ColumnAdmin  week={this} eventIndex={day.eventIndex} eventTypes={this.state.eventTypes} key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
                                 <Column  key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
-                                <div key={index*30} style={{width: 40}} ></div>
+                                <EmptyColumn key={index*30} week={this} eventIndex={day.eventIndex} day={day} event={day.event}/>
                         )}
                     </div>
                 </div>

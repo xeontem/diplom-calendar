@@ -33,7 +33,6 @@ export default class ExpandableMediaCard extends React.Component {
 			duration: this.props.event.duration
 		}
 		this._backupData();
-		// console.dir(this.state);
 		// initial mutable copy of event
 		let temp = this.props.event;
 		temp.eventIndex = this.props.eventIndex;
@@ -96,7 +95,6 @@ export default class ExpandableMediaCard extends React.Component {
 		curDate.setDate(dateDay);
 		curDate.setMonth(dateMonth);
 		curDate.setFullYear(dateYear);
-		// console.log(curDate);
 
 		let tempEvent = tempEventGet();
     	tempEvent.start = curDate;
@@ -110,7 +108,6 @@ export default class ExpandableMediaCard extends React.Component {
 		let colonIndex = time.indexOf(':');
 		let hours = Number(time.slice(0, colonIndex));
 		let minutes = Number(time.slice(colonIndex+1));
-		console.log('hours: ',hours,'minutes: ',minutes);
 		let curDate = new Date(this.state.start.valueOf());
 		curDate.setHours(hours);
 		curDate.setMinutes(minutes);
@@ -118,7 +115,6 @@ export default class ExpandableMediaCard extends React.Component {
     	tempEvent.start = curDate;
     	tempEventSet(tempEvent);
     	let end = new Date(curDate.valueOf() + this.state.duration);
-    	console.log(curDate);
 		this.setState({start: curDate, end});
 	}
 
@@ -148,7 +144,6 @@ export default class ExpandableMediaCard extends React.Component {
 		let colonIndex = time.indexOf(':');
 		let hours = Number(time.slice(0, colonIndex));
 		let minutes = Number(time.slice(colonIndex+1));
-		console.log('hours: ',hours,'minutes: ',minutes);
 		let curDate = new Date(this.state.end.valueOf());
 		curDate.setHours(hours);
 		curDate.setMinutes(minutes);
@@ -237,34 +232,24 @@ export default class ExpandableMediaCard extends React.Component {
 		tempEvent.speakers = this.props.event.speakers.slice(0, index);
 		tempEvent.speakers = tempEvent.speakers.concat(this.props.event.speakers.slice(index+1));
 		tempEventSet(tempEvent);
-		console.log('tempEventGet');
-		console.dir(tempEventGet());
 
 		let event = this.props.event;
 		event.speakers = this.props.event.speakers.slice(0, index);
 		event.speakers = event.speakers.concat(this.props.event.speakers.slice(index+1));
-		console.log('event');
-		console.dir(this.props.event);
 
 		// ready arr of speakers
 		let tempSpeakers = speakersTempGet();
     	tempSpeakers = this.state.speakers.slice(0, index);
     	tempSpeakers = tempSpeakers.concat(this.state.speakers.slice(index+1));
     	speakersTempSet(tempSpeakers);
-    	console.log('speakersTempSet(tempSpeakers);');
-		console.dir(speakersTempGet());
 		
     	let speakers = this.state.speakers;
 		speakers = this.state.speakers.slice(0, index);
 		speakers = speakers.concat(this.state.speakers.slice(index+1));
 		this.setState({speakers});
-		console.log('this.setState({speakers});');
-		console.dir(this.state.speakers);
 	}
 
 	_showTempEvent = () => {
-		// console.dir(eventBackupGet());
-		// console.dir(this.props.event);
 	}
 
 	_onMouseEnter = (i) => {

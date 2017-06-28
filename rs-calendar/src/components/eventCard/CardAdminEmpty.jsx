@@ -23,7 +23,7 @@ import deleteAvatar from '../eventCard/delete.png';
 let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
 let defaultLocation = '';
 
-export default class Column extends React.Component {
+export default class Empty extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -183,7 +183,6 @@ export default class Column extends React.Component {
 		let colonIndex = time.indexOf(':');
 		let hours = Number(time.slice(0, colonIndex));
 		let minutes = Number(time.slice(colonIndex+1));
-		console.log('hours: ',hours,'minutes: ',minutes);
 		let curDate = new Date(this.state.end.valueOf());
 		curDate.setHours(hours);
 		curDate.setMinutes(minutes);

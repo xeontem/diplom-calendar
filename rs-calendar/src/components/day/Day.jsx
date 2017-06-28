@@ -14,7 +14,7 @@ import scroll from '../../instruments/scroll';
 import globalScope from '../../globalScope';
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
 
-export default class Week extends React.Component {
+export default class Day extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -108,7 +108,6 @@ export default class Week extends React.Component {
                 };
             })    
         });
-        console.dir(backupDayEvents);
         return [month, avaldays, backupDayEvents];
     }
 
@@ -250,7 +249,6 @@ export default class Week extends React.Component {
 
     _nextDay = () => {
         let dayIndex = this.state.dayIndex+1;
-        
         if(dayIndex === this.state.appliedEventsMonth.length) {
             this._nextMonth();
             return;

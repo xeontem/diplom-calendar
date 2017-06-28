@@ -28,8 +28,6 @@ export default class EventsList extends React.Component {
     }
 
     _openDialog = (e, pressed) => {
-        // console.log('this.props.event');
-        // console.dir(this.props.event);
         let { pageX, pageY } = e;
         if (e.changedTouches) {
             const [touch] = e.changedTouches;

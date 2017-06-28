@@ -37,8 +37,6 @@ export default class Column extends React.Component {
 	}
 
 	_openDialog = (e, pressed) => {
-		// console.log('this.props.event');
-		// console.dir(this.props.event);
         let { pageX, pageY } = e;
         if (e.changedTouches) {
             const [touch] = e.changedTouches;
@@ -54,17 +52,6 @@ export default class Column extends React.Component {
 	    filtered.push(eventBackupGet());
 	    filtered = filtered.concat(this.props.month.state.filtered.slice(eventBackupGet().eventIndex+1));
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-  		
-  		// // clear backup container
-  		// let tempEvent = {};
-  		// let eventBackup = {};
-  		// let speakersBackup = {};
-  		// let speakersTemp = {};
-	   //  tempEventSet(tempEvent);
-  		// eventBackupSet(eventBackup);
-  		// speakersBackupSet(speakersBackup);
-  		// speakersTempSet(speakersTemp);
-
         this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersBackupGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});
     }
@@ -75,17 +62,6 @@ export default class Column extends React.Component {
 	    filtered.push(tempEventGet());
 	    filtered = filtered.concat(this.props.month.state.filtered.slice(tempEventGet().eventIndex+1));
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-	    
-	   //  // clear backup container
-  		// let tempEvent = {};
-  		// let eventBackup = {};
-  		// let speakersBackup = {};
-  		// let speakersTemp = {};
-	   //  tempEventSet(tempEvent);
-  		// eventBackupSet(eventBackup);
-  		// speakersBackupSet(speakersBackup);
-  		// speakersTempSet(speakersTemp);
-
   		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});
 

@@ -8,9 +8,11 @@ import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 
 import EventsList from './eventsList';
 import EventsListAdmin from './eventsListAdmin';
+import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import globalScope from '../../globalScope';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _loadEvents } from '../../instruments/fetching';
+import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
 export default class Agenda extends React.Component {
     constructor(props) {
@@ -46,14 +48,7 @@ export default class Agenda extends React.Component {
         const mobile = typeof window.orientation !== 'undefined';
         return (
             <div className="agenda-wrapper">
-                {globalScope.isAdmin && <Button
-                    tooltipPosition="top"
-                    tooltipLabel="add event"
-                    onClick={this._rerender}
-                    floating
-                    secondary
-                    fixed>add
-                </Button>}
+                {globalScope.isAdmin && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
                 <div className="md-grid no-padding">
