@@ -7,6 +7,7 @@ import Button from 'react-md/lib/Buttons';
 
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
+import EmptyColumn from './emptyColumn';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
@@ -305,12 +306,10 @@ export default class Month extends React.Component {
                                         day={day}
                                         index={index}
                                         mobile={mobile}/>    
-                                    : <Button 
-                                            className={`table-cell ${day.today ? 'today' : !day.isCurrentMonth && 'disabled-cell'}`} 
-                                            key={index*30}
-                                            floating 
-                                            ><p className="day-number">{day.dayNumber}</p>
-                                    </Button>
+                                    : <EmptyColumn
+                                            month={this}
+                                            day={day}
+                                            key={index*30}/> 
                                 )}
                         </div>)
                     }

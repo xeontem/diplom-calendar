@@ -84,11 +84,15 @@ a {
 }
 
 .table-cell {
+  margin: auto 0;
   padding: 0px !important;
+  transition: all 0.5s;
 }
 .disabled-cell {
   opacity: 0.5;
 }
+
+
 //------------------------- WEEK ---------------------------------
 .header-week {
     margin-bottom: -1px;
@@ -457,8 +461,9 @@ width: 25px;
     right: 0;
 }
 
-
-
+.over, .over-fromP {
+  border: 2px solid $md-primary-color !important;
+}
 
 @media (max-width: 576px) {
 

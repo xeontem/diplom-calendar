@@ -9,6 +9,7 @@ import FontIcon from 'react-md/lib/FontIcons';
 
 
 import Card from '../eventCard/Card';
+import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
 
 export default class Column extends React.Component {
 	constructor(props) {
@@ -21,6 +22,11 @@ export default class Column extends React.Component {
             pageY: null,
             notLoaded: true
 		}
+		this.handleDragEnter = handleDragEnter.bind(this);
+		this.handleDragLeave = handleDragLeave.bind(this);
+		this.handleDragOver = handleDragOver.bind(this);
+		this.handleDrop = handleDrop.bind(this);
+		this.handleDragEnd = handleDragEnd.bind(this);
 		this._loadSpeakers();
 	}
 
@@ -59,6 +65,11 @@ export default class Column extends React.Component {
 		return (
 			<Button 
 				className={ `${this.props.day.event.type} table-cell ${this.props.day.today ? 'today' : this.props.day.isCurrentMonth ? null : 'disabled-cell'}`}
+				onDragEnter={this.handleDragEnter}
+				onDragLeave={this.handleDragLeave}
+				onDragOver={this.handleDragOver}
+				onDrop={this.handleDrop}
+				onDragEnd={this.handleDragEnd}
 				onClick={this._openDialog}
 				floating>
 					<Dialog 

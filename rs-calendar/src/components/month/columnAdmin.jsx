@@ -11,6 +11,7 @@ import CardAdmin from '../eventCard/CardAdmin';
 import globalScope from '../../globalScope';
 import { _loadSpeakers } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
+import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
 
 export default class Column extends React.Component {
 	constructor(props) {
@@ -26,6 +27,12 @@ export default class Column extends React.Component {
             speakersReady: false,
             promptVisibility: false
 		}
+		this.handleDragStart = handleDragStart.bind(this);
+		this.handleDragEnter = handleDragEnter.bind(this);
+		this.handleDragLeave = handleDragLeave.bind(this);
+		this.handleDragOver = handleDragOver.bind(this);
+		this.handleDrop = handleDrop.bind(this);
+		this.handleDragEnd = handleDragEnd.bind(this);
 		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
@@ -132,7 +139,13 @@ export default class Column extends React.Component {
 
 		return (
 			<Button 
-				className={ `${this.props.day.event.type} table-cell ${this.props.day.today ? 'today' : this.props.day.isCurrentMonth ? null : 'disabled-cell'}`}
+				className={ `${this.props.day.event.type} table-cell ${this.props.day.today ? 'today' : this.props.day.isCurrentMonth ? '' : 'disabled-cell'}`}
+				onDragStart={this.handleDragStart}
+				onDragEnter={this.handleDragEnter}
+				onDragLeave={this.handleDragLeave}
+				onDragOver={this.handleDragOver}
+				onDrop={this.handleDrop}
+				onDragEnd={this.handleDragEnd}
 				onClick={this._openDialog}
 				draggable="true"
 				floating>
