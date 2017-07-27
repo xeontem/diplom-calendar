@@ -9,7 +9,7 @@ import TextField from 'react-md/lib/TextFields';
 
 import CardAdmin from '../eventCard/CardAdmin';
 import globalScope from '../../globalScope';
-import { _loadSpeakers } from '../../instruments/fetching';
+import { _loadSpeakers, sendToBackend } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
 
@@ -64,6 +64,7 @@ export default class Column extends React.Component {
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
   		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});
+	    sendToBackend(tempEventGet());
 
     }
 

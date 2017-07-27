@@ -8,6 +8,7 @@ import Button from 'react-md/lib/Buttons/Button';
 import Toolbar from 'react-md/lib/Toolbars';
 
 import Card from '../eventCard/Card';
+import { _loadSpeakers } from '../../instruments/fetching';
 
 export default class EventsList extends React.Component {
 
@@ -20,18 +21,11 @@ export default class EventsList extends React.Component {
             pageX: null,
             pageY: null
         };
+        this._loadSpeakers = _loadSpeakers.bind(this, this.props.event.speakers);
     }
 
     _expand = () => {
-        if(this.props.event){
-            let urls = [];
-            this.props.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
-            Promise.all(urls.map(url => fetch(url)))
-                .then(resp => Promise.all( resp.map(r => r.json()) ))
-                .then(speakers => {
-                        this.setState({speakers})
-                });
-        }
+        if(this.props.event) this._loadSpeakers();
     }
 
     _openDialog = (e, pressed) => {
@@ -50,8 +44,6 @@ export default class EventsList extends React.Component {
 
     render() {
         const { columnWidths, focused, mobile } = this.props;
-        // let icon = 'keyboard_arrow_down';
-        // if (mobile) icon = null;
         
         let secLabel;
         if(mobile) secLabel = `Starts: ${new Date(this.props.event.start).toString().slice(4, 24)}`;

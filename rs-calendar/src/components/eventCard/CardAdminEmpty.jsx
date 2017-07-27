@@ -90,7 +90,7 @@ export default class Empty extends React.Component {
 					  resources: this.state.resources,
 					  speakers: this.state.speakers,
 					  start: this.state.start});
-		_loadEvents.call(this, 'http://128.199.53.150/trainers')
+		_loadEvents.call(this, '/trainers')
 		  .then(avalSpeakers => {
 			avalSpeakers = avalSpeakers.slice(0, 10);
 			avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
@@ -245,8 +245,7 @@ export default class Empty extends React.Component {
 	}
 
 	_addSpeaker = (id) => {
-		fetch(`http://128.199.53.150/trainers/${id}`)
-		  .then(response=> response.json())
+		_loadEvents(`/trainers/${id}`)
 		  .then(speaker => {
 			let speakersReadyArr = this.state.speakersReadyArr;
 			let speakers = this.state.speakers;

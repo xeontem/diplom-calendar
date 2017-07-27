@@ -1,4 +1,5 @@
 import { tempEventGet, tempEventSet } from './eventsBackup';   
+import { sendToBackend } from './fetching';
 let defaultLocation = '';
 
 export function _closeSaveMonth() {
@@ -30,6 +31,7 @@ export function _closeSaveMonth() {
             promptVisibility: !this.state.promptVisibility
         });
     this.props.month.setState({appliedEventsMonth, filtered, events});
+    sendToBackend(tempEventGet());
     let empty = {};
     tempEventSet(empty);
 }
@@ -63,6 +65,7 @@ export function _closeSaveWeek() {
             promptVisibility: !this.state.promptVisibility
         });
     this.props.week.setState({appliedEventsMonth, filtered, events});
+    sendToBackend(tempEventGet());
     let empty = {};
     tempEventSet(empty);
 }
@@ -97,6 +100,7 @@ export function _closeSaveDay() {
             promptVisibility: !this.state.promptVisibility
         });
     this.props.day.setState({backupDayEvents, filtered, day});
+    sendToBackend(tempEventGet());
     let empty = {};
     tempEventSet(empty);
 }
@@ -129,6 +133,7 @@ export function _closeSaveTableAgenda() {
             promptVisibility: !this.state.promptVisibility
         });
     this.props.table.setState({events, filtered});
+    sendToBackend(tempEventGet());
     let empty = {};
     tempEventSet(empty);
 }

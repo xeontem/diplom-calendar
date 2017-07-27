@@ -1,4 +1,5 @@
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from './eventsBackup';
+import { sendToBackend } from './fetching';
 
 export function setStartTime(e) {
     let event = e.target.parentElement.parentElement;
@@ -36,9 +37,7 @@ export function setStartTime(e) {
         document.documentElement.removeEventListener('touchmove', doDrag, false);
         document.documentElement.removeEventListener('mouseup', stopDrag, false);
         document.documentElement.removeEventListener('touchend', stopDrag, false);
-        // let filtered = that.props.week.state.filtered;
-        // that.props.week.setState({filtered});
-        
+        sendToBackend(eventProps);
     }
    
     document.documentElement.addEventListener('mousemove', doDrag, false);
@@ -88,7 +87,7 @@ export function setEndTime(e) {
         document.documentElement.removeEventListener('touchmove', doDrag, false);
         document.documentElement.removeEventListener('mouseup', stopDrag, false);
         document.documentElement.removeEventListener('touchend', stopDrag, false);
-
+        sendToBackend(eventProps);
     }
    
     document.documentElement.addEventListener('mousemove', doDrag, false);

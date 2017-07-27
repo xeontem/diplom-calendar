@@ -8,7 +8,7 @@ import TextField from 'react-md/lib/TextFields';
 import FontIcon from 'react-md/lib/FontIcons';
 
 import CardAdmin from '../eventCard/CardAdmin';
-import { _loadSpeakers } from '../../instruments/fetching';
+import { _loadSpeakers, sendToBackend } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 import { setStartTime, setEndTime } from '../../instruments/initResize';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
@@ -66,7 +66,7 @@ export default class Column extends React.Component {
 	    
   		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.week.setState({appliedEventsMonth, filtered});
-
+	    sendToBackend(tempEventGet());
     }
 
 

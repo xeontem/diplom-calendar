@@ -1,3 +1,5 @@
+import { sendToBackend } from './fetching';
+
 let initElementEvent = null;
 let initElementEventIndex = 0;
 
@@ -51,6 +53,7 @@ export function handleDrop(e) {
   filtered.push(initElementEvent);
   let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
   this.props.month.setState({appliedEventsMonth, filtered});
+  sendToBackend(initElementEvent);
   return false;
 }
 

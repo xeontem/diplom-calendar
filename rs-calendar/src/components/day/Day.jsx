@@ -13,6 +13,7 @@ import smile from './legosmile.svg';
 import scroll from '../../instruments/scroll';
 import globalScope from '../../globalScope';
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
+import { _loadEvents } from '../../instruments/fetching';
 
 export default class Day extends React.Component {
     constructor(props) {
@@ -52,8 +53,7 @@ export default class Day extends React.Component {
             top: 0
         }
 
-        fetch('http://128.199.53.150/events')
-          .then(response => response.json())
+        _loadEvents.call(this, '/events')
           .then(events => {
             let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(events);
             let day = appliedEventsMonth[this.state.dayIndex];

@@ -12,7 +12,7 @@ import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
 import CardAdmin from '../eventCard/CardAdmin';
-import { _loadSpeakers } from '../../instruments/fetching';
+import { _loadSpeakers, sendToBackend } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 
 export default class EventsRow extends React.Component {
@@ -53,7 +53,7 @@ export default class EventsRow extends React.Component {
         filtered = filtered.concat(this.props.table.state.filtered.slice(tempEventGet().eventIndex+1));
         this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
         this.props.table.setState({filtered});
-
+        sendToBackend(tempEventGet());
     }
 
 

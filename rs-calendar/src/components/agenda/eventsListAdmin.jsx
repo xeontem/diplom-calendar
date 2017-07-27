@@ -10,7 +10,7 @@ import SelectField from 'react-md/lib/SelectFields';
 import TextField from 'react-md/lib/TextFields';
 
 import CardAdmin from '../eventCard/CardAdmin';
-import { _loadSpeakers } from '../../instruments/fetching';
+import { _loadSpeakers, sendToBackend } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../../instruments/eventsBackup';
 
 export default class EventsList extends React.Component {
@@ -51,7 +51,7 @@ export default class EventsList extends React.Component {
         filtered = filtered.concat(this.props.agenda.state.filtered.slice(tempEventGet().eventIndex+1));
         this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
         this.props.agenda.setState({filtered});
-
+        sendToBackend(tempEventGet());
     }
 
 

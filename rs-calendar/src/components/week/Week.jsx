@@ -60,7 +60,7 @@ export default class Week extends React.Component {
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
 
-        _loadEvents.call(this, 'http://128.199.53.150/events')
+        _loadEvents.call(this, '/events')
             .then(events => {
             let appliedEventsMonth = this._applyEventsOnDates(events);
             let weekToShow;

@@ -41,7 +41,7 @@ export default class ExpandableMediaCard extends React.Component {
 		// initial mutable copy of speakers
 		speakersTempSet(this.props.speakers);
 
-		_loadEvents.call(this, 'http://128.199.53.150/trainers')
+		_loadEvents.call(this, '/trainers')
 		  .then(avalSpeakers => {
 			avalSpeakers = avalSpeakers.slice(0, 10);
 			avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
@@ -210,15 +210,8 @@ export default class ExpandableMediaCard extends React.Component {
     	tempEventSet(tempEvent);
 
 		let that = this;
-		fetch(`http://128.199.53.150/trainers/${id}`)
-		  .then(function(response) {
-		  if(response.ok) {
-		    return response.json();
-		  }
-		}).then(function(speaker){
-			// let tempSpeakers = speakersTempGet();
-			// tempSpeakers.push(speaker);
-			// speakersTempSet(tempSpeakers);
+		_loadEvents(`/trainers/${id}`)
+			.then(function(speaker){
 
 			let speakers = that.state.speakers;
 			speakers.push(speaker);
