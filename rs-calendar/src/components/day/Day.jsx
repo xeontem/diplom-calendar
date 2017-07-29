@@ -270,7 +270,6 @@ export default class Day extends React.Component {
         }
         return (
             <div className="agenda-wrapper">
-                {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
                 {globalScope.isAdmin && <CardAdminEmpty day={this} _closeSave={_closeSaveDay} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.state.toasts} autohide={true} onDismiss={this._removeToast}/>}
