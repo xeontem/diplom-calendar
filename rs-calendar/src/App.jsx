@@ -1,9 +1,12 @@
 import React, { PureComponent } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Button from 'react-md/lib/Buttons/Button';
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import Switcher from 'react-md/lib/SelectionControls/Switch';
 
+import { removeToast } from './actions/toastMonthActions';
 import inboxListItems from './inboxListItems';
 import Month from './components/month/Month';
 import Week from './components/week/Week';
@@ -16,7 +19,7 @@ import gitLogo from './github-logo.svg';
 import './App.css';
 
 
-export default class App extends PureComponent {
+class App extends PureComponent {
     constructor(props) {
         super(props);
         this.title = 'Month';
@@ -29,6 +32,7 @@ export default class App extends PureComponent {
         this.state = {
             isAdmin: false
         }
+        this.month = () => (<Month removeToast={this.props.removeToast} _toastMonthReducer={this.props._toastMonthReducer}/>)
     }
 
     _setPage = (item) => { // eslint-disable-next-line
@@ -77,7 +81,6 @@ export default class App extends PureComponent {
             <Button icon tooltipLabel="Open in Github" href="https://github.com/xeontem"><img style={{width: 25}} src={gitLogo}/></Button>,
             <Button icon tooltipLabel="Add to favorite">favorite</Button>
         ]);
-
         return (
             <NavigationDrawer
                 navItems={this._navItems}
@@ -87,7 +90,7 @@ export default class App extends PureComponent {
                 toolbarActions={buttons}
             >
             <Switch>
-                <Route exact path="/month" component={Month} />
+                <Route exact path="/month" component={this.month} />
                 <Route path="/week" component={Week} />
                 <Route path="/day" component={Day} />
                 <Route path="/agenda" component={Agenda} />
@@ -98,3 +101,17 @@ export default class App extends PureComponent {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        _toastMonthReducer: state.toastMonthReducer
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        removeToast: bindActionCreators(removeToast, dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

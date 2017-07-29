@@ -4,6 +4,7 @@
   "private": true,
   "description": "rs-calendar-by-xeontem",
   "dependencies": {
+    "immutable": "^3.8.1",
     "modernizr": "^3.5.0",
     "node-sass": "^4.5.2",
     "npm-run-all": "^4.0.2",
@@ -12,7 +13,11 @@
     "react-addons-transition-group": "^15.5.2",
     "react-dom": "^15.5.4",
     "react-md": "^1.0.15",
+    "react-redux": "^5.0.5",
     "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
     "webfontloader": "^1.6.27"
   },
   "devDependencies": {

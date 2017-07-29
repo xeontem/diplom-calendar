@@ -23,6 +23,11 @@ import deleteAvatar from '../eventCard/delete.png';
 let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
 let defaultLocation = '';
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+
 export default class Empty extends React.Component {
 	constructor(props) {
 		super(props);
@@ -30,8 +35,8 @@ export default class Empty extends React.Component {
 			type: this.props.eventTypes[1],
 			title: '',
 			description: 'description...',
-			duration: 0,
-			id: 0,
+			duration: 1000*60*60,
+			id: getRandomArbitrary(0.1, 0.9)*1000000000000000000,
 			location: 'location...',
 			resources: [{type: ''}],
 			speakers: [],
@@ -64,8 +69,8 @@ export default class Empty extends React.Component {
 			type: this.props.eventTypes[1],
 			title: '',
 			description: 'description...',
-			duration: 0,
-			id: 0,
+			duration: 1000*60*60,
+			id: getRandomArbitrary(0.1, 0.9)*1000000000000000000,
 			location: 'location...',
 			resources: [{type: ''}],
 			speakers: [],

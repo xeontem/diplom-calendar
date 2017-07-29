@@ -27,12 +27,12 @@ export default class Column extends React.Component {
             speakersReady: false,
             promptVisibility: false
 		}
-		this.handleDragStart = handleDragStart.bind(this);
+		this.handleDragStart = handleDragStart.bind(this, this.props.month);
 		this.handleDragEnter = handleDragEnter.bind(this);
 		this.handleDragLeave = handleDragLeave.bind(this);
 		this.handleDragOver = handleDragOver.bind(this);
 		this.handleDrop = handleDrop.bind(this);
-		this.handleDragEnd = handleDragEnd.bind(this);
+		this.handleDragEnd = handleDragEnd.bind(this, this.props.month);
 		_loadSpeakers.call(this, this.props.event.speakers);
 	}
 
@@ -58,9 +58,13 @@ export default class Column extends React.Component {
 
     _closeSave = () => {
 
+	    // console.dir(this.props.month.state.filtered);
     	let filtered = this.props.month.state.filtered.slice(0, tempEventGet().eventIndex);
 	    filtered.push(tempEventGet());
 	    filtered = filtered.concat(this.props.month.state.filtered.slice(tempEventGet().eventIndex+1));
+	    // console.dir(tempEventGet().eventIndex);
+	    // console.dir(filtered[tempEventGet().eventIndex]);
+
 	    let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
   		this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
 	    this.props.month.setState({appliedEventsMonth, filtered});

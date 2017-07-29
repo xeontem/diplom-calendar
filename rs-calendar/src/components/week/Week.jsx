@@ -5,6 +5,8 @@ import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
+import DeleteZone from '../DeleteZone';
+import { handleDropDeleteZone } from '../../instruments/dragWeek';
 import Column from './column';
 import ColumnAdmin from './columnAdmin';
 import EmptyColumn from './emptyColumn';
@@ -51,6 +53,7 @@ export default class Week extends React.Component {
             filtered: [],
 			fetching: true,
 			toasts: [{text: "events successfully loaded"}],
+            toastsToDeleteZone: [],
             value: 'All',
             from: 'All',
             to: 'All',
@@ -188,19 +191,6 @@ export default class Week extends React.Component {
         }
     }
 
-    _progressBarShower = () => {
-        const mobile = typeof window.orientation !== 'undefined';
-        let top = 47;
-        let opacity = this.state.notLoaded;
-        if(mobile) top = 40;
-        return {opacity, top};
-    }
-
-	_snackBarShower = () => {
-		if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
-	}
-
-
   	_removeToast = () => {
     	const [, ...toasts] = this.state.toasts;
     	this.setState({ toasts });
@@ -302,7 +292,8 @@ export default class Week extends React.Component {
 			<div className="agenda-wrapper">
 				{globalScope.isAdmin && <CardAdminEmpty week={this} _closeSave={_closeSaveWeek} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-                {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
+                {!this.state.fetching && <Snackbar toasts={this.state.toasts} autohide={true} onDismiss={this._removeToast}/>}
+                {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
                     <DatePicker

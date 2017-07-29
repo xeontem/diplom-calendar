@@ -49,6 +49,7 @@ export default class Day extends React.Component {
             filtered: [],
             fetching: true,
             toasts: [{text: "events successfully loaded"}],
+            toastsToDeleteZone: [],
             value: 'All',
             top: 0
         }
@@ -162,12 +163,11 @@ export default class Day extends React.Component {
     }
 
     _removeToast = () => {
-        const [, ...toasts] = this.state.toasts;
         this.setState({ toasts: [] });
     }
 
     _filterByType = (value) => {
-        let day = this.state.day;//asdassssssssssssssssssss
+        let day = this.state.day;
         if(day.events) {
                 day.events = this.state.backupDayEvents.filter((event) => {
                 if(value === 'All') return true;
@@ -270,9 +270,10 @@ export default class Day extends React.Component {
         }
         return (
             <div className="agenda-wrapper">
+                {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
                 {globalScope.isAdmin && <CardAdminEmpty day={this} _closeSave={_closeSaveDay} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-                {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
+                {!this.state.fetching && <Snackbar toasts={this.state.toasts} autohide={true} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
                     <SelectField

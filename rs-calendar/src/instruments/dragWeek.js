@@ -3,10 +3,11 @@ import { sendToBackend } from './fetching';
 let initElementEvent = null;
 let initElementEventIndex = 0;
 
-export function handleDragStart(e) {
+export function handleDragStart(week, e) {
   e.target.style.opacity = '0.4';  // this / e.target is the source node.
   initElementEvent = this.props.day.event;
   initElementEventIndex = this.props.eventIndex;
+  if(!week.state.toastsToDeleteZone[0]) week.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
 }
 
 export function handleDragOver(e) {
@@ -51,4 +52,26 @@ export function handleDragEnd(e) {
   // this/e.target is the source node.
   e.target.style.opacity = '1';
   // e.target.classList.remove('over');
+}
+
+//------------------ delete handlers --------------------
+
+export function handleDropDeleteZone(week, e) {
+  // this / e.target is current target element.
+
+  if (e.stopPropagation) {
+    e.stopPropagation(); // stops the browser from redirecting.
+  }
+  
+  if(e.target.id === "snackbarAlert") {
+    let event = week.state.filtered[initElementEventIndex];
+    let filtered = week.state.filtered.slice(0, initElementEventIndex);
+    filtered = filtered.concat(week.state.filtered.slice(initElementEventIndex+1));
+    // filtered.push(initElementEvent);
+    let appliedEventsMonth = week._applyEventsOnDates(filtered, week.state.dateToShow);
+    week.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
+    let deleteInfo = {delete: true, id: event.id };
+    sendToBackend(deleteInfo);
+    return false;
+  }
 }

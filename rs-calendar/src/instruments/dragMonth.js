@@ -3,12 +3,13 @@ import { sendToBackend } from './fetching';
 let initElementEvent = null;
 let initElementEventIndex = 0;
 
-export function handleDragStart(e) {
+export function handleDragStart(month, e) {
   e.target.style.opacity = '0.4';  // this / e.target is the source node.
   e.target.style.width = '45px';
   e.target.style.height = '45px';
   initElementEvent = this.props.day.event;
   initElementEventIndex = this.props.eventIndex;
+  if(!month.state.toastsToDeleteZone[0]) month.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
 }
 
 export function handleDragOver(e) {
@@ -28,6 +29,10 @@ export function handleDragEnter(e) {
     // alert('day');
     e.target.parentElement.parentElement.classList.add('over-fromP');
   }
+  if(e.target.id === "snackbarAlert") {
+    // this.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
+    e.target.innerHTML = '<i class="material-icons">delete_forever</i> Delete forever';
+  }
 }
 
 export function handleDragLeave(e) {
@@ -37,7 +42,6 @@ export function handleDragLeave(e) {
     // alert('day');
     e.target.parentElement.parentElement.classList.remove('over-fromP');
   }
-  // if(e.target.className === "day-number") e.target.parentElement.parentElement.classList.remove('over');
 }
 
 export function handleDrop(e) {
@@ -46,21 +50,46 @@ export function handleDrop(e) {
   if (e.stopPropagation) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
+  
   initElementEvent.start = this.props.day.curDate;
 
-  let filtered = this.props.month.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(this.props.month.state.filtered.slice(initElementEventIndex+1));
+  let filtered = this.props.parent.state.filtered.slice(0, initElementEventIndex);
+  filtered = filtered.concat(this.props.parent.state.filtered.slice(initElementEventIndex+1));
   filtered.push(initElementEvent);
-  let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-  this.props.month.setState({appliedEventsMonth, filtered});
+  let appliedEventsMonth = this.props.parent._applyEventsOnDates(filtered, this.props.parent.state.dateToShow);
+  this.props.parent.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
   sendToBackend(initElementEvent);
   return false;
 }
 
-export function handleDragEnd(e) {
+export function handleDragEnd(month, e) {
   // this/e.target is the source node.
   e.target.style.opacity = '1';
   e.target.style.width = '56px';
   e.target.style.height = '56px';
   // e.target.classList.remove('over');
+  month.setState({toastsToDeleteZone: []});
+}
+
+
+//------------------ delete handlers --------------------
+
+export function handleDropDeleteZone(month, e) {
+  // this / e.target is current target element.
+
+  if (e.stopPropagation) {
+    e.stopPropagation(); // stops the browser from redirecting.
+  }
+  
+  if(e.target.id === "snackbarAlert") {
+    let event = month.state.filtered[initElementEventIndex];
+    let filtered = month.state.filtered.slice(0, initElementEventIndex);
+    filtered = filtered.concat(month.state.filtered.slice(initElementEventIndex+1));
+    // filtered.push(initElementEvent);
+    let appliedEventsMonth = month._applyEventsOnDates(filtered, month.state.dateToShow);
+    month.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
+    let deleteInfo = {delete: true, id: event.id };
+    sendToBackend(deleteInfo);
+    return false;
+  }
 }

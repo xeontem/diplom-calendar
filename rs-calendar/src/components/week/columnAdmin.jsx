@@ -26,7 +26,7 @@ export default class Column extends React.Component {
 		this.setStartTime = setStartTime.bind(this);
 		this.setEndTime = setEndTime.bind(this);
 
-		this.handleDragStart = handleDragStart.bind(this);
+		this.handleDragStart = handleDragStart.bind(this, this.props.week);
 		this.handleDragEnter = handleDragEnter.bind(this);
 		this.handleDragLeave = handleDragLeave.bind(this);
 		this.handleDragOver = handleDragOver.bind(this);

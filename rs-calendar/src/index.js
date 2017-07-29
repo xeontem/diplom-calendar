@@ -1,9 +1,12 @@
+import { Provider } from 'react-redux';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import WebFontLoader from 'webfontloader';
+
+import store from './store';
 
 WebFontLoader.load({
   google: {
@@ -12,11 +15,13 @@ WebFontLoader.load({
 });
 
 ReactDOM.render((
-	<BrowserRouter>
-	    <div>
-	        <Route path="/" component={App} />
-	        <Redirect to="/month"/>
-	    </div>
-	</BrowserRouter>),
+    <Provider store={store}>
+    	<BrowserRouter>
+    	    <div>
+    	        <Route path="/" component={App} />
+    	        <Redirect to="/month"/>
+    	    </div>
+    	</BrowserRouter>
+    </Provider>),
 	document.getElementById('root')
 );

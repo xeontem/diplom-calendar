@@ -37,6 +37,15 @@ export default class EventsList extends React.Component {
         this.setState({ visible: true, pageX, pageY });
     }
 
+    _deleteEvent = () => {
+        let filtered = this.props.agenda.state.filtered.slice(0, this.props.eventIndex);
+        filtered = filtered.concat(this.props.agenda.state.filtered.slice(this.props.eventIndex+1));
+        this.setState({ visible: false, promptVisibility: !this.state.promptVisibility, speakers: speakersTempGet()});
+        this.props.agenda.setState({filtered});
+        let deleteInfo = {delete: true, id: this.props.event.id };
+        sendToBackend(deleteInfo);
+    }
+
     _closeDiscard = () => {
         let filtered = this.props.agenda.state.filtered.slice(0, eventBackupGet().eventIndex);
         filtered.push(eventBackupGet());
@@ -156,6 +165,7 @@ export default class EventsList extends React.Component {
                 cancelLabel="Delete"
                 saveLabel="Edit"
                 onSave={this._openDialog}
+                onCancel={this._deleteEvent}
                 onExpandToggle={this._loadSpeakers}
                 closeOnSave={false}>
 

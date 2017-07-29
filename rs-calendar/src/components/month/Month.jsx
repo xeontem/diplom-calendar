@@ -9,12 +9,14 @@ import Column from './column';
 import ColumnAdmin from './columnAdmin';
 import EmptyColumn from './emptyColumn';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
+import DeleteZone from '../DeleteZone';
 
+import { handleDropDeleteZone } from '../../instruments/dragMonth';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
-// import { tempEventGet, tempEventSet, eventBackupGet, eventBackupSet, speakersBackupGet, speakersBackupSet, speakersTempGet, speakersTempSet } from '../eventsBackup';
 import { _closeSaveMonth } from '../../instruments/emptyEventOpenClose';
+
 export default class Month extends React.Component {
 	constructor(props) {
 		super(props);
@@ -42,6 +44,7 @@ export default class Month extends React.Component {
             filtered: [],
 			fetching: true,
 			toasts: [{text: "events successfully loaded"}],
+            toastsToDeleteZone: [],
             value: 'All',
             from: 'All',
             to: 'All'
@@ -49,7 +52,8 @@ export default class Month extends React.Component {
         this._filterByType = _filterByType.bind(this);
         this._filterByToDate = _filterByToDate.bind(this);
         this._filterByFromDate = _filterByFromDate.bind(this);
-        
+        this._removeToast = this.props.removeToast;
+
         _loadEvents.call(this, '/events')
             .then(events => {
                 console.dir(events);
@@ -64,7 +68,6 @@ export default class Month extends React.Component {
 	}
 	
     _applyEventsOnDates(events, date = Date.now()) {
-        // alert('_applyEventsOnDates');
         let month = this._calculateMonthArr(date);
         events.map((event, eventIndex) => {
             let eventDate = new Date(event.start);
@@ -81,7 +84,6 @@ export default class Month extends React.Component {
     }
 
     _calculateMonthArr(date = Date.now()) {
-        // alert('_calculateMonthArr');
         let currentDate = new Date(date);
         let rollDownDate = new Date(date);
         let rollDownNumber = Number(rollDownDate.toString().slice(8, 11));
@@ -143,7 +145,6 @@ export default class Month extends React.Component {
     }
 
     _progressBarShower = () => {
-        // alert('_progressBarShower');
         const mobile = typeof window.orientation !== 'undefined';
         let top = 47;
         let opacity = this.state.notLoaded;
@@ -152,19 +153,15 @@ export default class Month extends React.Component {
 	}
 
 	_snackBarShower = () => {
-        // alert('_snackBarShower');
 		if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
 	}
 
 
-  	_removeToast = () => {
-        // alert('_removeToast');
-    	const [, ...toasts] = this.state.toasts;
-    	this.setState({ toasts });
-  	}
+  	// _removeToast = () => {
+   //  	this.setState({ toasts: [] });
+  	// }
 
     _changeYear = (curYear) => {
-        // alert('_changeYear');
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
         dateToShow = new Date(dateToShow).valueOf();
@@ -173,7 +170,6 @@ export default class Month extends React.Component {
     }
 
     _changeMonth = (curMonth) => {
-        // alert('_changeMonth');
         let dateToShow = new Date(this.state.dateToShow).toString();
         dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
         dateToShow = new Date(dateToShow).valueOf();
@@ -182,13 +178,11 @@ export default class Month extends React.Component {
     }
 
     _toggle = (value) => {
-        // alert('_toggle');
         if(this.state.toggleValue == value) value = 'All';
         this._filterByType(value);
     }
 
     _prevMonth = () => {
-        // alert('_prevMonth');
         let curYear = this.state.curYear;
         let dateToShow = this.state.dateToShow - 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
@@ -198,7 +192,6 @@ export default class Month extends React.Component {
     }
 
     _nextMonth = () => {
-        // alert('_nextMonth');
         let curYear = this.state.curYear;
         let dateToShow = this.state.dateToShow + 1000*60*60*24*30;
         let curMonth = new Date(dateToShow).toString().slice(4, 7);
@@ -210,13 +203,13 @@ export default class Month extends React.Component {
     _rerender = () => {this.setState({addNew: true})}
 
 	render() {
-        // alert('render month');
         const mobile = typeof window.orientation !== 'undefined';
 		return (
 			<div className="agenda-wrapper">
                 {globalScope.isAdmin && <CardAdminEmpty month={this} _closeSave={_closeSaveMonth} eventTypes={this.state.eventTypes} mobile={mobile}/> }
+                {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
 				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-                {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
+                {!this.state.fetching && <Snackbar toasts={this.props._toastMonthReducer.get('toasts')} autohide={true} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
                 <div className="md-grid no-padding box">    
                     <DatePicker
