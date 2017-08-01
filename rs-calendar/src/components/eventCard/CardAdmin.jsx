@@ -17,6 +17,10 @@ import deleteAvatar from './delete.png';
 
 let defaultLocation = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d698.4331681038012!2d27.68178244677689!3d53.92748365509798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcebc7c83cb35%3A0xc659f43cf70964d5!2zdnVs0ZbRgWEgQWthZNC1bdGWa2EgS3VwctC1dtGWxI1hIDEvMiwgTWluc2sgMjIwMTQx!5e0!3m2!1sen!2sby!4v1496747626981';
 let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
+
+let defaultVideo = '-sUXMzkh-jI';
+let youtubeAPI = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyA17KYHw-TfsiBy3TdT8hThejNcLjdNnOo&type=video&part=snippet&maxResults=1&q=';
+
 export default class ExpandableMediaCard extends React.Component {
 	constructor(props) {
 		super(props);
@@ -26,6 +30,8 @@ export default class ExpandableMediaCard extends React.Component {
 			start: new Date(this.props.event.start),
 			end: new Date(new Date(this.props.event.start).valueOf() + new Date(this.props.event.duration).valueOf()),
 			showingLocation: this.props.event.showingLocation || defaultLocation,
+			videoId: this.props.event.videoId || defaultVideo,
+			video: this.props.event.videoId || '',
 			location: this.props.event.location,
 			speakers: this.props.speakers,
 			avalSpeakers: [],
@@ -173,6 +179,8 @@ export default class ExpandableMediaCard extends React.Component {
 		this.setState({showingLocation: uriAPI + location});
 	}
 
+	
+
 	_changeResources = (index, type) => {
 		let tempEvent = tempEventGet();
     	tempEvent.resources[index].type = type;
@@ -257,8 +265,27 @@ export default class ExpandableMediaCard extends React.Component {
 		this.setState({avatars});
 	}
 
+	_changeVideo = (video) => {
+		this.setState({video});
+	}
+
+	_changevideoId = (videoId) => {
+				let tempEvent = tempEventGet();
+		    	tempEvent.videoId = videoId;
+		    	tempEventSet(tempEvent);
+				this.setState({videoId});
+	}
+
 	render() {
-		
+		console.log('https://www.youtube.com/embed/' + this.state.videoId || 'kwkUURc_pHk');
+		let readyVideoURLToShow = 'https://www.youtube.com/embed/' + this.state.videoId || 'kwkUURc_pHk';
+		let videoNode = <TextField
+							    id="_changeVideo"
+							    value={this.state.video || 'insertset video id here'}
+							    rows={1}
+							    onChange={this._changeVideo}
+							    style={{width: '99%'}}
+							/>;
 		let locationNode = <TextField
 							    id="_changeLocation"
 							    value={this.state.location}
@@ -321,8 +348,16 @@ export default class ExpandableMediaCard extends React.Component {
 				    />
 				</div>
 				<Divider/>
-				<Media>
-					<iframe src={this.state.showingLocation} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
+				<Media className="iframe-wrapper">
+					<iframe className="move-on-top" src={readyVideoURLToShow} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
+					<MediaOverlay>
+						<CardTitle title={this.props.event.videoId ? "Lesson record" : "Lesson record isn't uploaded still"} subtitle={videoNode}>
+							<Button className="md-cell--right" onClick={this._changevideoId.bind(this, this.state.video)} icon>play_circle_filled</Button>
+						</CardTitle>
+					</MediaOverlay>
+				</Media>
+				<Media className="iframe-wrapper">
+					<iframe className="move-on-top" src={this.state.showingLocation} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
 					<MediaOverlay>
 						<CardTitle	className="location-wrapper" title="Location" subtitle={locationNode}>
 							<Button className="md-cell--right" onClick={this._changeShowingLocation.bind(this, this.state.location)} icon>place</Button>

@@ -15,12 +15,16 @@ export function _loadSpeakers(speakersIDs) {
 }
 
 export function sendToBackend(event) {
+
+    let headers = new Headers({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    });
+
     fetch(source + '/events',
         {
             method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify(event)
         })
 }

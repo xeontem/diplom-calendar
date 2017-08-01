@@ -53,11 +53,11 @@ export function handleDrop(e) {
   
   initElementEvent.start = this.props.day.curDate;
 
-  let filtered = this.props.parent.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(this.props.parent.state.filtered.slice(initElementEventIndex+1));
+  let filtered = this.props.month.state.filtered.slice(0, initElementEventIndex);
+  filtered = filtered.concat(this.props.month.state.filtered.slice(initElementEventIndex+1));
   filtered.push(initElementEvent);
-  let appliedEventsMonth = this.props.parent._applyEventsOnDates(filtered, this.props.parent.state.dateToShow);
-  this.props.parent.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
+  let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
+  this.props.month.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
   sendToBackend(initElementEvent);
   return false;
 }

@@ -322,6 +322,16 @@ a {
   cursor: pointer;
 }
 
+//---------------------- Card -----------------------------
+
+.iframe-wrapper {
+  margin-bottom: 20px;
+}
+
+.move-on-top:hover {
+  z-index: 10;
+}
+
 //---------------------- ADMIN MENU -----------------------
 
 .container {
