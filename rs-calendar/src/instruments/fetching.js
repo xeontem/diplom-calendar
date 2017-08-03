@@ -21,7 +21,7 @@ export function sendToBackend(event) {
         'Content-Type': 'application/json'
     });
 
-    fetch(source + '/events',
+    return fetch(source + '/events',
         {
             method: "POST",
             headers: headers,

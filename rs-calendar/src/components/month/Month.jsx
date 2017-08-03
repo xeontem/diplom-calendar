@@ -56,7 +56,6 @@ export default class Month extends React.Component {
 
         _loadEvents.call(this, '/events')
             .then(events => {
-                console.dir(events);
                 let appliedEventsMonth = this._applyEventsOnDates(events);
                 this.setState({
                     events,

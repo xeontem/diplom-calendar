@@ -6,6 +6,7 @@ import Button from 'react-md/lib/Buttons/Button';
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import Switcher from 'react-md/lib/SelectionControls/Switch';
 import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
+import Avatar from 'react-md/lib/Avatars';
 
 import { removeToast } from './actions/toastMonthActions';
 import inboxListItems from './inboxListItems';
@@ -15,6 +16,7 @@ import Day from './components/day/Day';
 import Table from './components/table/Table';
 import Agenda from './components/agenda/Agenda';
 import globalScope from './globalScope';
+import LoginDialog from './components/login/loginDialog';
 
 import { _loadEvents } from './instruments/fetching';
 import gitLogo from './github-logo.svg';
@@ -34,6 +36,9 @@ class App extends PureComponent {
         this.state = {
             isAdmin: false,
             toast: [],
+            visible: false,
+            user: 'user',
+            avatar: globalScope.defaultAvatar
         }
         this.month = () => (<Month removeToast={this.props.removeToast} _toastMonthReducer={this.props._toastMonthReducer}/>)
     }
@@ -88,12 +93,17 @@ class App extends PureComponent {
         this.setState({ toast: [] });
     }
 
+    _openLoginDialog = () => {
+        let visible = !this.state.visible;
+        this.setState({visible});
+    }
+
     render() {
         const buttons = ([
-            <h3 className={`admin-${this.state.isAdmin}`}>SUDO</h3>,
-            <Switcher id="switch1" style={{display: 'inline-flex'}} name="controlledSwitch" checked={this.state.isAdmin} onChange={this._handleChange} />,
-            <Button icon tooltipLabel="Open in Github" href="https://github.com/xeontem"><img style={{width: 25}} src={gitLogo}/></Button>,
-            <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>favorite</Button>
+            <Avatar src={this.state.avatar} role="presentation" />,
+            <Button flat label={this.state.user} />,
+            <Button icon tooltipLabel="log in" onClick={this._openLoginDialog}>assignment_ind</Button>,
+            <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>
         ]);
         return (
             <NavigationDrawer
@@ -103,7 +113,8 @@ class App extends PureComponent {
                 toolbarTitle={this.title}
                 toolbarActions={buttons}
             >
-            {this.state.resetted && <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>}
+            <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
+            <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
             <Switch>
                 <Route exact path="/month" component={this.month} />
                 <Route path="/week" component={Week} />
