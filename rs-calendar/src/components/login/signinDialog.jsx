@@ -16,6 +16,7 @@ export default class ModalDialogExamples extends PureComponent {
       visible: this.props.visible,
       login: '',
       password: '',
+      repassword: '',
       avatar: 'https://www.timeshighereducation.com/sites/default/files/byline_photos/default-avatar.png'
     };
   }
@@ -25,7 +26,7 @@ export default class ModalDialogExamples extends PureComponent {
   }
   
   closeDialog = () => {
-    this.props.app.setState({ visible: false });
+    this.props.app.setState({ signInvisible: false });
   };
 
   _storeLogin = (login) => {
@@ -37,60 +38,52 @@ export default class ModalDialogExamples extends PureComponent {
     this.setState({password: cripted});
   }
 
-  _login = () => {
-    if(this.props.app.state.isAdmin) {
-      globalScope.isAdmin = false;
-      this.props.app.setState({
-        avatar: globalScope.defaultAvatar,
-        user: 'user',
-        isAdmin: false,
-        visible: false,
-        toast: [{text: 'logged out'}]
+  _storeRepassword = (repassword) => {
+    let cripted = md5(repassword);
+    this.setState({repassword: cripted});
+  }
+
+  _storeAvatar = (avatar) => {
+    this.setState({avatar});
+  }
+
+  _signin = () => {
+    if(this.state.password == this.state.repassword) {
+      sendToBackend({
+        signin: true,
+        login: this.state.login,
+        password: this.state.password,
+        avatar: this.state.avatar
+      })
+      .then(res => res.json())
+      .then(res => {
+        let signInvisible = false;
+        if(res.notregister) signInvisible = true;
+        this.props.app.setState({
+          signInvisible,
+          toast: [{text: res.message}]
+        })
       });
-      return
+    } else {
+      this.props.app.setState({toast: [{text: 'missmatch passwords'}]});
     }
-    sendToBackend({
-      login: this.state.login,
-      password: this.state.password
-    })
-    .then(res => res.json())
-    .then(res => {
-      let user = res.isAdmin ? this.state.login : 'user'; 
-      let avatar = globalScope.defaultAvatar;
-      if(res.avatar) avatar = res.avatar;
-      globalScope.isAdmin = res.isAdmin;
-      this.props.app.setState({
-        isAdmin: res.isAdmin,
-        visible: false,
-        toast: [{text: res.message}],
-        user,
-        avatar 
-      });
-    });
   }
 
   render() {
-    let button = !this.props.app.state.isAdmin ? {
-            onClick: this._login,
-            primary: true,
-            label: 'Log In',
-          } :
-          {
-            onClick: this._login,
-            primary: true,
-            label: 'Log Out',
-          }
     return (
       <div>
         <Dialog
           id="speedBoost"
           visible={this.state.visible}
-          title="Log In"
+          title="Registration"
           onHide={this.closeDialog}
           aria-labelledby="speedBoostDescription"
           modal
-          actions={[
-          button,
+          actions={[{
+            onClick: this._signin,
+            primary: true,
+            label: 'Register',
+          },
           {
             onClick: this.closeDialog,
             primary: true,
@@ -98,8 +91,8 @@ export default class ModalDialogExamples extends PureComponent {
           }]}
         >
           <p id="speedBoostDescription" className="md-color--secondary-text">
-             Log In to get access to edit events and save them on server.</p>
-          <p className="md-color--secondary-text">Hint! login: xeontem, password: rollingscopes</p>
+            Register to get access to edit events and save them on server. Avatar is not required(optional)
+          </p>
           <TextField
             id="floatingLogin"
             label="Nickname"
@@ -118,6 +111,22 @@ export default class ModalDialogExamples extends PureComponent {
             style={{minWidth: '200px'}}
             onChange={this._storePassword}
             required
+          />
+          <TextField
+            id="floatingPassword"
+            label="Repeat your password"
+            type="password"
+            className="md-cell md-cell--bottom"
+            style={{minWidth: '200px'}}
+            onChange={this._storeRepassword}
+            required
+          />
+          <TextField
+            id="floatingRepassword"
+            label="Enter url to avatar"
+            className="md-cell md-cell--bottom"
+            style={{minWidth: '200px'}}
+            onChange={this._storeAvatar}
           />
         </Dialog>
       </div>
