@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Switch, Route, withRouter } from 'react-router-dom';
+import { Switch, Route, Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from 'react-md/lib/Buttons/Button';
@@ -23,17 +23,13 @@ import { _loadEvents } from './instruments/fetching';
 import gitLogo from './github-logo.svg';
 import './App.css';
 
+import FontIcon from 'react-md/lib/FontIcons';
 
 class App extends PureComponent {
     constructor(props) {
         super(props);
-        this.title = 'Month';
-        this._navItems = inboxListItems.map(item => {
-          if (!item.divider) {
-            item.onClick = () => this._setPage(item);
-          }
-          return item;
-        });
+        this.title = '';
+        this._navItems = inboxListItems;
         this.state = {
             isAdmin: false,
             toast: [],
@@ -45,37 +41,18 @@ class App extends PureComponent {
         this.month = () => (<Month removeToast={this.props.removeToast} _toastMonthReducer={this.props._toastMonthReducer}/>)
     }
 
-    _setPage = (item) => { // eslint-disable-next-line
-        inboxListItems.map(it => {
-          if (!it.divider) it.active = false;
+    _resetColorLink = (e) => {
+        let elements = document.querySelectorAll('[id^=link]');
+        elements.forEach(element => {
+            if(element.classList.contains('active')) element.classList.remove('active');
         });
-        item.active = true;
-        switch(item.key) {
-            case "Month": {
-                this.title = "Month";
-                return;
+
+        e.nativeEvent.path.map(el => {
+            if(el.classList && el.tagName === 'A') {
+
+                el.classList.add('active');
             }
-            case "Week": {
-                this.title = "Week";
-                return;
-            }
-            case "Day": {
-                this.title = "Day";
-                return;
-            }
-            case "Table": {
-                this.title = "Table";
-                return;
-            }
-            case "Agenda": {
-                this.title = "Agenda";
-                return;
-            }
-            default: {
-                this.title = "Month";
-                return;
-            }
-        }
+        });
     }
 
     _handleChange = () => {
@@ -107,11 +84,13 @@ class App extends PureComponent {
 
     render() {
         const mobile = typeof window.orientation !== 'undefined';
-        if(mobile) this.title = '';
+        const pathname = window.location.pathname;
+        if(!mobile && pathname.length > 1) this.title = pathname.slice(1)[0].toUpperCase() + pathname.slice(2);
+         // this.title = '';
         const buttons = ([
             <Avatar src={this.state.avatar} role="presentation" />,
             <Button flat label={this.state.user} />,
-            <Button icon tooltipLabel="log in" onClick={this._openSigninDialog}>assignment</Button>,
+            <Button icon tooltipLabel="sign in" onClick={this._openSigninDialog}>assignment</Button>,
             <Button icon tooltipLabel="log in" onClick={this._openLoginDialog}>assignment_ind</Button>,
             <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>
         ]);
@@ -122,18 +101,17 @@ class App extends PureComponent {
                 contentClassName="md-grid"
                 toolbarTitle={this.title}
                 toolbarActions={buttons}
+                onClick={this._resetColorLink}
             >
-            <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
-            <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
-            <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
-            <Switch>
-                <Route exact path="/month" component={this.month} />
-                <Route path="/week" component={Week} />
-                <Route path="/day" component={Day} />
-                <Route path="/agenda" component={Agenda} />
-                <Route path="/table" component={Table} />
-            </Switch>
+                <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
+                <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
+                <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
 
+                <Route exact path="/month" component={this.month} />
+                <Route exact path="/week" component={Week} />
+                <Route exact path="/day" component={Day} />
+                <Route exact path="/agenda" component={Agenda} />
+                <Route exact path="/table" component={Table} />
             </NavigationDrawer>
         );
     }

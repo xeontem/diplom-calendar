@@ -94,7 +94,7 @@ export default class ModalDialogExamples extends PureComponent {
             Register to get access to edit events and save them on server. Avatar is not required(optional)
           </p>
           <TextField
-            id="floatingLogin"
+            id="floatingSignin"
             label="Nickname"
             lineDirection="center"
             placeholder="name"

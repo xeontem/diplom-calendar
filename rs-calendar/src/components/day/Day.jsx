@@ -211,9 +211,13 @@ export default class Day extends React.Component {
         this.setState({dayIndex, day});
     }
 
-    _toggle = (value) => {
-        if(this.state.value == value) value = 'All';
-        this._filterByType(value);
+    _toggle = (e) => {
+        e.nativeEvent.path.map(el => {
+            if(el.classList && el.classList.contains('action')) {
+                if(this.state.value == el.dataset.type) this._filterByType('All');
+                else this._filterByType(el.dataset.type);
+            }
+        });
     }
 
     _prevMonth = () => {
@@ -355,12 +359,12 @@ export default class Day extends React.Component {
                     </div>
                 </div>
                 <h3>Legend:</h3>
-                <div className="md-grid no-padding box">
-                    <Button raised className={this.state.value === 'deadline' ? "action today" : "action"} onClick={this._toggle.bind(this, 'deadline')}><div className="event-cell deadline"></div><p>deadline</p></Button>
-                    <Button raised className={this.state.value === 'webinar' ? "action today" : "action"} onClick={this._toggle.bind(this, 'webinar')}><div className="event-cell webinar"></div><p>webinar</p></Button>
-                    <Button raised className={this.state.value === 'lecture' ? "action today" : "action"} onClick={this._toggle.bind(this, 'lecture')}><div className="event-cell lecture"></div><p>lecture</p></Button>
-                    <Button raised className={this.state.value === 'workshop' ? "action today" : "action"} onClick={this._toggle.bind(this, 'workshop')}><div className="event-cell workshop"></div><p>workshop</p></Button>
-                    <Button raised className={this.state.value === 'event' ? "action today" : "action"} onClick={this._toggle.bind(this, 'event')}><div className="event-cell event"></div><p>event</p></Button>
+                <div className="md-grid no-padding box" onClick={this._toggle}>
+                    <Button raised data-type="deadline" className={this.state.value === 'deadline' ? "action today" : "action"}><div className="event-cell deadline"></div><p>deadline</p></Button>
+                    <Button raised data-type="webinar" className={this.state.value === 'webinar' ? "action today" : "action"}><div className="event-cell webinar"></div><p>webinar</p></Button>
+                    <Button raised data-type="lecture" className={this.state.value === 'lecture' ? "action today" : "action"}><div className="event-cell lecture"></div><p>lecture</p></Button>
+                    <Button raised data-type="workshop" className={this.state.value === 'workshop' ? "action today" : "action"}><div className="event-cell workshop"></div><p>workshop</p></Button>
+                    <Button raised data-type="event" className={this.state.value === 'event' ? "action today" : "action"}><div className="event-cell event"></div><p>event</p></Button>
                 </div>
             </div>  
         )

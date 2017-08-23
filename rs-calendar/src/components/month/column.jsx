@@ -32,7 +32,7 @@ export default class Column extends React.Component {
 
 	_loadSpeakers() {
 	      let urls = [];
-	      this.props.day.event.speakers.map(id => urls.push('http://128.199.53.150/trainers/' + id));
+	      this.props.day.event.speakers.map(id => urls.push('https://damp-earth-84904.herokuapp.com/trainers/' + id));
 	      Promise.all(urls.map(url => fetch(url)))
 	        .then(resp => Promise.all( resp.map(r => r.json()) ))
 	        .then(speakers => {

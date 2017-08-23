@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -17,11 +17,8 @@ WebFontLoader.load({
 ReactDOM.render((
     <Provider store={store}>
     	<BrowserRouter>
-    	    <div>
-    	        <Route path="/" component={App} />
-    	        <Redirect to="/month"/>
-    	    </div>
-    	</BrowserRouter>
+                <Route path="/" component={App}/>
+        </BrowserRouter>
     </Provider>),
-	document.getElementById('root')
+    document.getElementById('root')
 );

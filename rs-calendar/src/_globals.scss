@@ -16,6 +16,10 @@ a {
 
 }
 
+.active i, .active div {
+  color: $md-indigo-500 !important;
+}
+
 .admin-true {
   display: inline-flex;
   margin: 12% 0 !important;
@@ -25,7 +29,7 @@ a {
 
 .admin-false {
   display: inline-flex;
-  color: grey;
+  color: gray;
 }
 
 
