@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Switch, Route, Link, Redirect } from 'react-router-dom';
+import { Switch, Route, Link, Redirect, DefaultRoute } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from 'react-md/lib/Buttons/Button';
@@ -106,12 +106,11 @@ class App extends PureComponent {
                 <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
                 <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
                 <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
-
-                <Route exact path="/month" component={this.month} />
-                <Route exact path="/week" component={Week} />
-                <Route exact path="/day" component={Day} />
-                <Route exact path="/agenda" component={Agenda} />
-                <Route exact path="/table" component={Table} />
+                    <Route exact path="/month" component={this.month} />
+                    <Route exact path="/week" component={Week} />
+                    <Route exact path="/day" component={Day} />
+                    <Route exact path="/agenda" component={Agenda} />
+                    <Route exact path="/table" component={Table} />
             </NavigationDrawer>
         );
     }

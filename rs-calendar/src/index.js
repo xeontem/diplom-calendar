@@ -17,7 +17,10 @@ WebFontLoader.load({
 ReactDOM.render((
     <Provider store={store}>
     	<BrowserRouter>
-                <Route path="/" component={App}/>
+                <div>
+                <App/>
+                <Redirect exact from="/" to="/month" />
+            </div>
         </BrowserRouter>
     </Provider>),
     document.getElementById('root')
