@@ -97,7 +97,7 @@ export default class EventsList extends React.Component {
           <Toolbar
             colored
             nav={<Button icon onClick={this._closeDialog}>close</Button>}
-            actions={<Button flat label="OK" onClick={this._closeDialog} />}
+            actions={<Button flat children="OK" onClick={this._closeDialog} />}
             title={`${this.props.event.type}: ${this.props.event.title}`}
             fixed
           />

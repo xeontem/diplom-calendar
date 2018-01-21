@@ -72,7 +72,7 @@ export default class Column extends React.Component {
 			               className={this.props.day.event.type}
 			               colored
 			               nav={<Button icon onClick={this._closeDialog}>close</Button>}
-			               actions={<Button flat label="OK" onClick={this._closeDialog} />}
+			               actions={<Button flat children="OK" onClick={this._closeDialog} />}
 			               title={`${this.props.day.event.type.toUpperCase()}: ${this.props.day.event.title.toUpperCase()}`}
 			               fixed
 			            />

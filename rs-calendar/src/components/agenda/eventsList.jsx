@@ -62,7 +62,7 @@ export default class EventsList extends React.Component {
                         colored
                         className={this.props.event.type}
                         nav={<Button icon onClick={this._closeDialog}>close</Button>}
-                        actions={<Button flat label="OK" onClick={this._closeDialog} />}
+                        actions={<Button flat children="OK" onClick={this._closeDialog} />}
                         title={`${this.props.event.type.toUpperCase()}: ${this.props.event.title.toUpperCase()}`}
                         fixed/>
                     <Card event={this.props.event} speakers={this.state.speakers} mobile={this.props.mobile}/>

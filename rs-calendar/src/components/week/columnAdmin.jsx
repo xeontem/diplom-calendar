@@ -102,10 +102,10 @@ export default class Column extends React.Component {
 		let	marginBottom = 28 + (23 - endHours) * 55;
 			marginBottom -= endMins * 0.9;
 			if(startDate !== endDate) marginBottom = -20;
-		let actions = [<Button flat label="Cancel" onClick={this._closeDiscard} />, <Button flat label="Save" onClick={this._closeSave} />];
+		let actions = [<Button flat children="Cancel" onClick={this._closeDiscard} />, <Button flat children="Save" onClick={this._closeSave} />];
 		let dialog = null;
 		if(this.props.mobile) {
-			actions = [<Button flat label="Back" onClick={this._togglePropmpt} />];
+			actions = [<Button flat children="Back" onClick={this._togglePropmpt} />];
 			dialog = <Dialog
 			          id="promptaction"
 			          visible={this.state.promptVisibility}

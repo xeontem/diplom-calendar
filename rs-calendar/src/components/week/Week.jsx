@@ -370,7 +370,7 @@ export default class Week extends React.Component {
                 <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
                     <div className="navigation">
                         <Button className="navigate-button" onClick={this._prevWeek} icon>navigate_before</Button>
-                        <Button raised className="action date-container" label={`${this.state.curMonth} ${this.state.curYear}, ${this.state.weekToShow.weekCounter+1} week`} />
+                        <Button raised className="action date-container" children={`${this.state.curMonth} ${this.state.curYear}, ${this.state.weekToShow.weekCounter+1} week`} />
                         <Button className="navigate-button" onClick={this._nextWeek} icon>navigate_next</Button>
                     </div>
                         

@@ -331,7 +331,7 @@ export default class Day extends React.Component {
                 <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
                     <div className="navigation">
                         <Button className="navigate-button" onClick={this._prevDay} icon>navigate_before</Button>
-                        <Button raised className="action date-container" label={`${this.state.day.date.getDate()} ${this._calculateMonthes(this.state.day.date.getMonth())} ${this.state.day.date.getFullYear()}, ${this.state.day.weekday}`} />
+                        <Button raised className="action date-container" children={`${this.state.day.date.getDate()} ${this._calculateMonthes(this.state.day.date.getMonth())} ${this.state.day.date.getFullYear()}, ${this.state.day.weekday}`} />
                         <Button className="navigate-button" onClick={this._nextDay} icon>navigate_next</Button>
                     </div>
                         

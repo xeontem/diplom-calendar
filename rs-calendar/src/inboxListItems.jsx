@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import FontIcon from 'react-md/lib/FontIcons';
 import ListItem from 'react-md/lib/Lists/ListItem';
 
-let selectLink = (link) => {
-        if(link === window.location.pathname) return true;
-        return false;
-    }
+const selectLink = link => link === window.location.pathname;
 
 export default [
   <Link id="link1" className={selectLink('/month') && 'active'} key="000" to="/month"><ListItem leftIcon={<FontIcon>date_range</FontIcon>} primaryText="Month" /></Link>,

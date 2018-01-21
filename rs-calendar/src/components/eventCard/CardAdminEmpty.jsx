@@ -290,10 +290,10 @@ export default class Empty extends React.Component {
 	}
 
 	render() {
-		let actions = [<Button flat label="Cancel" onClick={this._closeDiscard} />, <Button flat label="Save" onClick={this._closeSave} />];
+		let actions = [<Button flat children="Cancel" onClick={this._closeDiscard} />, <Button flat children="Save" onClick={this._closeSave} />];
 		let dialog = null;
 		if(this.props.mobile) {
-			actions = [<Button flat label="Back" onClick={this._togglePropmpt} />];
+			actions = [<Button flat children="Back" onClick={this._togglePropmpt} />];
 			dialog = <Dialog
 			          id="promptaction"
 			          visible={this.state.promptVisibility}
@@ -489,7 +489,7 @@ export default class Empty extends React.Component {
 											    size={8}
 											    customSize="title"
 										    />    
-											<Button className="md-cell--right" flat label="Link" href={resource.resource} target="_blank"/>
+											<Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
 										</div>
 										<Divider/>
 									</div>

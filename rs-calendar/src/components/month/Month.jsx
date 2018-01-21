@@ -205,18 +205,18 @@ export default class Month extends React.Component {
 
     _rerender = () => {this.setState({addNew: true})}
 
-	render() {
+    render() {
         const mobile = typeof window.orientation !== 'undefined';
-		return (
-			<div className="agenda-wrapper">
+        return (
+            <div className="agenda-wrapper">
                 {globalScope.isAdmin && <CardAdminEmpty month={this} _closeSave={_closeSaveMonth} eventTypes={this.state.eventTypes} mobile={mobile}/> }
                 {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
-				{this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
+                {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
                 {!this.state.fetching && <Snackbar toasts={this.props._toastMonthReducer.get('toasts')} autohide={true} onDismiss={this._removeToast}/>}
                 <h3>Events Selector:</h3>
-                <div className="md-grid no-padding box">    
+                <div className="md-grid no-padding box">
                     <DatePicker
-                        id="local-ru-RU"
+                        id="local-ru-RU-from"
                         label="Select from date"
                         locales="ru-RU"
                         className="md-cell"
@@ -224,7 +224,7 @@ export default class Month extends React.Component {
                         autoOk
                     />
                     <DatePicker
-                        id="local-ru-RU"
+                        id="local-ru-RU-"
                         label="Select to date"
                         locales="ru-RU"
                         className="md-cell"
@@ -272,7 +272,7 @@ export default class Month extends React.Component {
                 <div style={{maxWidth: 750, margin: 'auto'}}>
                     <div className="navigation">
                         <Button className="navigate-button" onClick={this._prevMonth} icon>navigate_before</Button>
-                        <Button raised className="action date-container" label={`${this.state.curMonth} ${this.state.curYear}`} />
+                        <Button raised className="action date-container" children={`${this.state.curMonth} ${this.state.curYear}`} />
                         <Button className="navigate-button" onClick={this._nextMonth} icon>navigate_next</Button>
                     </div>
                     <div className="header-week">

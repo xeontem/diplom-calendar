@@ -429,7 +429,7 @@ export default class ExpandableMediaCard extends React.Component {
 											    size={8}
 											    customSize="title"
 										    />    
-											<Button className="md-cell--right" flat label="Link" href={resource.resource} target="_blank"/>
+											<Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
 										</div>
 										<Divider/>
 									</div>
