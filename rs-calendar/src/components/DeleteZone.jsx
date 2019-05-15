@@ -1,10 +1,5 @@
 import React, { PureComponent } from 'react';
-import Button from 'react-md/lib/Buttons/Button';
 import Snackbar from 'react-md/lib/Snackbars';
-import TextField from 'react-md/lib/TextFields';
-import SelectionControl from 'react-md/lib/SelectionControls/SelectionControl';
-
-
 
 export default class SimpleExamples extends PureComponent {
   constructor(props) {
@@ -49,10 +44,10 @@ export default class SimpleExamples extends PureComponent {
 
   render() {
     return (
-        <Snackbar 
-        toasts={this.state.toasts} 
-        autohide={false} 
-        onDismiss={this._removeToast} 
+        <Snackbar
+        toasts={this.state.toasts}
+        autohide={false}
+        onDismiss={this._removeToast}
         onDragEnter={this.handleDragEnterDeleteZone}
         onDragLeave={this.handleDragLeaveDeleteZone}
         onDragOver={this.handleDragOver}

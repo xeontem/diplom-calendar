@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
 import Dialog from 'react-md/lib/Dialogs';
-import Button from 'react-md/lib/Buttons/Button';
 import TextField from 'react-md/lib/TextFields';
-import FileInput from 'react-md/lib/FileInputs';
 import md5 from 'md5';
 
 import globalScope from '../../globalScope';
@@ -12,7 +10,7 @@ export default class ModalDialogExamples extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       visible: this.props.visible,
       login: '',
       password: '',
@@ -23,7 +21,7 @@ export default class ModalDialogExamples extends PureComponent {
   componentWillReceiveProps(nextProps) {
     this.setState({visible: nextProps.visible});
   }
-  
+
   closeDialog = () => {
     this.props.app.setState({ visible: false });
   };
@@ -55,7 +53,7 @@ export default class ModalDialogExamples extends PureComponent {
     })
     .then(res => res.json())
     .then(res => {
-      let user = res.isAdmin ? this.state.login : 'user'; 
+      let user = res.isAdmin ? this.state.login : 'user';
       let avatar = globalScope.defaultAvatar;
       if(res.avatar) avatar = res.avatar;
       globalScope.isAdmin = res.isAdmin;
@@ -64,7 +62,7 @@ export default class ModalDialogExamples extends PureComponent {
         visible: false,
         toast: [{text: res.message}],
         user,
-        avatar 
+        avatar
       });
     });
   }

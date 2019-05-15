@@ -1,18 +1,15 @@
 import React, { PureComponent } from 'react';
 import Dialog from 'react-md/lib/Dialogs';
-import Button from 'react-md/lib/Buttons/Button';
 import TextField from 'react-md/lib/TextFields';
-import FileInput from 'react-md/lib/FileInputs';
 import md5 from 'md5';
 
-import globalScope from '../../globalScope';
 import { sendToBackend } from '../../instruments/fetching';
 
 export default class ModalDialogExamples extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
       visible: this.props.visible,
       login: '',
       password: '',
@@ -24,7 +21,7 @@ export default class ModalDialogExamples extends PureComponent {
   componentWillReceiveProps(nextProps) {
     this.setState({visible: nextProps.visible});
   }
-  
+
   closeDialog = () => {
     this.props.app.setState({ signInvisible: false });
   };
@@ -48,7 +45,7 @@ export default class ModalDialogExamples extends PureComponent {
   }
 
   _signin = () => {
-    if(this.state.password == this.state.repassword) {
+    if(this.state.password === this.state.repassword) {
       sendToBackend({
         signin: true,
         login: this.state.login,

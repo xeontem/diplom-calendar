@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { logger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
+import { routerReducer } from 'react-router-redux'
 import toastMonthReducer from './reducers/toastMonthReducer';
 
 const combiner = combineReducers({

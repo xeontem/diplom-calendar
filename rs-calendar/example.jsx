@@ -152,27 +152,3 @@ export default class SimpleExample extends PureComponent {
     );
   }
 }
-The NavigationDrawer is just a combination of the Drawer component and the Toolbar component. It is mainly used as a full page layout manager and it also automatically transitions any new children with the md-cross-fade animation. This works really well with react-router.
-OPEN THE DEMO
-This Website's Drawer
-code
-You can change this app's navigation drawer to the different types. I was lazy in this demo so if you change from a permanent drawer to a temporary or persistent, you might run into some visibility problems. Just make sure that when you switch to the permanent drawer or navigate away from this page, you have toggled the drawer open. The Drawer component was not designed to have its type switched out side of media queries. In addition, if you change from emulating a mobile device, reload the page. Like I said.. I was lazy. Sorry.
-Drawer Type
-full-height
-arrow_drop_down
-arrow_back
-Previous
-Menus
-Next
-Papers
-arrow_forward
-Contact
-
-mail
-MIKKEL LAURSEN
-Contributing
-
-This project is currently developed by a single person. Feel free to contribute!
-
-GITHUB
-Current version: 1.0.15
