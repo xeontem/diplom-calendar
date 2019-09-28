@@ -1,5 +1,5 @@
 ## Artsiom Kukharev (xeontem)
 
-### RS-Calendar with user view and admin editor
+### Diplom-Calendar with user view and admin editor
 
-## [Link ](http://xeontem-md-calendar.bitballoon.com) to calendar
+## [Link ](https://diplom-calendar.firebaseapp.com) to calendar
