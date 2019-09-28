@@ -1,0 +1,490 @@
+// Can't use the nice '~react-md/src/scss/react-md' since this isn't being bundled with webpack
+@import '../node_modules/react-md/src/scss/react-md';
+
+// Variable overrides
+
+$md-primary-color: $md-indigo-500;
+$md-secondary-color: $md-lime-a-400;
+
+//colors
+$black_87: rgba(0, 0, 0, 0.87);
+
+a {
+  display: block;
+  text-decoration: none;
+  color: $black_87;
+
+}
+
+.active i, .active div {
+  color: $md-indigo-500 !important;
+}
+
+.admin-true {
+  display: inline-flex;
+  margin: 12% 0 !important;
+  color: $md-lime-a-400;
+
+}
+
+.admin-false {
+  display: inline-flex;
+  color: gray;
+}
+
+
+
+.navigation {
+  display: flex;
+}
+
+.navigate-button {
+  margin: 15px auto !important;
+}
+
+.md-text--theme-primary a {
+  color: $md-primary-color;
+}
+
+.action {
+    display: block !important;
+    width: 160px;
+    height: 40px !important;
+    margin: 15px auto !important;
+}
+
+.date-container {
+    cursor: auto !important;
+}
+
+//------------------------- MONTH --------------------------------
+.header-month {
+    border: 1px solid #ddd;
+    height: 40px;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.column-month {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 75px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.body-month {
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-around;
+}
+
+.body-month:hover {
+  background: #eee;
+}
+
+.table-cell {
+  margin: auto 0;
+  padding: 0px !important;
+  transition: all 0.5s;
+}
+.disabled-cell {
+  opacity: 0.5;
+}
+
+
+//------------------------- WEEK ---------------------------------
+.header-week {
+    margin-bottom: -1px;
+    border: 1px solid #ddd;
+    height: 55px;
+    padding: 10px 0;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-around;
+}
+
+.column-week {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 40px;
+}
+
+.event-column-week {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+.event-column-week:hover, .event-column-day:hover {
+  box-shadow: 0px 0px 5px 1px black;
+}
+
+.body-week {
+    position: relative;
+    height: 1340px;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border: 1px solid #ddd;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    overflow: hidden;
+}
+
+.body-week:hover {
+  background: #eee;
+}
+
+
+.time {
+  width: 40px;
+}
+
+.current-time {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: $md-primary-color;
+    transition: all 2s;
+    transition-timing-function: cubic-bezier(0.82, 0.05, 0.26, 1.17);
+    z-index: 10;
+}
+
+
+.dot-current-time {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $md-primary-color;
+    margin-top: -4px;
+    margin-left: -5px;
+}
+
+.time > div {
+    width: 50px;
+    height: 50px;
+    border-left: 1px solid #ddd;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.time-divider {
+    width: 10000%;
+    height: 1px;
+    background: #ddd;
+}
+
+.today-week-day {
+    width: 45px;
+    height: 45px;
+    box-shadow: 0px 0px 5px 1px #333;
+    margin-top: -5px;
+    border-radius: 5px;
+    padding-top: 3px;
+}
+
+.another-month {
+  // background: grey !important;
+}
+
+.disabled p{
+  color: grey !important;
+}
+
+.week-day-number {
+    display: block;
+    margin: -3px;
+    font-size: 14pt;
+}
+
+//------------------------- DAY ----------------------------------
+
+.header-day {
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    height: 55px;
+    /* padding: 10px 0; */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.body-day {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    height: 1340px;
+}
+
+.event-column-day {
+    color: rgba(0, 0, 0, 0.54);
+    text-align: center;
+    width: 20%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.freedom {
+    position: absolute;
+    width: 180px;
+    margin: 0 36%;
+    display: flex;
+    flex-direction: column;
+}
+
+.agenda {
+    margin-right: 35%;
+    font-size: 14pt;
+}
+
+//------------------------- AGENDA -------------------------------
+.agenda-wrapper {
+  width: 100%;
+}
+
+.chip {
+  margin: 5px;
+}
+
+.loading-bar {
+    position: fixed !important;
+    width: 100% !important;
+    // top: 47px;
+    z-index: 15;
+    left: 0px;
+}
+
+//------------------------- EVENTS --------------------------------
+
+.event-cell {
+  margin: 0 auto;
+  padding-bottom: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.deadline {
+  background: $md-pink-500 !important;
+}
+
+.event {
+  background: $md-green-500 !important;
+}
+
+.lecture {
+  background: $md-secondary-color !important;
+}
+.webinar {
+  background: $md-orange-500 !important;
+}
+.workshop {
+  background: $md-purple-500 !important;
+}
+
+.day-number {
+  margin: 0;
+  font-size: 16pt;
+}
+
+//---------------------------------
+
+.today {
+	// color: white !important;
+    background: $md-primary-color !important;
+}
+
+.today p {
+	color: white !important;
+}
+
+.box {
+  justify-content: space-around;
+  border: 1px solid #ddd;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+//---------------------- Card -----------------------------
+
+.iframe-wrapper {
+  margin-bottom: 20px;
+}
+
+.move-on-top:hover {
+  z-index: 10;
+}
+
+//---------------------- ADMIN MENU -----------------------
+
+.container {
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-selector {
+  // margin: 10px;
+}
+
+.text-title {
+    // font-size: 20px !important;
+}
+
+.title-selector hr {
+  display: none;
+}
+
+.title-selector div {
+  margin: 0;
+}
+
+.text-title hr {
+  background: white !important;
+}
+
+.text-title input, .text-title i {
+  font-size: 20px;
+}
+
+.title-selector span {
+  font-size: 20px;
+}
+
+.name-field {
+  margin: 0;
+  color: white;
+  font-size: 20px;
+}
+
+.resource-field {
+    margin: 17px 0;
+    font-size: 20px;
+}
+
+section:first-child {
+  width: 100%;
+}
+
+.location-wrapper > div:first-child {
+  width: 100%;
+} 
+
+.container-resource {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.speaker-container {
+  position: relative;
+}
+
+.speaker-avatar:hover {
+  opacity: 0;
+}
+
+.minus {
+width: 25px;
+    height: 5px;
+    background: red;
+    position: absolute;
+    top: 18px;
+    z-index: 0;
+    left: 7px;
+}
+.drag-up {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 40px;
+  // background: red;
+  border-radius: 5px;
+  cursor: n-resize;
+  z-index: 10;
+}
+
+.drag-down {
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    bottom: 0px;
+    border-radius: 5px;
+    // background: red;
+    cursor: n-resize;
+    z-index: 10;
+}
+
+
+.drag-down-icon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: rotate(270deg);
+    font-size: 32pt !important;
+    color: white !important;
+}
+
+.drag-up-icon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  transform: rotate(90deg);
+    font-size: 32pt !important;
+    color: white !important;
+}
+
+.show-changed-starttime {
+    position: absolute;
+    top: -38px;
+    height: 20px;
+    transition: all 0.5s;
+    left: 0;
+    right: 0;
+}
+
+.show-changed-endtime {
+    position: absolute;
+    bottom: -21px;
+    height: 20px;
+    transition: all 0.5s;
+    left: 0;
+    right: 0;
+}
+
+.over, .over-fromP {
+  border: 2px solid $md-primary-color !important;
+}
+
+@media (max-width: 576px) {
+
+  .table-cell {
+      width: 12vw !important;
+      height: 12vw !important;
+  }
+}

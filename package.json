@@ -1,0 +1,40 @@
+{
+  "name": "md-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "rs-calendar-by-xeontem",
+  "dependencies": {
+    "history": "^4.7.2",
+    "immutable": "^3.8.1",
+    "md5": "^2.2.1",
+    "modernizr": "^3.5.0",
+    "node-sass": "^4.7.2",
+    "npm-run-all": "^4.0.2",
+    "react": "^15.5.4",
+    "react-addons-css-transition-group": "^15.5.2",
+    "react-addons-transition-group": "^15.5.2",
+    "react-dom": "^15.5.4",
+    "react-md": "^1.0.15",
+    "react-redux": "^5.0.5",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "next",
+    "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
+    "webfontloader": "^1.6.27"
+  },
+  "devDependencies": {
+    "react-scripts": "0.9.5"
+  },
+  "scripts": {
+    "build-css": "node-sass src/ -o src/",
+    "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
+    "start-js": "react-scripts start",
+    "start": "npm-run-all -p watch-css start-js",
+    "build": "npm run build-css && react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "eslint-fix": "eslint --fix *.js,*.jsx"
+  }
+}
