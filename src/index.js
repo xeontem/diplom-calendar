@@ -5,10 +5,7 @@ import App from './App';
 import './index.css';
 import WebFontLoader from 'webfontloader';
 import store from './store';
-import { createBrowserHistory } from 'history';
-import { ConnectedRouter } from 'react-router-redux';
 
-const history = createBrowserHistory()
 WebFontLoader.load({
   google: {
   families: ['Roboto:300,400,500,700', 'Material Icons'],
@@ -17,9 +14,7 @@ WebFontLoader.load({
 
 ReactDOM.render((
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <App/>
-    </ConnectedRouter>
+    <App/>
   </Provider>),
   document.getElementById('root')
 );

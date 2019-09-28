@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from 'react-md/lib/Buttons/Button';
@@ -24,6 +24,13 @@ import FontIcon from 'react-md/lib/FontIcons';
 import ListItem from 'react-md/lib/Lists/ListItem';
 
 const selectLink = link => link === window.location.pathname;
+const pages = [
+  { pageName: 'month', icon: 'date_range' },
+  { pageName: 'week', icon: 'event' },
+  { pageName: 'day', icon: 'content_paste' },
+  { pageName: 'table', icon: 'list' },
+  { pageName: 'agenda', icon: 'view_agenda' }
+];
 
 class App extends PureComponent {
   constructor(props) {
@@ -47,11 +54,11 @@ class App extends PureComponent {
       if(element.classList.contains('active')) element.classList.remove('active');
     });
 
-    e.nativeEvent.path.forEach(el => {
-      if(el.classList && el.tagName === 'A') {
-        el.classList.add('active');
-      }
-    });
+    // e.nativeEvent.path.forEach(el => {
+    //   if(el.classList && el.tagName === 'A') {
+    //     el.classList.add('active');
+    //   }
+    // });
   }
 
   _handleChange = () => {
@@ -81,10 +88,18 @@ class App extends PureComponent {
     this.setState({signInvisible});
   }
 
+  routerLinkHandler = name => e => {
+    this.refs[`LINK_${name}`].handleClick(e);
+  }
+
   render() {
     const mobile = typeof window.orientation !== 'undefined';
     const pathname = window.location.pathname;
-    if(!mobile && pathname.length > 1) this.title = pathname.slice(1)[0].toUpperCase() + pathname.slice(2);
+
+    if (!mobile && pathname.length > 1) {
+      this.title = pathname.slice(1)[0].toUpperCase() + pathname.slice(2);
+    }
+
     const buttons = [
       <Avatar src={this.state.avatar} role="presentation" />,
       <Button flat children={this.state.user} />,
@@ -93,43 +108,40 @@ class App extends PureComponent {
       <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>
     ];
 
-    const links = [
-      <Link className={selectLink('/month') && 'active'} key="000" to="/month">
-        <ListItem leftIcon={<FontIcon>date_range</FontIcon>} primaryText="Month" />
-      </Link>,
-      <Link className={selectLink('/week') && 'active'} key="001" to="/week">
-        <ListItem leftIcon={<FontIcon>event</FontIcon>} primaryText="Week" />
-      </Link>,
-      <Link className={selectLink('/day') && 'active'} key="002" to="/day">
-        <ListItem leftIcon={<FontIcon>content_paste</FontIcon>} primaryText="Day" />
-      </Link>,
-      <Link className={selectLink('/table') && 'active'} key="003" to="/table">
-        <ListItem leftIcon={<FontIcon>list</FontIcon>} primaryText="Table" />
-      </Link>,
-      <Link className={selectLink('/agenda') && 'active'} key="004" to="/agenda">
-        <ListItem leftIcon={<FontIcon>view_agenda</FontIcon>} primaryText="Agenda" />
-      </Link>,
-      { key: 'divider', divider: true }
-    ];
+    const links = pages.map(({ pageName, icon }, i) => (
+      <ListItem
+        key={pageName}
+        className={selectLink(`/${pageName}`) ? 'active' : ''}
+        leftIcon={<FontIcon>{icon}</FontIcon>}
+        onClick={this.routerLinkHandler(pageName.toUpperCase())}
+        primaryText={`${pageName}`} />
+    )).concat({ key: 'divider', divider: true });
+
     return (
-      <NavigationDrawer
-        navItems={links}
-        drawerTitle="Select view:"
-        contentClassName="md-grid"
-        toolbarTitle={this.title}
-        toolbarActions={buttons}
-        onClick={this._resetColorLink}>
-        <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
-        <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
-        <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
-          <Switch>
-            <Route path="/month" component={this.month} />
-            <Route path="/week" component={Week} />
-            <Route path="/day" component={Day} />
-            <Route path="/agenda" component={Agenda} />
-            <Route path="/table" component={Table} />
-          </Switch>
-      </NavigationDrawer>
+        <NavigationDrawer
+          navItems={links}
+          drawerTitle="Select view:"
+          contentClassName="md-grid"
+          toolbarTitle={this.title}
+          toolbarActions={buttons}
+          onClick={this._resetColorLink}>
+          <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
+          <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
+          <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
+
+          <BrowserRouter>
+          <div>
+            {pages.map(({ pageName }) => <Link ref={`LINK_${pageName.toUpperCase()}`} key={pageName} to={`/${pageName}`} />)}
+            <Switch>
+              <Route path="/month" component={this.month} />
+              <Route path="/week" component={Week} />
+              <Route path="/day" component={Day} />
+              <Route path="/agenda" component={Agenda} />
+              <Route path="/table" component={Table} />
+            </Switch>
+          </div>
+          </BrowserRouter>
+        </NavigationDrawer>
     );
   }
 }
