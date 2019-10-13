@@ -1,14 +1,4 @@
-# xeontem-diplom-calendar
-
-- **Name:** Artsiom Kukharev (Артем Кухарев)
-
-- **Age:** 28
-
-- **E-Mail:** xeontem@gmail.com
-
-- **Univer:** BSUIR
-
-- **Graduate:** current
+## Artsiom Kukharev (xeontem)
 
 ### RS-Calendar with user view and admin editor
 
