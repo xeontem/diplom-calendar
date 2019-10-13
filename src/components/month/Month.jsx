@@ -1,83 +1,74 @@
 import React from 'react';// eslint-disable-next-line
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import LinearProgress from 'react-md/lib/Progress/LinearProgress';
-import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
 import SelectField from 'react-md/lib/SelectFields';
 import Button from 'react-md/lib/Buttons';
 
-import Column from './column';
-import ColumnAdmin from './columnAdmin';
-import EmptyColumn from './emptyColumn';
-import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import DeleteZone from '../DeleteZone';
 
+import { EVENT_TYPES } from '../../instruments/constants';
 import { handleDropDeleteZone } from '../../instruments/dragMonth';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
-import { _closeSaveMonth } from '../../instruments/emptyEventOpenClose';
+import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
 
-export default class Month extends React.Component {
+export class Month extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       addNew: false,
       dateToShow: Date.now(),
-      avalMonthes: [{name: 'January', abbreviation: 'Jan'},
-              {name: 'February', abbreviation: 'Feb'},
-              {name: 'March', abbreviation: 'Mar'},
-              {name: 'April', abbreviation: 'Apr'},
-              {name: 'May', abbreviation: 'May'},
-              {name: 'June', abbreviation: 'Jun'},
-              {name: 'July', abbreviation: 'Jul'},
-              {name: 'August', abbreviation: 'Aug'},
-              {name: 'September', abbreviation: 'Sep'},
-              {name: 'October', abbreviation: 'Oct'},
-              {name: 'November', abbreviation: 'Nov'},
-              {name: 'December', abbreviation: 'Dec'}],
+      avalMonthes: [
+        { name: 'January', abbreviation: 'Jan' },
+        { name: 'February', abbreviation: 'Feb' },
+        { name: 'March', abbreviation: 'Mar' },
+        { name: 'April', abbreviation: 'Apr' },
+        { name: 'May', abbreviation: 'May' },
+        { name: 'June', abbreviation: 'Jun' },
+        { name: 'July', abbreviation: 'Jul' },
+        { name: 'August', abbreviation: 'Aug' },
+        { name: 'September', abbreviation: 'Sep' },
+        { name: 'October', abbreviation: 'Oct' },
+        { name: 'November', abbreviation: 'Nov' },
+        { name: 'December', abbreviation: 'Dec' }
+      ],
       avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
       curMonth: (new Date()).toString().slice(4, 7),
       curYear: (new Date()).getFullYear(),
-      appliedEventsMonth: this._calculateMonthArr(),
-      eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
-      events: [],
-      filtered: [],
+      appliedEventsMonth: this._applyEventsOnDates(this.props.events),
+      filtered: this.props.events,
       fetching: true,
       toasts: [{text: "events successfully loaded"}],
       toastsToDeleteZone: [],
       value: 'All',
       from: 'All',
       to: 'All'
-    }
+    };
+
     this._filterByType = _filterByType.bind(this);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
     this._removeToast = this.props.removeToast;
+  }
 
-    _loadEvents.call(this, '/events')
-      .then(events => {
-        let appliedEventsMonth = this._applyEventsOnDates(events);
-        this.setState({
-          events,
-          filtered: events,
-          appliedEventsMonth,
-          fetching: false
-        });
-      });
+  componentDidUpdate(prevProps) {
+    if (prevProps.events.length !== this.props.events.length) {
+      const appliedEventsMonth = this._applyEventsOnDates(this.props.events);
+      this.setState({ appliedEventsMonth });
+    }
   }
 
   _applyEventsOnDates(events, date = Date.now()) {
     let month = this._calculateMonthArr(date);
     events.forEach((event, eventIndex) => {
-      let eventDate = new Date(event.start);
+      let eventDate = new Date(event.start.seconds * 1000);
       month.forEach((week, weekIndex) => {
         week.forEach((day, dayIndex) => {
           if(eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)){
             day.event = event;
             day.eventIndex = eventIndex;
           };
-        })
-      })
+        });
+      });
     });
     return month;
   }
@@ -145,21 +136,10 @@ export default class Month extends React.Component {
   }
 
   _progressBarShower = () => {
-    const mobile = typeof window.orientation !== 'undefined';
-    let top = 47;
-    let opacity = this.state.notLoaded;
-    if(mobile) top = 40;
-    return {opacity, top};
+    const top = this.props.isMobile ? 40 : 47;
+    const opacity = this.state.notLoaded;
+    return { opacity, top };
   }
-
-  _snackBarShower = () => {
-    if(!this.state.notLoaded) return <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>;
-  }
-
-
-  // _removeToast = () => {
-   //   this.setState({ toasts: [] });
-  // }
 
   _changeYear = (curYear) => {
     let dateToShow = new Date(this.state.dateToShow).toString();
@@ -206,14 +186,18 @@ export default class Month extends React.Component {
 
   _rerender = () => {this.setState({addNew: true})}
 
+  _openDialog = (event, eventIndex) => e => {
+    if (event) {
+      const [{ pageX, pageY }] = e.changedTouches || [e];
+      this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
+    }
+  }
+
   render() {
-    const mobile = typeof window.orientation !== 'undefined';
     return (
       <div className="agenda-wrapper">
-        {globalScope.isAdmin && <CardAdminEmpty month={this} _closeSave={_closeSaveMonth} eventTypes={this.state.eventTypes} mobile={mobile}/> }
-        {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
-        {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-        {!this.state.fetching && <Snackbar toasts={this.props._toastMonthReducer.get('toasts')} autohide={true} onDismiss={this._removeToast}/>}
+
+        {this.props.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone(this)}/> }
         <h3>Events Selector:</h3>
         <div className="md-grid no-padding box">
           <DatePicker
@@ -237,7 +221,7 @@ export default class Month extends React.Component {
             label="Select type of event"
             value={this.state.value}
             placeholder="Some State"
-            menuItems={this.state.eventTypes}
+            menuItems={EVENT_TYPES}
             onChange={this._filterByType}
             errorText="A state is required"
             className="md-cell"
@@ -277,38 +261,34 @@ export default class Month extends React.Component {
             <Button className="navigate-button" onClick={this._nextMonth} icon>navigate_next</Button>
           </div>
           <div className="header-week">
-            <div className="column-month">{mobile ? 'Mon' : 'Monday'}</div>
-            <div className="column-month">{mobile ? 'Tue' : 'Tuesday'}</div>
-            <div className="column-month">{mobile ? 'Wed' : 'Wednesday'}</div>
-            <div className="column-month">{mobile ? 'Thu' : 'Thursday'}</div>
-            <div className="column-month">{mobile ? 'Fri' : 'Friday'}</div>
-            <div className="column-month">{mobile ? 'Sat' : 'Saturday'}</div>
-            <div className="column-month">{mobile ? 'Sun' : 'Sunday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Mon' : 'Monday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Tue' : 'Tuesday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Wed' : 'Wednesday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Thu' : 'Thursday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Fri' : 'Friday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Sat' : 'Saturday'}</div>
+            <div className="column-month">{this.props.isMobile ? 'Sun' : 'Sunday'}</div>
           </div>
           { this.state.appliedEventsMonth.map((week, i) =>
             <div className="body-month" key={i}>
               {week.map((day, index) =>
-                day.event ? globalScope.isAdmin ?
-                  <ColumnAdmin
-                    month={this}
-                    eventTypes={this.state.eventTypes}
-                    key={index*30}
-                    eventIndex={day.eventIndex}
-                    day={day}
-                    event={day.event}
-                    index={index}
-                    mobile={mobile}/> :
-                  <Column
-                    eventTypes={this.state.eventTypes}
-                    key={index*30}
-                    day={day}
-                    index={index}
-                    mobile={mobile}/>
-                  : <EmptyColumn
-                      month={this}
-                      day={day}
-                      key={index*30}/>
-                )}
+                <Button
+                  key={index*30}
+                  className={`table-cell ${day.event ? day.event.type : ''} ${day.today ? 'today' : ''} ${day.isCurrentMonth ? '' : 'disabled-cell'}`}
+                  onDragStart={handleDragStart(this, day.event, day.eventIndex)}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop(this, day.curDate)}
+                  onDragEnd={handleDragEnd(this, this.props.isMobile)}
+                  onClick={this._openDialog(day.event, day.eventIndex)}
+                  floating
+                  draggable={true}
+                >
+                  <p className="day-number">{day.dayNumber}</p>
+                  {day.event && day.today && <div className={`event-cell ${day.event.type}`}></div>}
+                </Button>
+              )}
             </div>)
           }
         </div>
@@ -324,4 +304,3 @@ export default class Month extends React.Component {
     )
   }
 }
-

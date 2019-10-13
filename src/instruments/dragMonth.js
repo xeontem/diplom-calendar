@@ -3,13 +3,15 @@ import { sendToBackend } from './fetching';
 let initElementEvent = null;
 let initElementEventIndex = 0;
 
-export function handleDragStart(month, e) {
+export const handleDragStart = (component, event, eventIndex) => e => {
   e.target.style.opacity = '0.4';  // this / e.target is the source node.
   e.target.style.width = '45px';
   e.target.style.height = '45px';
-  initElementEvent = this.props.day.event;
-  initElementEventIndex = this.props.eventIndex;
-  if(!month.state.toastsToDeleteZone[0]) month.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
+  initElementEvent = event;
+  initElementEventIndex = eventIndex;
+  if(!component.state.toastsToDeleteZone.length) {
+    component.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
+  }
 }
 
 export function handleDragOver(e) {
@@ -44,50 +46,50 @@ export function handleDragLeave(e) {
   }
 }
 
-export function handleDrop(e) {
+export const handleDrop = (component, curDate) => e => {
   // this / e.target is current target element.
 
   if (e.stopPropagation) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
-  
-  initElementEvent.start = this.props.day.curDate;
 
-  let filtered = this.props.month.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(this.props.month.state.filtered.slice(initElementEventIndex+1));
+  initElementEvent.start = curDate;
+
+  let filtered = component.state.filtered.slice(0, initElementEventIndex);
+  filtered = filtered.concat(component.state.filtered.slice(initElementEventIndex+1));
   filtered.push(initElementEvent);
-  let appliedEventsMonth = this.props.month._applyEventsOnDates(filtered, this.props.month.state.dateToShow);
-  this.props.month.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
+  let appliedEventsMonth = component._applyEventsOnDates(filtered, component.state.dateToShow);
+  component.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
   sendToBackend(initElementEvent);
   return false;
 }
 
-export function handleDragEnd(month, e) {
+export const handleDragEnd = (component, isMobile) => e => {
   // this/e.target is the source node.
   e.target.style.opacity = '1';
-  e.target.style.width = '56px';
-  e.target.style.height = '56px';
+  e.target.style.width = isMobile ? '48px' : '56px';
+  e.target.style.height = isMobile ? '48px' : '56px';
   // e.target.classList.remove('over');
-  month.setState({toastsToDeleteZone: []});
+  component.setState({toastsToDeleteZone: []});
 }
 
 
 //------------------ delete handlers --------------------
 
-export function handleDropDeleteZone(month, e) {
+export const handleDropDeleteZone = component => e => {
   // this / e.target is current target element.
 
   if (e.stopPropagation) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
-  
+
   if(e.target.id === "snackbarAlert") {
-    let event = month.state.filtered[initElementEventIndex];
-    let filtered = month.state.filtered.slice(0, initElementEventIndex);
-    filtered = filtered.concat(month.state.filtered.slice(initElementEventIndex+1));
+    let event = component.state.filtered[initElementEventIndex];
+    let filtered = component.state.filtered.slice(0, initElementEventIndex);
+    filtered = filtered.concat(component.state.filtered.slice(initElementEventIndex+1));
     // filtered.push(initElementEvent);
-    let appliedEventsMonth = month._applyEventsOnDates(filtered, month.state.dateToShow);
-    month.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
+    let appliedEventsMonth = component._applyEventsOnDates(filtered, component.state.dateToShow);
+    component.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
     let deleteInfo = {delete: true, id: event.id };
     sendToBackend(deleteInfo);
     return false;

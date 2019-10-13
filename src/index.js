@@ -1,10 +1,11 @@
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import './index.css';
+import { ConnectedApp } from './App';
 import WebFontLoader from 'webfontloader';
-import store from './store';
+import { store } from './store';
+
+import './index.css';
 
 WebFontLoader.load({
   google: {
@@ -14,7 +15,7 @@ WebFontLoader.load({
 
 ReactDOM.render((
   <Provider store={store}>
-    <App/>
+    <ConnectedApp />
   </Provider>),
   document.getElementById('root')
 );

@@ -23,6 +23,7 @@ let defaultVideo = '-sUXMzkh-jI';
 export default class ExpandableMediaCard extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       avatars: [],
       description: this.props.event.description,
@@ -36,7 +37,8 @@ export default class ExpandableMediaCard extends React.Component {
       avalSpeakers: [],
       resources: this.props.event.resources,
       duration: this.props.event.duration
-    }
+    };
+
     this._backupData();
     // initial mutable copy of event
     let temp = this.props.event;
@@ -48,10 +50,11 @@ export default class ExpandableMediaCard extends React.Component {
 
     _loadEvents.call(this, '/trainers')
       .then(avalSpeakers => {
-      avalSpeakers = avalSpeakers.slice(0, 10);
-      avalSpeakers = avalSpeakers.map(speaker => { return {name: speaker.name, id: speaker.id}})
-      this.setState({avalSpeakers});
-    });
+        avalSpeakers = avalSpeakers
+          .slice(0, 10)
+          .map(speaker => ({name: speaker.name, id: speaker.id}));
+        this.setState({avalSpeakers});
+      });
   }
 
   _backupData = () => {
@@ -87,8 +90,8 @@ export default class ExpandableMediaCard extends React.Component {
 
   _changeDescription = (description) => {
     let tempEvent = tempEventGet();
-      tempEvent.description = description;
-      tempEventSet(tempEvent);
+    tempEvent.description = description;
+    tempEventSet(tempEvent);
     this.setState({description});
   }
 
@@ -102,9 +105,9 @@ export default class ExpandableMediaCard extends React.Component {
     curDate.setFullYear(dateYear);
 
     let tempEvent = tempEventGet();
-      tempEvent.start = curDate;
-      tempEventSet(tempEvent);
-      let end = new Date(curDate.valueOf() + this.state.duration);
+    tempEvent.start = curDate;
+    tempEventSet(tempEvent);
+    let end = new Date(curDate.valueOf() + this.state.duration);
     this.setState({start: curDate, end});
   }
 
@@ -116,9 +119,9 @@ export default class ExpandableMediaCard extends React.Component {
     curDate.setHours(hours);
     curDate.setMinutes(minutes);
     let tempEvent = tempEventGet();
-      tempEvent.start = curDate;
-      tempEventSet(tempEvent);
-      let end = new Date(curDate.valueOf() + this.state.duration);
+    tempEvent.start = curDate;
+    tempEventSet(tempEvent);
+    let end = new Date(curDate.valueOf() + this.state.duration);
     this.setState({start: curDate, end});
   }
 
@@ -137,10 +140,9 @@ export default class ExpandableMediaCard extends React.Component {
       return;
     }
     let tempEvent = tempEventGet();
-      tempEvent.duration = duration;
-
-      tempEventSet(tempEvent);
-      let end = new Date(curDate.valueOf() + duration);
+    tempEvent.duration = duration;
+    tempEventSet(tempEvent);
+    let end = new Date(curDate.valueOf() + duration);
     this.setState({end, duration});
   }
 
@@ -157,32 +159,30 @@ export default class ExpandableMediaCard extends React.Component {
       return;
     }
     let tempEvent = tempEventGet();
-      tempEvent.duration = duration;
-      tempEventSet(tempEvent);
-      let end = new Date(curDate.valueOf() + duration);
+    tempEvent.duration = duration;
+    tempEventSet(tempEvent);
+    let end = new Date(curDate.valueOf() + duration);
     this.setState({end, duration});
   }
 
   _changeLocation = (location) => {
     let tempEvent = tempEventGet();
-      tempEvent.location = location;
-      tempEventSet(tempEvent);
+    tempEvent.location = location;
+    tempEventSet(tempEvent);
     this.setState({location});
   }
 
   _changeShowingLocation = (location) => {
     let tempEvent = tempEventGet();
-      tempEvent.showingLocation = uriAPI + location;
-      tempEventSet(tempEvent);
+    tempEvent.showingLocation = uriAPI + location;
+    tempEventSet(tempEvent);
     this.setState({showingLocation: uriAPI + location});
   }
 
-
-
   _changeResources = (index, type) => {
     let tempEvent = tempEventGet();
-      tempEvent.resources[index].type = type;
-      tempEventSet(tempEvent);
+    tempEvent.resources[index].type = type;
+    tempEventSet(tempEvent);
     let resources = this.state.resources;
     resources[index].type = type;
     this.setState({resources});
@@ -190,8 +190,8 @@ export default class ExpandableMediaCard extends React.Component {
 
   _changeResourceDescription = (index, description) => {
     let tempEvent = tempEventGet();
-      tempEvent.resources[index].description = description;
-      tempEventSet(tempEvent);
+    tempEvent.resources[index].description = description;
+    tempEventSet(tempEvent);
     let resources = this.state.resources;
     resources[index].description = description;
     this.setState({resources});
@@ -199,8 +199,8 @@ export default class ExpandableMediaCard extends React.Component {
 
   _changeResourcesResource = (index, resource) => {
     let tempEvent = tempEventGet();
-      tempEvent.resources[index].resource = resource;
-      tempEventSet(tempEvent);
+    tempEvent.resources[index].resource = resource;
+    tempEventSet(tempEvent);
     let resources = this.state.resources;
     resources[index].resource = resource;
     this.setState({resources});
@@ -238,11 +238,11 @@ export default class ExpandableMediaCard extends React.Component {
 
     // ready arr of speakers
     let tempSpeakers = speakersTempGet();
-      tempSpeakers = this.state.speakers.slice(0, index);
-      tempSpeakers = tempSpeakers.concat(this.state.speakers.slice(index+1));
-      speakersTempSet(tempSpeakers);
+    tempSpeakers = this.state.speakers.slice(0, index);
+    tempSpeakers = tempSpeakers.concat(this.state.speakers.slice(index+1));
+    speakersTempSet(tempSpeakers);
 
-      let speakers = this.state.speakers;
+    let speakers = this.state.speakers;
     speakers = this.state.speakers.slice(0, index);
     speakers = speakers.concat(this.state.speakers.slice(index+1));
     this.setState({speakers});
@@ -268,88 +268,80 @@ export default class ExpandableMediaCard extends React.Component {
   }
 
   _changevideoId = (videoId) => {
-        let tempEvent = tempEventGet();
-          tempEvent.videoId = videoId;
-          tempEventSet(tempEvent);
-        this.setState({videoId});
+    let tempEvent = tempEventGet();
+    tempEvent.videoId = videoId;
+    tempEventSet(tempEvent);
+    this.setState({videoId});
   }
 
   render() {
-    console.log('https://www.youtube.com/embed/' + this.state.videoId || 'kwkUURc_pHk');
-    let readyVideoURLToShow = 'https://www.youtube.com/embed/' + this.state.videoId || 'kwkUURc_pHk';
-    let videoNode = <TextField
-                  id="_changeVideo"
-                  value={this.state.video || 'insertset video id here'}
-                  rows={1}
-                  onChange={this._changeVideo}
-                  style={{width: '99%'}}
-              />;
-    let locationNode = <TextField
-                  id="_changeLocation"
-                  value={this.state.location}
-                  rows={1}
-                  onChange={this._changeLocation}
-                  style={{width: '99%'}}
-              />;
-    let view = { maxWidth: '70%' };
-    if(this.props.mobile) view = { maxWidth: '95%' };
-
+    const videoUrl = 'https://www.youtube.com/embed/' + this.state.videoId || '7GzcWF_tynw';
     return (
-      <Card style={view} className="md-block-expanded md-block-centered">
+      <Card style={{ maxWidth: this.props.mobile ? '95%' : '70%' }} className="md-block-expanded md-block-centered">
         <div style={{marginLeft: 15, marginTop: 80}}>
           <div style={{display: 'flex'}}>
             <Button icon>description</Button>
             <h3 style={{padding: 10}}>Description:</h3>
           </div>
           <TextField
-              id="singleMultiline"
-              value={this.state.description}
-              rows={1}
-              maxRows={8}
-              onChange={this._changeDescription}
-              style={{width: '99%'}}
-            />
+            id="singleMultiline"
+            value={this.state.description}
+            rows={1}
+            maxRows={8}
+            onChange={this._changeDescription}
+            style={{width: '99%'}}
+          />
         </div>
         <Divider/>
         <div className="md-grid">
           <DatePicker
-                        id="local-ru-RU"
-                        className="md-cell"
-                        label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 ? '0': ''}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
-                        locales="ru-RU"
-                        onChange={this._changeFromDate}
-                        autoOk
-                    />
-                    <TimePicker
-              id="appointmentPortrait"
-              className="md-cell"
-              label={`${this.state.start.getHours() < 10 ? '0' : ''}${this.state.start.getHours()}:${this.state.start.getMinutes() < 10 ? '0' : ''}${this.state.start.getMinutes()}`}
-              displayMode="portrait"
-              onChange={this._changeFromTime}
-              autoOk
-            />
-                    <DatePicker
-                        id="local-ru-RU"
-                        label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 ? '0' : ''}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
-                        locales="ru-RU"
-                        className="md-cell"
-                        onChange={this._changeToDate}
-                        autoOk
-                    />
-                    <TimePicker
-              id="appointmentPortrait"
-              className="md-cell"
-              label={`${this.state.end.getHours() < 10 ? '0' : ''}${this.state.end.getHours()}:${this.state.end.getMinutes() < 10 ? '0' : ''}${this.state.end.getMinutes()}`}
-              displayMode="portrait"
-              onChange={this._changeToTime}
-              autoOk
-            />
+            id="local-ru-RU0"
+            className="md-cell"
+            label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 ? '0': ''}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
+            locales="ru-RU"
+            onChange={this._changeFromDate}
+            autoOk
+          />
+          <TimePicker
+            id="appointmentPortrait"
+            className="md-cell"
+            label={`${this.state.start.getHours() < 10 ? '0' : ''}${this.state.start.getHours()}:${this.state.start.getMinutes() < 10 ? '0' : ''}${this.state.start.getMinutes()}`}
+            displayMode="portrait"
+            onChange={this._changeFromTime}
+            autoOk
+          />
+          <DatePicker
+            id="local-ru-RU1"
+            label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 ? '0' : ''}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
+            locales="ru-RU"
+            className="md-cell"
+            onChange={this._changeToDate}
+            autoOk
+          />
+          <TimePicker
+            id="appointmentPortrait"
+            className="md-cell"
+            label={`${this.state.end.getHours() < 10 ? '0' : ''}${this.state.end.getHours()}:${this.state.end.getMinutes() < 10 ? '0' : ''}${this.state.end.getMinutes()}`}
+            displayMode="portrait"
+            onChange={this._changeToTime}
+            autoOk
+          />
         </div>
         <Divider/>
         <Media className="iframe-wrapper">
-          <iframe className="move-on-top" src={readyVideoURLToShow} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
+          <iframe className="move-on-top" src={videoUrl} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
           <MediaOverlay>
-            <CardTitle title={this.props.event.videoId ? "Lesson record" : "Lesson record isn't uploaded still"} subtitle={videoNode}>
+            <CardTitle
+              title={this.props.event.videoId ? "Lesson record" : "Lesson record isn't uploaded still"}
+              subtitle={
+                <TextField
+                  id="_changeVideo"
+                  value={this.state.video || 'insert video id here'}
+                  rows={1}
+                  onChange={this._changeVideo}
+                  style={{width: '99%'}}
+              />}
+            >
               <Button className="md-cell--right" onClick={this._changevideoId.bind(this, this.state.video)} icon>play_circle_filled</Button>
             </CardTitle>
           </MediaOverlay>
@@ -357,7 +349,18 @@ export default class ExpandableMediaCard extends React.Component {
         <Media className="iframe-wrapper">
           <iframe className="move-on-top" src={this.state.showingLocation} frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
           <MediaOverlay>
-            <CardTitle  className="location-wrapper" title="Location" subtitle={locationNode}>
+            <CardTitle
+              className="location-wrapper"
+              title="Location"
+              subtitle={
+                <TextField
+                  id="_changeLocation"
+                  value={this.state.location}
+                  rows={1}
+                  onChange={this._changeLocation}
+                  style={{width: '99%'}}
+                />
+              }>
               <Button className="md-cell--right" onClick={this._changeShowingLocation.bind(this, this.state.location)} icon>place</Button>
             </CardTitle>
           </MediaOverlay>
@@ -374,67 +377,69 @@ export default class ExpandableMediaCard extends React.Component {
           />
         )})}
         <SelectField
-                      id="statesControlled"
-                      label="Add speaker"
-                      menuItems={this.state.avalSpeakers}
-                      onChange={this._addSpeaker}
-                      errorText="A state is required"
-                      className="md-cell"
-                      itemLabel="name"
-                      itemValue="id"
-                    />
+          id="statesControlled"
+          label="Add speaker"
+          menuItems={this.state.avalSpeakers}
+          onChange={this._addSpeaker}
+          errorText="A state is required"
+          className="md-cell"
+          itemLabel="name"
+          itemValue="id"
+        />
         </div>
         <ExpansionList style={{ padding: 16 }}>
           <ExpansionPanel
-                    label="Resourses"
-                    contentClassName="md-grid expander"
-                    closeOnSave={false}
-                    onSave={this._addResource}
-                    saveLabel="ADD"
-                    cancelLabel="HIDE">
-                    <CSSTransitionGroup
-                            component="section"
-                            transitionName="opacity"
-                            transitionEnterTimeout={1000}
-                            transitionLeave={false}>
-                {this.state.resources.map((resource, i) => (
-                  <div key={i*365} className="md-grid" >
-                    <p className="resource-field">Type:</p>
+            label="Resourses"
+            contentClassName="md-grid expander"
+            closeOnSave={false}
+            onSave={this._addResource}
+            saveLabel="ADD"
+            cancelLabel="HIDE"
+          >
+            <CSSTransitionGroup
+              component="section"
+              transitionName="opacity"
+              transitionEnterTimeout={1000}
+              transitionLeave={false}
+            >
+              {this.state.resources.map((resource, i) => (
+                <div key={i*365} className="md-grid" >
+                  <p className="resource-field">Type:</p>
+                  <TextField
+                    id={`_changeResources${i}`}
+                    className="md-cell md-cell--bottom text-title"
+                    value={resource.type}
+                    onChange={this._changeResources.bind(this, i)}
+                    size={8}
+                    customSize="title"
+                    style={{fontSize: 20}}
+                  />
+                  <TextField
+                    id={`_changeResourceDescription${i}`}
+                    value={resource.description}
+                    rows={1}
+                    maxRows={8}
+                    onChange={this._changeResourceDescription.bind(this, i)}
+                    style={{width: '99%'}}
+                  />
+                  <div className="container-resource" >
+                    <p className="resource-field">Link:</p>
                     <TextField
-                        id={`_changeResources${i}`}
-                        className="md-cell md-cell--bottom text-title"
-                        value={resource.type}
-                        onChange={this._changeResources.bind(this, i)}
-                        size={8}
-                        customSize="title"
-                      style={{fontSize: 20}}
-                      />
-                    <TextField
-                        id={`_changeResourceDescription${i}`}
-                        value={resource.description}
-                        rows={1}
-                        maxRows={8}
-                        onChange={this._changeResourceDescription.bind(this, i)}
-                        style={{width: '99%'}}
-                      />
-                      <div className="container-resource" >
-                      <p className="resource-field">Link:</p>
-                      <TextField
-                          id={`_changeResourcesResource${i}`}
-                          className="text-title"
-                          value={resource.resource}
-                          onChange={this._changeResourcesResource.bind(this, i)}
-                          size={8}
-                          customSize="title"
-                        />
-                      <Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
-                    </div>
-                    <Divider/>
+                      id={`_changeResourcesResource${i}`}
+                      className="text-title"
+                      value={resource.resource}
+                      onChange={this._changeResourcesResource.bind(this, i)}
+                      size={8}
+                      customSize="title"
+                    />
+                    <Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
                   </div>
-                ))}
-                    </CSSTransitionGroup>
-                </ExpansionPanel>
-              </ExpansionList>
+                  <Divider/>
+                </div>
+              ))}
+            </CSSTransitionGroup>
+          </ExpansionPanel>
+        </ExpansionList>
         <Button
           tooltipPosition="top"
           tooltipLabel="send feedback"
@@ -444,6 +449,6 @@ export default class ExpandableMediaCard extends React.Component {
           fixed>mail_outline
         </Button>
       </Card>
-  )}
+    );
+  }
 }
-          // href="mailto:xeontem@gmail.com"

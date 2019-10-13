@@ -4,6 +4,7 @@
   "private": true,
   "description": "rs-calendar-by-xeontem",
   "dependencies": {
+    "firebase": "^7.2.0",
     "history": "^4.7.2",
     "immutable": "^3.8.1",
     "md5": "^2.2.1",

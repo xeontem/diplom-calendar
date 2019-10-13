@@ -16,6 +16,7 @@ import { ExpansionList, ExpansionPanel } from 'react-md/lib/ExpansionPanels';
 import { tempEventGet, tempEventSet } from '../../instruments/eventsBackup';
 
 import { _loadEvents } from '../../instruments/fetching';
+import { EVENT_TYPES } from '../../instruments/constants';
 import deleteAvatar from '../eventCard/delete.png';
 
 let uriAPI = 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDeGEZBSlUTpIxfJYlcw5gZNvQ532UCml4&q=';
@@ -30,7 +31,7 @@ export default class Empty extends React.Component {
   constructor(props) {
   super(props);
   this.state = {
-    type: this.props.eventTypes[1],
+    type: EVENT_TYPES[1],
     title: '',
     description: 'description...',
     duration: 1000*60*60,
@@ -64,7 +65,7 @@ export default class Empty extends React.Component {
       pageY = touch.pageY;
     }
     this.setState({
-    type: this.props.eventTypes[1],
+    type: EVENT_TYPES[1],
     title: '',
     description: 'description...',
     duration: 1000*60*60,
@@ -347,7 +348,7 @@ export default class Empty extends React.Component {
           id={`titleItem${this.props.index}`}
           value={this.state.type}
           onChange={this._changeType}
-          menuItems={this.props.eventTypes}
+          menuItems={EVENT_TYPES}
         />
         {!this.props.mobile && <p className="name-field">Title:</p>}
         <TextField
@@ -381,7 +382,7 @@ export default class Empty extends React.Component {
     <Divider/>
     <div className="md-grid">
       <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU0"
             className="md-cell"
             label={`${this.state.start.getDate()}.${this.state.start.getMonth() < 10 ? '0': ''}${this.state.start.getMonth()+1}.${this.state.start.getFullYear()}`}
             locales="ru-RU"
@@ -397,7 +398,7 @@ export default class Empty extends React.Component {
         autoOk
       />
           <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU1"
             label={`${this.state.end.getDate()}.${this.state.end.getMonth() < 10 ? '0' : ''}${this.state.end.getMonth()+1}.${this.state.end.getFullYear()}`}
             locales="ru-RU"
             className="md-cell"

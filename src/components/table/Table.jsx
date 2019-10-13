@@ -1,7 +1,5 @@
 import React from 'react';
 import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import LinearProgress from 'react-md/lib/Progress/LinearProgress';
-import Snackbar from 'react-md/lib/Snackbars';
 import SelectField from 'react-md/lib/SelectFields';
 import DataTable from 'react-md/lib/DataTables/DataTable';
 import TableBody from 'react-md/lib/DataTables/TableBody';
@@ -9,23 +7,17 @@ import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
-import EventsRow from './eventsRow';
-import EventsRowAdmin from './eventsRowAdmin';
-import CardAdminEmpty from '../eventCard/CardAdminEmpty';
-import globalScope from '../../globalScope';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _loadEvents } from '../../instruments/fetching';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
-export default class Table extends React.Component {
+export class Table extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
-      events: [],
-      filtered: [],
-      fetching: true,
-      toasts: [{text: "events successfully loaded"}],
+      events: this.props.events,
+      filtered: this.props.events,
       value: 'All',
       from: 'All',
       to: 'All'
@@ -33,32 +25,27 @@ export default class Table extends React.Component {
     this._filterByType = _filterByType.bind(this);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
-    _loadEvents.call(this, '/events')
-      .then(events => {
-        this.setState({
-          events,
-          filtered: events,
-          fetching: false
-        });
-      });
   }
 
-  _removeToast = () => {
-    const [, ...toasts] = this.state.toasts;
-    this.setState({ toasts });
+  componentDidUpdate(prevProps) {
+    if (prevProps.events.length !== this.props.events.length) {
+      this.setState({ events: this.props.events, filtered: this.props.events });
+    }
+  }
+
+  openDialog = (event, eventIndex) => e => {
+    if (event) {
+      const [{ pageX, pageY }] = e.changedTouches || [e];
+      this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
+    }
   }
 
   render() {
-    let mobile = typeof window.orientation !== 'undefined';
-    const RowComponent = globalScope.isAdmin ? EventsRowAdmin : EventsRow;
     return (
       <div className="agenda-wrapper">
-        {globalScope.isAdmin && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
-        {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-        {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
         <div className="md-grid no-padding">
           <DatePicker
-            id="local-ru-RU"
+            id="fromDate"
             label="Select from date"
             locales="ru-RU"
             className="md-cell"
@@ -66,7 +53,7 @@ export default class Table extends React.Component {
             autoOk
           />
           <DatePicker
-            id="local-ru-RU"
+            id="toDate"
             label="Select to date"
             locales="ru-RU"
             className="md-cell"
@@ -97,14 +84,13 @@ export default class Table extends React.Component {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {this.state.filtered.map((event, index) =>
-                <RowComponent
-                  key={index + parseInt(Math.random()*30, 10)+event.id}
-                  table={this}
-                  mobile={mobile}
-                  event={event}
-                  eventIndex={index}
-                  eventTypes={this.state.eventTypes}/>
+              {this.state.filtered.map((event, i) =>
+                <TableRow key={event.description.slice(0, 45)} onClick={this.openDialog(event, i)} className="pointer">
+                  <TableColumn>{event.type.toUpperCase()}</TableColumn>
+                  <TableColumn>{event.title.toUpperCase()}</TableColumn>
+                  <TableColumn>{event.description.slice(0, 45)+'...'}</TableColumn>
+                  <TableColumn>{'event.location'}</TableColumn>
+                </TableRow>
               )}
             </TableBody>
           </DataTable>

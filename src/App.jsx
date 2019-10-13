@@ -1,31 +1,35 @@
 import React, { PureComponent } from 'react';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import FontIcon from 'react-md/lib/FontIcons';
+import ListItem from 'react-md/lib/Lists/ListItem';
 import Button from 'react-md/lib/Buttons/Button';
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import Snackbar from 'react-md/lib/Snackbars'; // eslint-disable-next-line
 import Avatar from 'react-md/lib/Avatars';
+import LinearProgress from 'react-md/lib/Progress/LinearProgress';
 
-import { removeToast } from './actions/toastMonthActions';
-import Month from './components/month/Month';
-import Week from './components/week/Week';
-import Day from './components/day/Day';
-import Table from './components/table/Table';
-import Agenda from './components/agenda/Agenda';
-import globalScope from './globalScope';
-import LoginDialog from './components/login/loginDialog';
+import { ConnectedMonth } from './components/month';
+import { ConnectedWeek } from './components/week';
+import { ConnectedDay } from './components/day';
+import { ConnectedTable } from './components/table';
+import { ConnectedAgenda } from './components/agenda';
+import { LoginPopup } from './components/login';
 import SigninDialog from './components/login/signinDialog';
+import { EventDialog } from './components/event-dialog';
 
-import { capitalise } from './instruments/utils';
+import { toggleDialog } from './store/actions/dialog-popup-actions';
+import { setEvents, startFetching } from './store/actions/global-state-actions';
+import { showToast, removeToast } from './store/actions/toast-actions';
+
+import { _closeSaveMonth } from './instruments/emptyEventOpenClose';
+import { capitalise, getEmptyEvent } from './instruments/utils';
 import { _loadEvents } from './instruments/fetching';
+import { getEvents } from './services/firebase.service';
 import './App.css';
 
-import FontIcon from 'react-md/lib/FontIcons';
-import ListItem from 'react-md/lib/Lists/ListItem';
-
-const selectLink = link => link === window.location.pathname;
-const pages = [
+const PAGES = [
   { pageName: 'month', icon: 'date_range' },
   { pageName: 'week', icon: 'event' },
   { pageName: 'day', icon: 'content_paste' },
@@ -37,28 +41,24 @@ class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      title: this.getTitle(),
-      isAdmin: false,
-      toast: [],
+      links: PAGES.map(link => ({ ...link, active: window.location.href.includes(link.pageName) })),
       visible: false,
       signInvisible: false,
       user: 'user',
-      avatar: globalScope.defaultAvatar
-    }
-    this.month = () => (<Month removeToast={this.props.removeToast} _toastMonthReducer={this.props._toastMonthReducer}/>)
+      avatar: ''
+    };
   }
 
-  resetColorLink = e => {
-    let elements = document.querySelectorAll('[id^=link]');
-    elements.forEach(element => {
-      if(element.classList.contains('active')) element.classList.remove('active');
+  componentDidMount(prevProps) {
+    this.props.startFetching();
+    getEvents(events => {
+      this.props.showToast({text: "events successfully loaded"})
+      this.props.setEvents(events);
     });
   }
 
   _handleChange = () => {
-    globalScope.isAdmin = !this.state.isAdmin;
-    this.setState({isAdmin: !this.state.isAdmin});
-
+    this.props.toggleAdmin();
   }
 
   _resetEvents = () => {
@@ -68,27 +68,34 @@ class App extends PureComponent {
     });
   }
 
-  _removeToast = () => {
-    this.setState({ toast: [] });
-  }
-
   _openLoginDialog = () => {
     let visible = !this.state.visible;
-    this.setState({visible});
+    this.setState({ visible });
   }
 
   _openSigninDialog = () => {
     let signInvisible = !this.state.signInvisible;
-    this.setState({signInvisible});
+    this.setState({ signInvisible });
   }
 
   routerLinkHandler = name => e => {
-    this.refs[`LINK_${name}`].handleClick(e);
-    this.setState({ title: this.getTitle() });
+    this.refs[`LINK_${name.toUpperCase()}`].handleClick(e);
+    this.setState({
+      links: this.state.links.map(link => ({
+        ...link,
+        active: link.pageName === name,
+      })),
+    });
   }
 
   getTitle() {
-    return capitalise(window.location.pathname.slice(1));
+    return capitalise(this.state.links.find(l => l.active).pageName);
+  }
+
+  openDialog = e => {
+    const event = getEmptyEvent();
+    const [{ pageX, pageY }] = e.changedTouches || [e];
+    this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex: 0 });
   }
 
   render() {
@@ -97,54 +104,65 @@ class App extends PureComponent {
       <Button flat children={this.state.user} />,
       <Button icon tooltipLabel="sign in" onClick={this._openSigninDialog}>assignment</Button>,
       <Button icon tooltipLabel="log in" onClick={this._openLoginDialog}>assignment_ind</Button>,
-      <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>
-    ];
-
-    const links = pages.map(({ pageName, icon }, i) => (
-      <ListItem
-        key={pageName}
-        className={selectLink(`/${pageName}`) ? 'active' : ''}
-        leftIcon={<FontIcon>{icon}</FontIcon>}
-        onClick={this.routerLinkHandler(pageName.toUpperCase())}
-        primaryText={capitalise(pageName)} />
-    )).concat({ key: 'divider', divider: true });
+      <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>,
+      this.props.fetching ? <LinearProgress id="progress" className="loading-bar" style={{top: '50px'}} /> : null
+    ].filter(x => x);
 
     return (
         <NavigationDrawer
-          navItems={links}
+          navItems={this.state.links.map(({ pageName, icon, active }) => (
+            <ListItem
+              key={pageName}
+              className={active ? 'active' : ''}
+              leftIcon={<FontIcon>{icon}</FontIcon>}
+              onClick={this.routerLinkHandler(pageName)}
+              primaryText={capitalise(pageName)} />
+          )).concat({ key: 'divider', divider: true })}
           drawerTitle="Select view:"
           contentClassName="md-grid"
-          toolbarTitle={this.state.title}
+          toolbarTitle={this.getTitle()}
           toolbarTitleClassName="page-title"
           toolbarActions={buttons}
-          onClick={this.resetColorLink}>
-          <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
+        >
+          <LoginPopup visible={this.state.visible} app={this} />
           <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
-          <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>
 
           <BrowserRouter>
           <div>
-            {pages.map(({ pageName }) => <Link ref={`LINK_${pageName.toUpperCase()}`} key={pageName} to={`/${pageName}`} />)}
+            {PAGES.map(({ pageName }) => <Link ref={`LINK_${pageName.toUpperCase()}`} key={pageName} to={`/${pageName}`} />)}
             <Switch>
-              <Route path="/month" component={this.month} />
-              <Route path="/week" component={Week} />
-              <Route path="/day" component={Day} />
-              <Route path="/agenda" component={Agenda} />
-              <Route path="/table" component={Table} />
+              <Route path="/week" component={ConnectedWeek} />
+              <Route path="/day" component={ConnectedDay} />
+              <Route path="/agenda" component={ConnectedAgenda} />
+              <Route path="/table" component={ConnectedTable} />
+              <Route path="/month" component={ConnectedMonth} />
             </Switch>
+            {this.props.isAdmin &&
+              <Button tooltipPosition="top" tooltipLabel="add event" onClick={this.openDialog} floating secondary fixed>add</Button>
+            }
           </div>
           </BrowserRouter>
+
+          <EventDialog />
+          <Snackbar toasts={this.props.toasts} autohide={true} onDismiss={this.props.removeToast} />
         </NavigationDrawer>
     );
   }
 }
 
 const mapStateToProps = state => ({
-    _toastMonthReducer: state.toastMonthReducer
-  });
+  isAdmin: state.globalState.isAdmin,
+  isMobile: state.globalState.isMobile,
+  fetching: state.globalState.fetching,
+  toasts: state.toastsReducer.toasts,
+});
 
 const mapDispatchToProps = dispatch => ({
-    removeToast: bindActionCreators(removeToast, dispatch)
-  });
+  toggleDialog: bindActionCreators(toggleDialog, dispatch),
+  setEvents: bindActionCreators(setEvents, dispatch),
+  startFetching: bindActionCreators(startFetching, dispatch),
+  showToast: bindActionCreators(showToast, dispatch),
+  removeToast: bindActionCreators(removeToast, dispatch)
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);

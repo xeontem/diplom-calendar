@@ -1,17 +1,12 @@
-// let source = 'http://localhost:4444';
-let source = 'https://damp-earth-84904.herokuapp.com';
+const DOMAIN = 'https://rs-calendar-events.herokuapp.com';
 
-export const _loadEvents = url => fetch(source+url)
+export const _loadEvents = url => fetch(DOMAIN+url)
   .then(response => response.json())
-  .then(events => events.filter(e => e.type && e.title));
+  .then(events => events.filter(e => e.type));
 
-export function _loadSpeakers(speakersIDs) {
-  let urls = [];
-  speakersIDs.map(id => urls.push(source + '/trainers/' + id));
-  Promise.all(urls.map(url => fetch(url)))
-    .then(resp => Promise.all( resp.map(r => r.json()) ))
-    .then(speakers => this.setState({speakers, speakersReady: true}));
-}
+export const _loadSpeakers = speakersIDs =>
+  Promise.all(speakersIDs.map(id =>
+    fetch(DOMAIN + '/trainers/' + id).then(resp => resp.json())));
 
 export function sendToBackend(event) {
   let headers = new Headers({
@@ -19,7 +14,7 @@ export function sendToBackend(event) {
     'Content-Type': 'application/json'
   });
 
-  return fetch(source + '/events',
+  return fetch(DOMAIN + '/events',
     {
       method: "POST",
       headers: headers,

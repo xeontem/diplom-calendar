@@ -1,58 +1,50 @@
 import React from 'react';// eslint-disable-next-line
-import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import LinearProgress from 'react-md/lib/Progress/LinearProgress';
-import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
-import SelectField from 'react-md/lib/SelectFields';
-import Button from 'react-md/lib/Buttons';
+import { Button, SelectField, FontIcon, DatePicker } from 'react-md';
 
 import DeleteZone from '../DeleteZone';
 import { handleDropDeleteZone } from '../../instruments/dragWeek';
-import Column from './column';
-import ColumnAdmin from './columnAdmin';
-import EmptyColumn from './emptyColumn';
-import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import globalScope from '../../globalScope';
 import { _loadEvents } from '../../instruments/fetching';
 import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
+import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
+import { getStyles } from '../../instruments/utils';
 
-export default class Week extends React.Component {
+export class Week extends React.Component {
   constructor(props) {
     super(props);
     let weekToShow = [];
+    weekToShow.curWeek = false;
     weekToShow.weekCounter = 0;
     this.state = {
+      ...this._applyEventsOnDates(this.props.events),
+      filtered: this.props.events,
       dateToShow: Date.now(),
-      avalWeeks: [],
-      avalMonthes: [{name: 'January', abbreviation: 'Jan'},
-              {name: 'February', abbreviation: 'Feb'},
-              {name: 'March', abbreviation: 'Mar'},
-              {name: 'April', abbreviation: 'Apr'},
-              {name: 'May', abbreviation: 'May'},
-              {name: 'June', abbreviation: 'Jun'},
-              {name: 'July', abbreviation: 'Jul'},
-              {name: 'August', abbreviation: 'Aug'},
-              {name: 'September', abbreviation: 'Sep'},
-              {name: 'October', abbreviation: 'Oct'},
-              {name: 'November', abbreviation: 'Nov'},
-              {name: 'December', abbreviation: 'Dec'}],
+      avalMonthes: [
+        {name: 'January', abbreviation: 'Jan'},
+        {name: 'February', abbreviation: 'Feb'},
+        {name: 'March', abbreviation: 'Mar'},
+        {name: 'April', abbreviation: 'Apr'},
+        {name: 'May', abbreviation: 'May'},
+        {name: 'June', abbreviation: 'Jun'},
+        {name: 'July', abbreviation: 'Jul'},
+        {name: 'August', abbreviation: 'Aug'},
+        {name: 'September', abbreviation: 'Sep'},
+        {name: 'October', abbreviation: 'Oct'},
+        {name: 'November', abbreviation: 'Nov'},
+        {name: 'December', abbreviation: 'Dec'}
+      ],
       avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
       eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
       curMonth: (new Date()).toString().slice(4, 7),
       curYear: (new Date()).getFullYear(),
-      appliedEventsMonth: this._calculateMonthArr(),
-      weekToShow,
-      curIndexOfWeek: 0,
-      stateItems: [{name: 'All', abbreviation: 'All'},
-             {name: 'deadline', abbreviation: 'deadline'},
-             {name: 'event', abbreviation: 'event'},
-             {name: 'lecture', abbreviation: 'lecture'},
-             {name: 'webinar', abbreviation: 'webinar'},
-             {name: 'workshop', abbreviation: 'workshop'}],
-      events: [],
-      filtered: [],
-      fetching: true,
-      toasts: [{text: "events successfully loaded"}],
+      stateItems: [
+        {name: 'All', abbreviation: 'All'},
+        {name: 'deadline', abbreviation: 'deadline'},
+        {name: 'event', abbreviation: 'event'},
+        {name: 'lecture', abbreviation: 'lecture'},
+        {name: 'webinar', abbreviation: 'webinar'},
+        {name: 'workshop', abbreviation: 'workshop'}
+      ],
       toastsToDeleteZone: [],
       value: 'All',
       from: 'All',
@@ -63,38 +55,18 @@ export default class Week extends React.Component {
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
 
-    _loadEvents.call(this, '/events')
-      .then(events => {
-      let appliedEventsMonth = this._applyEventsOnDates(events);
-      let weekToShow;
-      let curIndexOfWeek;
-      let avalWeeks = [];
-      for(let i = 0; i < appliedEventsMonth.length; i++) {
-        for(let j = 0; j < appliedEventsMonth[i].length; j++){
-          if(appliedEventsMonth[i][j].today) {
-            weekToShow = appliedEventsMonth[i];
-          }
-        }
-        avalWeeks.push({name: i, abbreviation: i+1});
-      }
-      this.state.events = events; // eslint-disable-line
-      this.state.avalWeeks = avalWeeks;// eslint-disable-line
-      this.state.filtered = events; // eslint-disable-line
-      this.state.appliedEventsMonth = appliedEventsMonth; // eslint-disable-line
-      this.state.weekToShow =weekToShow; // eslint-disable-line
-      this.state.curIndexOfWeek = curIndexOfWeek; // eslint-disable-line
-      this.state.fetching = false; // eslint-disable-line
-      return appliedEventsMonth;
-    }).then( appliedEventsMonth => {
-      let weekToShow = [];
-      appliedEventsMonth.forEach((week, i) => {
-          if(week.curWeek) {
-            weekToShow = [...week];
-            weekToShow.weekCounter = i;
-          }
-        });
-      this.setState({weekToShow});
-    });
+    this.handleDragStart = handleDragStart.bind(this);
+    this.handleDragEnter = handleDragEnter.bind(this);
+    this.handleDragLeave = handleDragLeave.bind(this);
+    this.handleDragOver = handleDragOver.bind(this);
+    this.handleDrop = handleDrop.bind(this);
+    this.handleDragEnd = handleDragEnd.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.events.length !== this.props.events.length) {
+      this.setState({ ...this._applyEventsOnDates(this.props.events), filtered: this.props.events });
+    }
   }
 
   componentDidMount() {
@@ -110,19 +82,32 @@ export default class Week extends React.Component {
   }
 
   _applyEventsOnDates(events, date = Date.now()) {
-    let month = this._calculateMonthArr(date);
+    let weekToShow;
+    let avalWeeks = [];
+    let appliedEventsMonth = this._calculateMonthArr(date);
     events.forEach((event, eventIndex) => {
-      let eventDate = new Date(event.start);
-      month.forEach((week, weekIndex) => {
+      let eventDate = new Date(event.start.seconds * 1000);
+      appliedEventsMonth.forEach((week, weekIndex) => {
         week.forEach((day, dayIndex) => {
-          if(eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)){
+          if (eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)) {
             day.event = event;
             day.eventIndex = eventIndex;
-          };
-        })
-      })
+          }
+        });
+
+        if (week.curWeek) {
+          weekToShow = [...week];
+          weekToShow.weekCounter = weekIndex;
+        }
+
+        avalWeeks.push({ name: weekIndex, abbreviation: weekIndex + 1 });
+      });
     });
-    return month;
+    if (!weekToShow) {
+      weekToShow = appliedEventsMonth[0];
+      weekToShow.weekCounter = 0;
+    }
+    return { appliedEventsMonth, weekToShow, avalWeeks };
   }
 
   _calculateMonthArr(date = Date.now(), toWeek) {
@@ -160,11 +145,12 @@ export default class Week extends React.Component {
       let isCurrentMonth = curMonthNumber === monthNumber;
       weekNumber = this._calculateWeekNum(weekday);
       let today = false;
+      weekArr.curWeek = false;
       if(curDate.toString().slice(0, 15) === (new Date()).toString().slice(0, 15)) {
         today = true;
         weekArr.curWeek = true;
       }
-      weekArr.push({dayNumber, weekNumber, monthNumber, yearNumber, weekday, isCurrentMonth, curDate, today});
+      weekArr.push({ dayNumber, weekNumber, monthNumber, yearNumber, weekday, isCurrentMonth, curDate, today });
       nextDate += 1000*60*60*24;
       curDate = new Date(nextDate);
       monthNumber = curDate.getMonth();
@@ -202,7 +188,7 @@ export default class Week extends React.Component {
     dateToShow = `${dateToShow.slice(0, 11)}${curYear}${dateToShow.slice(15)}`;
     dateToShow = new Date(dateToShow).valueOf();
     let month = this._calculateMonthArr(dateToShow);
-    let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+    let { appliedEventsMonth } = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let avalWeeks = [];
     for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
     this.setState({curYear, dateToShow, month, appliedEventsMonth, avalWeeks});
@@ -213,10 +199,10 @@ export default class Week extends React.Component {
     dateToShow = `${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`;
     dateToShow = new Date(dateToShow).valueOf();
     let month = this._calculateMonthArr(dateToShow);
-    let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+    let { appliedEventsMonth } = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let avalWeeks = [];
     for(let i = 0; i < appliedEventsMonth.length; i++) avalWeeks.push({name: i, abbreviation: i+1});
-    this.setState({curMonth, dateToShow, month, appliedEventsMonth, avalWeeks});
+    this.setState({ curMonth, dateToShow, month, appliedEventsMonth, avalWeeks });
   }
 
   _changeWeek = (selectedWeek) => {
@@ -240,7 +226,7 @@ export default class Week extends React.Component {
     let curMonth = new Date(dateToShow).toString().slice(4, 7);
     if(curMonth === "Dec") curYear--;
     let month = this._calculateMonthArr(dateToShow);
-    let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+    let { appliedEventsMonth } = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let weekToShow = this.state.weekToShow;
     if(_prevWeek === '_prevWeek') {
       weekToShow = appliedEventsMonth[appliedEventsMonth.length-1];
@@ -255,7 +241,7 @@ export default class Week extends React.Component {
     let curMonth = new Date(dateToShow).toString().slice(4, 7);
     if(curMonth === "Jan") curYear++;
     let month = this._calculateMonthArr(dateToShow);
-    let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
+    let { appliedEventsMonth } = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let weekToShow = this.state.weekToShow;
     if(_nextWeek === '_nextWeek') {
       weekToShow = appliedEventsMonth[0];
@@ -282,27 +268,32 @@ export default class Week extends React.Component {
     }
   }
 
+ openDialog = (event, eventIndex) => e => {
+    if (event) {
+      const [{ pageX, pageY }] = e.changedTouches || [e];
+      this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
+    }
+  }
+
   render() {
-    const mobile = typeof window.orientation !== 'undefined';
-    let week = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
     let today = false;
     let isInCurMonth = [];
     let NumDayArr = [];
-    for(let i = 0; i < week.length; i++){
-      isInCurMonth.push({isCurrentMonth: week[i].isCurrentMonth, weekday: week[i].weekday});
-      NumDayArr.push(week[i].dayNumber)
-      if(week[i].today) today = (new Date()).toString().slice(0, 3);
-    }
+    console.log(this.state);
+    this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].forEach(day => {
+      isInCurMonth.push({ isCurrentMonth: day.isCurrentMonth, weekday: day.weekday });
+      NumDayArr.push(day.dayNumber)
+      if (day.today) {
+        today = (new Date()).toString().slice(0, 3);
+      }
+    });
     return (
       <div className="agenda-wrapper">
-        {globalScope.isAdmin && <CardAdminEmpty week={this} _closeSave={_closeSaveWeek} eventTypes={this.state.eventTypes} mobile={mobile}/> }
-        {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-        {!this.state.fetching && <Snackbar toasts={this.state.toasts} autohide={true} onDismiss={this._removeToast}/>}
-        {globalScope.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
+        {false && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
         <h3>Events Selector:</h3>
         <div className="md-grid no-padding box">
           <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU0"
             label="Select from date"
             locales="ru-RU"
             className="md-cell"
@@ -310,7 +301,7 @@ export default class Week extends React.Component {
             autoOk
           />
           <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU1"
             label="Select to date"
             locales="ru-RU"
             className="md-cell"
@@ -407,10 +398,30 @@ export default class Week extends React.Component {
               {(new Array(24).fill(0)).map((val, i) => <div key={i}>{i < 10 ? `0${i}:00` : `${i}:00`}<div className="time-divider"></div></div>)}
             </div>
             {this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].map((day, index) =>
-              day.event ? globalScope.isAdmin ?
-                <ColumnAdmin  week={this} eventIndex={day.eventIndex} eventTypes={this.state.eventTypes} key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
-                <Column  key={index*30} day={day} event={day.event} index={index} mobile={mobile}/> :
-                <EmptyColumn key={index*30} week={this} eventIndex={day.eventIndex} day={day} event={day.event}/>
+              <div
+                key={day.weekday}
+                style={day.event ? getStyles(day.event) : {}}
+                className={`${day.event ? day.event.type : ''} event-column-week`}
+                onDragStart={this.handleDragStart}
+                onDragEnter={this.handleDragEnter}
+                onDragLeave={this.handleDragLeave}
+                onDragOver={this.handleDragOver}
+                onDrop={this.handleDrop}
+                onDragEnd={this.handleDragEnd}
+                onClick={this.openDialog(day.event, index)}
+                draggable={true}
+              >
+                {this.props.isAdmin &&
+                  <div style={{ borderRadius: '5px', position: 'relative', height: '100%' }}>
+                    <div className="drag-up" onMouseDown={this.setStartTime} onTouchStart={this.setStartTime} onClick={(e)=>{e.stopPropagation()}}></div>
+                    <div className="show-changed-starttime"></div>
+                    <FontIcon className="drag-up-icon">fast_rewind</FontIcon>
+                    <div className="drag-down" onMouseDown={this.setEndTime} onTouchStart={this.setEndTime} onClick={(e)=>{e.stopPropagation()}}></div>
+                    <FontIcon className="drag-down-icon">fast_rewind</FontIcon>
+                    <div className="show-changed-endtime"></div>
+                  </div>
+                }
+              </div>
             )}
           </div>
         </div>

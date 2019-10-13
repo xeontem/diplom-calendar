@@ -8,12 +8,11 @@ import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 import EventsList from './eventsList';
 import EventsListAdmin from './eventsListAdmin';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
-import globalScope from '../../globalScope';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _loadEvents } from '../../instruments/fetching';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
-export default class Agenda extends React.Component {
+export class Agenda extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,12 +46,12 @@ export default class Agenda extends React.Component {
     const mobile = typeof window.orientation !== 'undefined';
     return (
       <div className="agenda-wrapper">
-        {globalScope.isAdmin && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
+        {false && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
         {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
         {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
         <div className="md-grid no-padding">
           <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU0"
             label="Select from date"
             locales="ru-RU"
             className="md-cell"
@@ -60,7 +59,7 @@ export default class Agenda extends React.Component {
             autoOk
           />
           <DatePicker
-            id="local-ru-RU"
+            id="local-ru-RU1"
             label="Select to date"
             locales="ru-RU"
             className="md-cell"
@@ -80,7 +79,7 @@ export default class Agenda extends React.Component {
         </div>
         <div>
           <ExpansionList style={{ padding: 16 }}>
-            { globalScope.isAdmin ?
+            { this.props.isAdmin ?
               this.state.filtered.map((event, index) => (<EventsListAdmin key={event.id} eventIndex={index} mobile={mobile} event={event} agenda={this} eventTypes={this.state.eventTypes}/>)) :
               this.state.filtered.map((event) => (<EventsList key={event.id} mobile={mobile} event={event}/>))}
           </ExpansionList>

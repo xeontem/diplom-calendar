@@ -1,23 +1,16 @@
 import React from 'react';// eslint-disable-next-line
-import DatePicker from 'react-md/lib/Pickers/DatePickerContainer';
-import LinearProgress from 'react-md/lib/Progress/LinearProgress';
-import Snackbar from 'react-md/lib/Snackbars';// eslint-disable-next-line
-import SelectField from 'react-md/lib/SelectFields';
-import Button from 'react-md/lib/Buttons';
-import Column from './column';
-import ColumnAdmin from './columnAdmin';
-import CardAdminEmpty from '../eventCard/CardAdminEmpty';
+import { SelectField, Snackbar, LinearProgress, DatePicker, FontIcon, Button } from 'react-md';
 import smile from './legosmile.svg';
 import scroll from '../../instruments/scroll';
-import globalScope from '../../globalScope';
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
-import { _loadEvents } from '../../instruments/fetching';
+import { setStartTime, setEndTime } from '../../instruments/initResize';
+import { getStyles } from '../../instruments/utils';
 
-export default class Day extends React.Component {
+export class Day extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      day: {weekday: this._calculateWeekNum(new Date(Date.now()).getDay()), date: new Date(Date.now()), today: true},
+      day: { weekday: this._calculateWeekNum(new Date(Date.now()).getDay()), date: new Date(Date.now()), today: true, events: [] },
       avalDays: [1,2,3],
       avalMonthes: [
         {name: 'January', abbreviation: 0},
@@ -37,8 +30,8 @@ export default class Day extends React.Component {
       eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
       curMonth: new Date(Date.now()).getMonth(),
       curYear: new Date(Date.now()).getFullYear(),
-      appliedEventsMonth: this._calculateMonthArr(),
-      dayIndex: new Date(Date.now()).getDate()-1,
+      appliedEventsMonth: this._applyEventsOnDates(this.props.events)[0],
+      dayIndex: new Date(Date.now()).getDate() - 1,
       stateItems: [
         {name: 'All', abbreviation: 'All'},
         {name: 'deadline', abbreviation: 'deadline'},
@@ -49,25 +42,24 @@ export default class Day extends React.Component {
       ],
       backupDayEvents: [],
       filtered: [],
-      fetching: true,
-      toasts: [{text: "events successfully loaded"}],
       toastsToDeleteZone: [],
       value: 'All',
       top: 0
-    }
+    };
+  }
 
-    _loadEvents.call(this, '/events').then(events => {
-      let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(events);
-      let day = appliedEventsMonth[this.state.dayIndex];
+  componentDidUpdate(prevProps) {
+    if (prevProps.events.length !== this.props.events.length) {
+      const [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.props.events);
+      const day = appliedEventsMonth[this.state.dayIndex];
       this.setState({
         avalDays,
         day,
-        filtered: events,
+        filtered: this.props.events,
         backupDayEvents,
         appliedEventsMonth,
-        fetching: false
       });
-    });
+    }
   }
 
   componentDidMount() {
@@ -80,7 +72,7 @@ export default class Day extends React.Component {
     let curTimeMins = (new Date()).toString().slice(19, 21);
     let top = 34 + 55*curTimeHours;
     top += curTimeMins*0.9;
-    this.setState({top});
+    this.setState({ top });
   }
 
   _applyEventsOnDates(events, date = new Date(Date.now())) {
@@ -88,26 +80,19 @@ export default class Day extends React.Component {
     let avaldays = [];
     let backupDayEvents = [];
     month.forEach((day, dayIndex) => {
+      if(!day.events) day.events = [];
+      if(!day.eventIndexes) day.eventIndexes = [];
       avaldays.push(dayIndex + 1);
       events.forEach((event, eventIndex) => {
 
-        let eventDate = new Date(event.start);
-
-        if(
-          date.getFullYear() === eventDate.getFullYear() &&
-          date.getMonth() === eventDate.getMonth() &&
-          date.getDate() === eventDate.getDate()
-        ) {
-          backupDayEvents.push(event);
-        }
+        const eventDate = new Date(event.start.seconds * 1000);
 
         if(
           eventDate.getFullYear() === day.date.getFullYear() &&
           eventDate.getMonth() === day.date.getMonth() &&
           eventDate.getDate() === day.date.getDate()
         ) {
-          if(!day.events) day.events = [];
-          if(!day.eventIndexes) day.eventIndexes = [];
+          backupDayEvents.push(event);
           day.events.push(event);
           day.eventIndexes.push(eventIndex);
         }
@@ -151,38 +136,19 @@ export default class Day extends React.Component {
     }
   }
 
-  _calculateMonthes(monthNumber) {
-    switch(monthNumber) {
-      case 0: return "Jan";
-      case 1: return "Feb";
-      case 2: return "Mar";
-      case 3: return "Apr";
-      case 4: return "May";
-      case 5: return "Jun";
-      case 6: return "Jul";
-      case 7: return "Aug";
-      case 8: return "Sep";
-      case 9: return "Oct";
-      case 10: return "Nov";
-      case 11: return "Dec";
-      default: return "Jan";
-
-    }
-  }
-
   _removeToast = () => {
     this.setState({ toasts: [] });
   }
 
   _filterByType = (value) => {
     let day = this.state.day;
-    if(day.events) {
+    if(day.events.length) {
       day.events = this.state.backupDayEvents.filter((event) => {
       if(value === 'All') return true;
       return event.type === value});
     }
 
-    this.setState({day, value});
+    this.setState({ day, value });
   }
 
   _changeYear = (curYear) => {
@@ -192,7 +158,7 @@ export default class Day extends React.Component {
     dateToShow.setFullYear(curYear);
     // check if more then numbers in month
     let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
-    if(backupDayNumber > avalDays.length-1) backupDayNumber = avalDays.length-1;
+    if(backupDayNumber > avalDays.length - 1) backupDayNumber = avalDays.length - 1;
     dateToShow.setDate(backupDayNumber);
     let dayIndex = backupDayNumber;
     let day = appliedEventsMonth[dayIndex];
@@ -213,17 +179,16 @@ export default class Day extends React.Component {
     this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
   }
 
-  _changeDay = (selectedDay) => {
-    let dayIndex = selectedDay-1;
-    let day = this.state.appliedEventsMonth[dayIndex];
-    this.setState({dayIndex, day});
+  _changeDay = selectedDay => {
+    const dayIndex = selectedDay - 1;
+    const day = this.state.appliedEventsMonth[dayIndex];
+    this.setState({ dayIndex, day });
   }
 
   _toggle = (e) => {
     e.nativeEvent.path.forEach(el => {
       if(el.classList && el.classList.contains('action')) {
-        if(this.state.value === el.dataset.type) this._filterByType('All');
-        else this._filterByType(el.dataset.type);
+        this._filterByType(this.state.value === el.dataset.type ? 'All' : el.dataset.type);
       }
     });
   }
@@ -237,13 +202,13 @@ export default class Day extends React.Component {
     this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
   }
 
-  _nextMonth = (_nextDay) => {
+  _nextMonth = _nextDay => {
     let dateToShow = new Date(this.state.day.date.toString());
-    dateToShow.setDate(this.state.dayIndex+2);
+    dateToShow.setDate(this.state.dayIndex + 2);
     let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let dayIndex = 0;
     let day = appliedEventsMonth[dayIndex];
-    this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
+    this.setState({ avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex });
   }
 
   _prevDay = () => {
@@ -260,31 +225,33 @@ export default class Day extends React.Component {
   }
 
   _nextDay = () => {
-    let dayIndex = this.state.dayIndex+1;
-    if(dayIndex === this.state.appliedEventsMonth.length) {
+    let dayIndex = this.state.dayIndex + 1;
+    if (dayIndex === this.state.appliedEventsMonth.length) {
       this._nextMonth();
       return;
     }
     let day = this.state.appliedEventsMonth[dayIndex];
     let backupDayEvents = [];
-    if(day.events) backupDayEvents = day.events.slice();
-    this.setState({dayIndex, day, backupDayEvents});
+    if (day.events) {
+      backupDayEvents = day.events.slice();
+    }
+    this.setState({ dayIndex, day, backupDayEvents });
+  }
+
+  openDialog = (event, eventIndex) => e => {
+    if (event) {
+      const [{ pageX, pageY }] = e.changedTouches || [e];
+      this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
+    }
+  }
+
+  timeSliderMouseDown(e) {
+    console.log(e.target);
   }
 
   render() {
-    const mobile = typeof window.orientation !== 'undefined';
-    let todayEvents = [];
-    let eventIndexes = [];
-    if(this.state.day.events) {
-      todayEvents = this.state.day.events;
-      eventIndexes = this.state.day.eventIndexes;
-    }
-
     return (
       <div className="agenda-wrapper">
-        {globalScope.isAdmin && <CardAdminEmpty day={this} _closeSave={_closeSaveDay} eventTypes={this.state.eventTypes} mobile={mobile}/> }
-        {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
-        {!this.state.fetching && <Snackbar toasts={this.state.toasts} autohide={true} onDismiss={this._removeToast}/>}
         <h3>Events Selector:</h3>
         <div className="md-grid no-padding box">
           <SelectField
@@ -316,7 +283,7 @@ export default class Day extends React.Component {
             id="statesControlled2"
             label="Select month"
             placeholder="Some State"
-            value={this._calculateMonthes(this.state.day.date.getMonth())}
+            value={this.state.day.date.getMonth()}
             menuItems={this.state.avalMonthes}
             onChange={this._changeMonth}
             errorText="A state is required"
@@ -328,42 +295,57 @@ export default class Day extends React.Component {
             id="statesControlled2"
             label="Select year"
             placeholder="Some State"
-            value={this.state.day.date.getFullYear()}
+            value={this.state.day.date.getFullYear().toString()}
             menuItems={this.state.avalYears}
             onChange={this._changeYear}
             errorText="A state is required"
             className="md-cell"
           />
-
         </div>
         <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
           <div className="navigation">
             <Button className="navigate-button" onClick={this._prevDay} icon>navigate_before</Button>
-            <Button raised className="action date-container" children={`${this.state.day.date.getDate()} ${this._calculateMonthes(this.state.day.date.getMonth())} ${this.state.day.date.getFullYear()}, ${this.state.day.weekday}`} />
+            <Button raised className="action date-container" children={`${this.state.day.date.getDate()} ${this.state.day.date.toString().slice(4, 7)} ${this.state.day.date.getFullYear()}, ${this.state.day.weekday}`} />
             <Button className="navigate-button" onClick={this._nextDay} icon>navigate_next</Button>
           </div>
-
           <div className="header-day">
-            <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
+            <div className="column-week"><Button icon style={{ marginTop: -7 }}>access_time</Button></div>
             <p><span className="agenda">Agenda:</span></p>
             <div></div>
           </div>
           <div className="body-day">
             <div className="time">
-              <section style={{top: this.state.top}} className="current-time">
+              <section style={{ top: this.state.top }} className="current-time">
                 <div className="dot-current-time"></div>
               </section>
-              {(new Array(24).fill(0)).map((val, i) => <div key={i}>{i < 10 ? `0${i}:00` : `${i}:00`}<div className="time-divider"></div></div>)}
+              {(new Array(24).fill(0)).map((val, i) =>
+                <div key={i}>{`${i < 10 ? '0' : ''}${i}:00`}<div className="time-divider"></div></div>
+              )}
             </div>
-            {todayEvents.length ? globalScope.isAdmin ?
-              todayEvents.map((event, index) =>
-                <ColumnAdmin key={index*30} day={this} event={event} eventIndex={eventIndexes[index]} eventTypes={this.state.eventTypes} index={index} mobile={mobile}/>) :
-              todayEvents.map((event, index) =>
-                <Column key={index*30} day={this.state.day} event={event} eventTypes={this.state.eventTypes} index={index} mobile={mobile}/>) :
-              <div className="freedom">
+            {this.state.day.events.length
+              ? this.state.day.events.map((event, index) =>
+              <div
+                key={event.title}
+                style={getStyles(event)}
+                className={`${event.type} event-column-day`}
+                onClick={this.openDialog(event, this.state.day.eventIndexes[index])}
+              >
+                {this.props.isAdmin &&
+                  <div style={{position: 'relative', height: '100%'}}>
+                    <div className="drag-up" onMouseDown={setStartTime(event)} onTouchStart={setStartTime} ></div>
+                    <div className="show-changed-starttime"></div>
+                    <FontIcon className="drag-up-icon">fast_rewind</FontIcon>
+                    <div className="drag-down" onMouseDown={setEndTime(event)} onTouchStart={setEndTime} ></div>
+                    <div className="show-changed-endtime"></div>
+                    <FontIcon className="drag-down-icon">fast_rewind</FontIcon>
+                  </div>
+                }
+              </div>)
+              : <div className="freedom">
                 <p style={{fontSize: '16pt'}}>You are free today!</p>
                 <img style={{margin: '0 auto', width: 100}} src={smile} alt="smile" />
-              </div>}
+              </div>
+            }
           </div>
         </div>
         <h3>Legend:</h3>
