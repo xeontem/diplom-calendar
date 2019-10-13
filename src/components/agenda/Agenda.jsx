@@ -5,8 +5,8 @@ import Snackbar from 'react-md/lib/Snackbars';
 import SelectField from 'react-md/lib/SelectFields';
 import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 
-import EventsList from './eventsList';
-import EventsListAdmin from './eventsListAdmin';
+import EventsList from './events-list';
+import EventsListAdmin from './events-list-admin';
 import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _loadEvents } from '../../instruments/fetching';
