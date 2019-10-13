@@ -12,7 +12,6 @@ import Divider from 'react-md/lib/Dividers';
 export default class ExpandableMediaCard extends React.Component {
   render() {
   let readyVideoURLToShow = 'https://www.youtube.com/embed/' + (this.props.event.videoId || '-sUXMzkh-jI');
-  console.log(readyVideoURLToShow);
   let view = { maxWidth: '70%' };
   if(this.props.mobile) view = { maxWidth: '95%' };
 
@@ -28,7 +27,7 @@ export default class ExpandableMediaCard extends React.Component {
     <Divider/>
     <div style={{marginLeft: 15, display: 'flex'}}>
       <Button icon>timelapse</Button>
-      <p style={{padding: 16, margin: 0}}>{`${new Date(this.props.event.start).toString().slice(4, 24)}`}</p>
+      <p style={{padding: 16, margin: 0}}>{new Date(this.props.event.start).toString().slice(4, 24)}</p>
       <p style={{padding: 16, margin: 0}}>{new Date(new Date(this.props.event.start).valueOf()+this.props.event.duration).toString().slice(4, 24)}</p>
     </div>
     <Divider/>

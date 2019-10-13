@@ -17,6 +17,7 @@ import globalScope from './globalScope';
 import LoginDialog from './components/login/loginDialog';
 import SigninDialog from './components/login/signinDialog';
 
+import { capitalise } from './instruments/utils';
 import { _loadEvents } from './instruments/fetching';
 import './App.css';
 
@@ -35,9 +36,8 @@ const pages = [
 class App extends PureComponent {
   constructor(props) {
     super(props);
-    this.title = '';
-    // this._navItems = inboxListItems;
     this.state = {
+      title: this.getTitle(),
       isAdmin: false,
       toast: [],
       visible: false,
@@ -48,17 +48,11 @@ class App extends PureComponent {
     this.month = () => (<Month removeToast={this.props.removeToast} _toastMonthReducer={this.props._toastMonthReducer}/>)
   }
 
-  _resetColorLink = (e) => {
+  resetColorLink = e => {
     let elements = document.querySelectorAll('[id^=link]');
     elements.forEach(element => {
       if(element.classList.contains('active')) element.classList.remove('active');
     });
-
-    // e.nativeEvent.path.forEach(el => {
-    //   if(el.classList && el.tagName === 'A') {
-    //     el.classList.add('active');
-    //   }
-    // });
   }
 
   _handleChange = () => {
@@ -90,16 +84,14 @@ class App extends PureComponent {
 
   routerLinkHandler = name => e => {
     this.refs[`LINK_${name}`].handleClick(e);
+    this.setState({ title: this.getTitle() });
+  }
+
+  getTitle() {
+    return capitalise(window.location.pathname.slice(1));
   }
 
   render() {
-    const mobile = typeof window.orientation !== 'undefined';
-    const pathname = window.location.pathname;
-
-    if (!mobile && pathname.length > 1) {
-      this.title = pathname.slice(1)[0].toUpperCase() + pathname.slice(2);
-    }
-
     const buttons = [
       <Avatar src={this.state.avatar} role="presentation" />,
       <Button flat children={this.state.user} />,
@@ -114,7 +106,7 @@ class App extends PureComponent {
         className={selectLink(`/${pageName}`) ? 'active' : ''}
         leftIcon={<FontIcon>{icon}</FontIcon>}
         onClick={this.routerLinkHandler(pageName.toUpperCase())}
-        primaryText={`${pageName}`} />
+        primaryText={capitalise(pageName)} />
     )).concat({ key: 'divider', divider: true });
 
     return (
@@ -122,9 +114,10 @@ class App extends PureComponent {
           navItems={links}
           drawerTitle="Select view:"
           contentClassName="md-grid"
-          toolbarTitle={this.title}
+          toolbarTitle={this.state.title}
+          toolbarTitleClassName="page-title"
           toolbarActions={buttons}
-          onClick={this._resetColorLink}>
+          onClick={this.resetColorLink}>
           <LoginDialog visible={this.state.visible} app={this}></LoginDialog>
           <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
           <Snackbar toasts={this.state.toast} autohide={true} onDismiss={this._removeToast}/>

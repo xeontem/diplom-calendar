@@ -1,10 +1,9 @@
 // let source = 'http://localhost:4444';
 let source = 'https://damp-earth-84904.herokuapp.com';
 
-export function _loadEvents(url) {
-  return fetch(source+url)
-    .then(response => response.json());
-}
+export const _loadEvents = url => fetch(source+url)
+  .then(response => response.json())
+  .then(events => events.filter(e => e.type && e.title));
 
 export function _loadSpeakers(speakersIDs) {
   let urls = [];

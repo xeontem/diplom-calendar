@@ -50,6 +50,7 @@ export default class Table extends React.Component {
 
   render() {
     let mobile = typeof window.orientation !== 'undefined';
+    const RowComponent = globalScope.isAdmin ? EventsRowAdmin : EventsRow;
     return (
       <div className="agenda-wrapper">
         {globalScope.isAdmin && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
@@ -96,9 +97,15 @@ export default class Table extends React.Component {
               </TableRow>
             </TableHeader>
             <TableBody>
-              { globalScope.isAdmin ?
-                this.state.filtered.map((event, index) => (<EventsRowAdmin key={index + parseInt(Math.random()*30, 10)+event.id} table={this} mobile={mobile} event={event} eventIndex={index} eventTypes={this.state.eventTypes}/>)) :
-                this.state.filtered.map((event, index) => (<EventsRow key={index + parseInt(Math.random()*30, 10)+event.id} mobile={mobile} event={event}/>))}
+              {this.state.filtered.map((event, index) =>
+                <RowComponent
+                  key={index + parseInt(Math.random()*30, 10)+event.id}
+                  table={this}
+                  mobile={mobile}
+                  event={event}
+                  eventIndex={index}
+                  eventTypes={this.state.eventTypes}/>
+              )}
             </TableBody>
           </DataTable>
         </div>
