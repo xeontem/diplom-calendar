@@ -1,5 +1,5 @@
 {
   "extends": "react-app",
-  "excludedFiles": "./package-lock.json",
-  "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
+  "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+  "excludedFiles": "*.test.js"
 }

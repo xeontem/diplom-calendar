@@ -37,7 +37,7 @@ const PAGES = [
   { pageName: 'agenda', icon: 'view_agenda' }
 ];
 
-class App extends PureComponent {
+export class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -89,7 +89,7 @@ class App extends PureComponent {
   }
 
   getTitle() {
-    return capitalise(this.state.links.find(l => l.active).pageName);
+    return capitalise((this.state.links.find(l => l.active) || { pageName: '222' }).pageName);
   }
 
   openDialog = e => {
