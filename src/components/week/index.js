@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { toggleDialog } from '../../store/actions/dialog-popup-actions';
 import { removeToast } from '../../store/actions/toast-actions';
 
-import { Week } from './week';
+import { Week } from './awdweek';
 
 const mapStateToProps = state => ({
   isMobile: state.globalState.isMobile,

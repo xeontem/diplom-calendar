@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { toggleDialog } from '../../store/actions/dialog-popup-actions';
 import { removeToast } from '../../store/actions/toast-actions';
 
-import { Agenda } from './agenda';
+import { Agenda } from './aagenda';
 
 const mapStateToProps = state => ({
   toasts: state.toastsReducer.toasts,

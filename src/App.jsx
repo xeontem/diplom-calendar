@@ -89,7 +89,7 @@ export class App extends PureComponent {
   }
 
   getTitle() {
-    return capitalise((this.state.links.find(l => l.active) || { pageName: '222' }).pageName);
+    return capitalise((this.state.links.find(l => l.active) || { pageName: '333' }).pageName);
   }
 
   openDialog = e => {

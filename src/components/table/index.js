@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { toggleDialog } from '../../store/actions/dialog-popup-actions';
-import { Table } from './table';
+import { Table } from './atable';
 
 const mapStateToProps = state => ({
   ...state.dialogPopupReducer,
