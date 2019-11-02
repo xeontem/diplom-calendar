@@ -15,20 +15,22 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
-          name: add token to the command
+          name: compile containers
+          command: yarn compose-up-build-only
+  deploy:
+    <<: *common
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: add token to the deploy command
           command: echo $FIREBASE_TOKEN >> ./.deploy-command
       - run:
           name: set permissions
           command: chmod +rwx ./.deploy-command
       - run:
           name: compile containers
-          command: yarn compose-make
-      - run:
-          name: build-project
-          command: yarn ci-deploy
-      - run:
-          name: show folder
-          command: ls
+          command: yarn compose-up-build-and-deploy
   test:
     <<: *common
     steps:
@@ -78,7 +80,7 @@ workflows:
       - build:
           context: diplom-calendar
       - deploy:
-          context: public
+          context: diplom-calendar
           filters:
                 branches:
                   only: master

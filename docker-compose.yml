@@ -5,43 +5,43 @@
 version: '3.7'
 services:
 
-  # dev:
-  #   container_name: dev_container
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-dev
-  #   volumes:
-  #     - '.:/app'
-  #     - '/app/node_modules'
-  #   ports:
-  #     - '3000:3000'
-  #   environment:
-  #     - NODE_ENV=development
-  #     - CHOKIDAR_USEPOLLING=true
-
-  ci-build:
-    container_name: ci-build_container
+  dev:
+    container_name: dev_container
     build:
       context: .
-      dockerfile: Dockerfile-ci-prod
+      dockerfile: Dockerfile-dev
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+
+  make-build-folder:
+    container_name: make-build-folder_container
+    build:
+      context: .
+      dockerfile: Dockerfile-make-build-folder
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
     environment:
       - NODE_ENV=production
 
-  # local-build:
-  #   container_name: local-build_container
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-local-prod
-  #   volumes:
-  #     - '.:/app'
-  #     - '/app/node_modules'
-  #   environment:
-  #     - NODE_ENV=production
+  build-and-deploy:
+    container_name: build-and-deploy_container
+    build:
+      context: .
+      dockerfile: Dockerfile-build-and-deploy
+    environment:
+      - NODE_ENV=production
 
-  # test:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-lint-and-test
-  #   volumes:
-  #     - '.:/app'
-  #     - '/app/node_modules'
+  build-only:
+    container_name: build-only_container
+    build:
+      context: .
+      dockerfile: Dockerfile-build-only
+    environment:
+      - NODE_ENV=production

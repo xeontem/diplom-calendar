@@ -5,4 +5,4 @@ COPY ./package*.json ./
 RUN npm i
 COPY . .
 RUN npm rebuild node-sass
-CMD ["npm", "run", "deploy"]
+CMD ["npm", "run", "build-and-deploy"]
