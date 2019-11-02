@@ -4,7 +4,8 @@
   "private": true,
   "description": "rs-calendar-by-xeontem",
   "dependencies": {
-    "firebase": "^7.2.0",
+    "firebase": "^7.2.2",
+    "firebase-tools": "^7.6.2",
     "history": "^4.7.2",
     "immutable": "^3.8.1",
     "md5": "^2.2.1",
@@ -19,23 +20,39 @@
     "react-md": "^1.0.15",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.3.1",
+    "react-scripts": "0.9.5",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.7.2",
-    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "webfontloader": "^1.6.27"
   },
   "devDependencies": {
-    "react-scripts": "0.9.5"
+    "enzyme": "^3.10.0"
   },
   "scripts": {
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
-    "build": "npm run build-css && react-scripts build",
+    "build": "ls && npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "lint": "eslint ./src",
+    "ci-test": "react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject",
-    "eslint-fix": "eslint --fix *.js,*.jsx"
+    "eslint-fix": "eslint --fix *.js,*.jsx",
+    "compose-make": "docker-compose build",
+    "deploy": "npm run build && cat ./.deploy-command && ./.deploy-command",
+    "ci-deploy": "docker-compose up ci-build",
+    "make-build-folder": "docker-compose up local-build",
+    "compose-build": "docker-compose start build && docker container wait diplom-calendar_build_1 && docker-compose stop build",
+    "compose-test": "docker-compose up test",
+    "start-dev": "docker-compose up dev",
+    "stop-dev": "docker-compose stop dev",
+    "docker-bash": "docker exec -it dev_container /bin/sh",
+    "docker-build": "docker build -t dev .",
+    "compose-up": "docker-compose up -d --build",
+    "compose-stop": "docker-compose stop",
+    "docker-build-manual": "docker build -f ./Dockerfile-dev -t diplom-calendar-dev_container .",
+    "docker-start": "docker run -v %cd%:/app -v /app/node_modules -p 3000:3000 --rm diplom-calendar_dev"
   }
 }

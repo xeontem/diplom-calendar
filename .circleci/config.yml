@@ -1,0 +1,84 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+
+common: &common
+  working_directory: ~/xeontem
+  docker:
+    - image: circleci/node:8-browsers
+
+version: 2
+jobs:
+  build:
+    <<: *common
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: add token to the command
+          command: echo $FIREBASE_TOKEN >> ./.deploy-command
+      - run:
+          name: set permissions
+          command: chmod +rwx ./.deploy-command
+      - run:
+          name: compile containers
+          command: yarn compose-make
+      - run:
+          name: build-project
+          command: yarn ci-deploy
+      - run:
+          name: show folder
+          command: ls
+  test:
+    <<: *common
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - dependency-cache-{{ checksum "yarn.lock" }}
+          - dependency-cache-
+      - run:
+          name: install-dependencies
+          command: yarn
+      - run:
+          name: run-unit-tests
+          command: yarn test:ci
+      - store_artifacts:
+          path: ./coverage/
+          prefix: tests-report
+      - store_test_results:
+          path: ./coverage/
+  lint:
+    <<: *common
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - dependency-cache-{{ checksum "yarn.lock" }}
+          - dependency-cache-
+      - run:
+          name: install-dependencies
+          command: yarn
+      - run:
+          name: angular-lint
+          command: yarn lint:ci
+      - store_artifacts:
+          path: ./tslintout.json
+          prefix: lint
+  show_token:
+    <<: *common
+    steps:
+      - run:
+          name: show token
+          command: echo $FIREBASE_TOKEN
+workflows:
+  version: 2
+  build_and_test-flow:
+    jobs:
+      - build:
+          context: diplom-calendar
+      - deploy:
+          context: public
+          filters:
+                branches:
+                  only: master

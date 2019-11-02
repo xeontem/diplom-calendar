@@ -1,0 +1,47 @@
+
+# inspired by:
+# https://mherman.org/blog/dockerizing-a-react-app/
+
+version: '3.7'
+services:
+
+  # dev:
+  #   container_name: dev_container
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-dev
+  #   volumes:
+  #     - '.:/app'
+  #     - '/app/node_modules'
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - CHOKIDAR_USEPOLLING=true
+
+  ci-build:
+    container_name: ci-build_container
+    build:
+      context: .
+      dockerfile: Dockerfile-ci-prod
+    environment:
+      - NODE_ENV=production
+
+  # local-build:
+  #   container_name: local-build_container
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-local-prod
+  #   volumes:
+  #     - '.:/app'
+  #     - '/app/node_modules'
+  #   environment:
+  #     - NODE_ENV=production
+
+  # test:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-lint-and-test
+  #   volumes:
+  #     - '.:/app'
+  #     - '/app/node_modules'
