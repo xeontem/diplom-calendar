@@ -1,12 +1,11 @@
-const DOMAIN = 'https://rs-calendar-events.herokuapp.com';
+import { HEROKU_DB_DOMAIN } from './constants';
 
-export const _loadEvents = url => fetch(DOMAIN+url)
-  .then(response => response.json())
-  .then(events => events.filter(e => e.type));
+export const apiCallForHerokuDB = url => fetch(HEROKU_DB_DOMAIN + url)
+  .then(response => response.json());
 
 export const _loadSpeakers = speakersIDs =>
   Promise.all(speakersIDs.map(id =>
-    fetch(DOMAIN + '/trainers/' + id).then(resp => resp.json())));
+    fetch(HEROKU_DB_DOMAIN + '/trainers/' + id).then(resp => resp.json())));
 
 export function sendToBackend(event) {
   let headers = new Headers({
@@ -14,7 +13,7 @@ export function sendToBackend(event) {
     'Content-Type': 'application/json'
   });
 
-  return fetch(DOMAIN + '/events',
+  return fetch(HEROKU_DB_DOMAIN + '/events',
     {
       method: "POST",
       headers: headers,

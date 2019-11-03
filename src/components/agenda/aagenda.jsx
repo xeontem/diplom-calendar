@@ -7,9 +7,8 @@ import ExpansionList from 'react-md/lib/ExpansionPanels/ExpansionList';
 
 import EventsList from './events-list';
 import EventsListAdmin from './events-list-admin';
-import CardAdminEmpty from '../eventCard/CardAdminEmpty';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import { _loadEvents } from '../../instruments/fetching';
+import { apiCallForHerokuDB } from '../../instruments/fetching';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
 export class Agenda extends React.Component {
@@ -27,7 +26,7 @@ export class Agenda extends React.Component {
     this._filterByType = _filterByType.bind(this);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
-    _loadEvents.call(this, '/events')
+    apiCallForHerokuDB.call(this, '/events')
       .then(events => {
         this.setState({
           events,
@@ -46,7 +45,6 @@ export class Agenda extends React.Component {
     const mobile = typeof window.orientation !== 'undefined';
     return (
       <div className="agenda-wrapper">
-        {false && <CardAdminEmpty table={this} _closeSave={_closeSaveTableAgenda} eventTypes={this.state.eventTypes} mobile={mobile}/> }
         {this.state.fetching && <LinearProgress className="loading-bar" key="progress" id="contentLoadingProgress" style={mobile ? {top: 40} : {top: 47}}/>}
         {!this.state.fetching && <Snackbar toasts={this.state.toasts} onDismiss={this._removeToast}/>}
         <div className="md-grid no-padding">

@@ -9,7 +9,7 @@ import Toolbar from 'react-md/lib/Toolbars';
 import SelectField from 'react-md/lib/SelectFields';
 import TextField from 'react-md/lib/TextFields';
 
-import CardAdmin from '../eventCard/CardAdmin';
+import CardAdmin from '../event-card/acard-admin';
 import { _loadSpeakers, sendToBackend } from '../../instruments/fetching';
 import { tempEventGet, tempEventSet, eventBackupGet, speakersBackupGet, speakersTempGet } from '../../instruments/eventsBackup';
 

@@ -1,20 +1,20 @@
-import { EVENT_TYPES } from './constants';
+import { EVENT_TYPES, DEFAULT_VIDEO_ID, DEFAULT_LOCATION } from './constants';
 
 export const capitalise = str => str ? str[0].toUpperCase() + str.slice(1) : '';
 
 export const rand = (min, max) => Math.random() * (max - min) + min;
 
 export const getEmptyEvent = () => ({
-  type: EVENT_TYPES[1],
-  title: '',
-  description: 'description...',
-  duration: 1000*60*60,
-  id: rand(0.1, 0.9)*1000000000000000000,
-  location: 'location...',
+  id: null,
+  description: '',
+  duration: 1000 * 60 * 60,
+  location: DEFAULT_LOCATION,
   resources: [],
   speakers: [],
-  start: new Date(),
-  end: new Date(),
+  start: Date.now(),
+  title: '',
+  type: EVENT_TYPES[1],
+  videoId: DEFAULT_VIDEO_ID,
 });
 
 export const getStyles = event => {

@@ -8,7 +8,9 @@ import { Month } from './month';
 
 const mapStateToProps = state => ({
   isMobile: state.globalState.isMobile,
-  events: state.globalState.events
+  events: state.globalState.events,
+  eventsLoading: state.globalState.eventsLoading,
+  eventsUpdated: state.globalState.eventsUpdated
 });
 
 const mapDispatchToProps = dispatch => ({

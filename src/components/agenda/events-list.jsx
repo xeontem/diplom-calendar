@@ -7,7 +7,7 @@ import Dialog from 'react-md/lib/Dialogs';
 import Button from 'react-md/lib/Buttons/Button';
 import Toolbar from 'react-md/lib/Toolbars';
 
-import Card from '../eventCard/Card';
+import Card from '../event-card/acard';
 import { _loadSpeakers } from '../../instruments/fetching';
 
 export default class EventsList extends React.Component {
