@@ -4,7 +4,6 @@ import { Button, SelectField, FontIcon, DatePicker } from 'react-md';
 import DeleteZone from '../DeleteZone';
 import { handleDropDeleteZone } from '../../instruments/dragWeek';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import { _loadEvents } from '../../instruments/fetching';
 import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
 import { getStyles } from '../../instruments/utils';

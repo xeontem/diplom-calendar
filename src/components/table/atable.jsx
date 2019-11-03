@@ -8,7 +8,6 @@ import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import { _loadEvents } from '../../instruments/fetching';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
 
 export class Table extends React.Component {

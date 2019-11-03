@@ -13,12 +13,11 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore();
-
-
+const DB = firebase.firestore();
+const eventsCollection = DB.collection('events');
 
 // Add
-// db.collection("users").add({
+// DB.collection("users").add({
 //     first: "Ada",
 //     last: "Lovelace",
 //     born: 1815
@@ -32,5 +31,9 @@ const db = firebase.firestore();
 
 
 // Read
-export const getEvents = cb => db.collection('events')
-  .onSnapshot(snap => cb(snap.docs.map(doc => doc.data())));
+export const getEvents = cb => eventsCollection
+  .onSnapshot(snap => cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+
+export const updateEvent = ({ id, ...newEvent }) => eventsCollection.doc(id).update(newEvent);
+
+export const createNewEvent = ({ id, ...newEvent }) => eventsCollection.doc().set(newEvent);

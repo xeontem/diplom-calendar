@@ -20,12 +20,12 @@ import SigninDialog from './components/login/signinDialog';
 import { EventDialog } from './components/event-dialog';
 
 import { toggleDialog } from './store/actions/dialog-popup-actions';
-import { setEvents, startFetching } from './store/actions/global-state-actions';
+import { setEvents, startFetching, unmarkEventsUpdated } from './store/actions/global-state-actions';
 import { showToast, removeToast } from './store/actions/toast-actions';
 
 import { _closeSaveMonth } from './instruments/emptyEventOpenClose';
 import { capitalise, getEmptyEvent } from './instruments/utils';
-import { _loadEvents } from './instruments/fetching';
+import { apiCallForHerokuDB } from './instruments/fetching';
 import { getEvents } from './services/firebase.service';
 import './App.css';
 
@@ -52,8 +52,9 @@ export class App extends PureComponent {
   componentDidMount(prevProps) {
     this.props.startFetching();
     getEvents(events => {
-      this.props.showToast({text: "events successfully loaded"})
+      this.props.showToast({text: "events successfully loaded"});
       this.props.setEvents(events);
+      this.props.unmarkEventsUpdated();
     });
   }
 
@@ -62,7 +63,7 @@ export class App extends PureComponent {
   }
 
   _resetEvents = () => {
-    _loadEvents('/reset').then(res => {
+    apiCallForHerokuDB('/reset').then(res => {
       this.setState({resetted: true,
         toast: [{text: res.mess}]});
     });
@@ -95,7 +96,7 @@ export class App extends PureComponent {
   openDialog = e => {
     const event = getEmptyEvent();
     const [{ pageX, pageY }] = e.changedTouches || [e];
-    this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex: 0 });
+    this.props.toggleDialog({ isOpen: true, pageX, pageY, event });
   }
 
   render() {
@@ -105,9 +106,9 @@ export class App extends PureComponent {
       <Button icon tooltipLabel="sign in" onClick={this._openSigninDialog}>assignment</Button>,
       <Button icon tooltipLabel="log in" onClick={this._openLoginDialog}>assignment_ind</Button>,
       <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>,
-      this.props.fetching ? <LinearProgress id="progress" className="loading-bar" style={{top: '50px'}} /> : null
+      this.props.eventsLoading ? <LinearProgress id="progress" className="loading-bar" style={{top: '50px'}} /> : null
     ].filter(x => x);
-
+    const isAddEventButton = this.props.isAdmin && !this.props.isDialogOpen;
     return (
         <NavigationDrawer
           navItems={this.state.links.map(({ pageName, icon, active }) => (
@@ -137,9 +138,15 @@ export class App extends PureComponent {
               <Route path="/table" component={ConnectedTable} />
               <Route path="/month" component={ConnectedMonth} />
             </Switch>
-            {this.props.isAdmin &&
-              <Button tooltipPosition="top" tooltipLabel="add event" onClick={this.openDialog} floating secondary fixed>add</Button>
-            }
+            <Button
+              className="global-action-button"
+              tooltipPosition="top"
+              tooltipLabel={isAddEventButton ? 'add event' : 'send feedback'}
+              onClick={isAddEventButton ? this.openDialog : this.sendFeedback}
+              floating secondary fixed
+            >
+              {isAddEventButton ? 'add' : 'mail_outline'}
+            </Button>
           </div>
           </BrowserRouter>
 
@@ -153,8 +160,9 @@ export class App extends PureComponent {
 const mapStateToProps = state => ({
   isAdmin: state.globalState.isAdmin,
   isMobile: state.globalState.isMobile,
-  fetching: state.globalState.fetching,
+  eventsLoading: state.globalState.eventsLoading,
   toasts: state.toastsReducer.toasts,
+  isDialogOpen: state.dialogPopupReducer.isOpen,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -162,7 +170,8 @@ const mapDispatchToProps = dispatch => ({
   setEvents: bindActionCreators(setEvents, dispatch),
   startFetching: bindActionCreators(startFetching, dispatch),
   showToast: bindActionCreators(showToast, dispatch),
-  removeToast: bindActionCreators(removeToast, dispatch)
+  removeToast: bindActionCreators(removeToast, dispatch),
+  unmarkEventsUpdated: bindActionCreators(unmarkEventsUpdated, dispatch)
 });
 
 export const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);

@@ -8,7 +8,6 @@ import DeleteZone from '../DeleteZone';
 import { EVENT_TYPES } from '../../instruments/constants';
 import { handleDropDeleteZone } from '../../instruments/dragMonth';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
-import { _loadEvents } from '../../instruments/fetching';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
 
 export class Month extends React.Component {
@@ -18,25 +17,24 @@ export class Month extends React.Component {
       addNew: false,
       dateToShow: Date.now(),
       avalMonthes: [
-        { name: 'January', abbreviation: 'Jan' },
-        { name: 'February', abbreviation: 'Feb' },
-        { name: 'March', abbreviation: 'Mar' },
-        { name: 'April', abbreviation: 'Apr' },
-        { name: 'May', abbreviation: 'May' },
-        { name: 'June', abbreviation: 'Jun' },
-        { name: 'July', abbreviation: 'Jul' },
-        { name: 'August', abbreviation: 'Aug' },
-        { name: 'September', abbreviation: 'Sep' },
-        { name: 'October', abbreviation: 'Oct' },
-        { name: 'November', abbreviation: 'Nov' },
-        { name: 'December', abbreviation: 'Dec' }
+        { abbreviation: 'Jan', name: 'January' },
+        { abbreviation: 'Feb', name: 'February' },
+        { abbreviation: 'Mar', name: 'March' },
+        { abbreviation: 'Apr', name: 'April' },
+        { abbreviation: 'May', name: 'May' },
+        { abbreviation: 'Jun', name: 'June' },
+        { abbreviation: 'Jul', name: 'July' },
+        { abbreviation: 'Aug', name: 'August' },
+        { abbreviation: 'Sep', name: 'September' },
+        { abbreviation: 'Oct', name: 'October' },
+        { abbreviation: 'Nov', name: 'November' },
+        { abbreviation: 'Dec', name: 'December' }
       ],
-      avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
+      avalYears: ['2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
       curMonth: (new Date()).toString().slice(4, 7),
       curYear: (new Date()).getFullYear(),
       appliedEventsMonth: this._applyEventsOnDates(this.props.events),
       filtered: this.props.events,
-      fetching: true,
       toasts: [{text: "events successfully loaded"}],
       toastsToDeleteZone: [],
       value: 'All',
@@ -51,7 +49,7 @@ export class Month extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.events.length !== this.props.events.length) {
+    if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
       const appliedEventsMonth = this._applyEventsOnDates(this.props.events);
       this.setState({ appliedEventsMonth });
     }
@@ -60,7 +58,7 @@ export class Month extends React.Component {
   _applyEventsOnDates(events, date = Date.now()) {
     let month = this._calculateMonthArr(date);
     events.forEach((event, eventIndex) => {
-      let eventDate = new Date(event.start.seconds * 1000);
+      let eventDate = new Date(event.start);
       month.forEach((week, weekIndex) => {
         week.forEach((day, dayIndex) => {
           if(eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)){
@@ -186,17 +184,16 @@ export class Month extends React.Component {
 
   _rerender = () => {this.setState({addNew: true})}
 
-  _openDialog = (event, eventIndex) => e => {
+  _openDialog = event => e => {
     if (event) {
       const [{ pageX, pageY }] = e.changedTouches || [e];
-      this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
+      this.props.toggleDialog({ isOpen: true, pageX, pageY, event });
     }
   }
 
   render() {
     return (
       <div className="agenda-wrapper">
-
         {this.props.isAdmin && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone(this)}/> }
         <h3>Events Selector:</h3>
         <div className="md-grid no-padding box">
@@ -281,7 +278,7 @@ export class Month extends React.Component {
                   onDragOver={handleDragOver}
                   onDrop={handleDrop(this, day.curDate)}
                   onDragEnd={handleDragEnd(this, this.props.isMobile)}
-                  onClick={this._openDialog(day.event, day.eventIndex)}
+                  onClick={this._openDialog(day.event)}
                   floating
                   draggable={true}
                 >

@@ -381,13 +381,19 @@ a {
 }
 
 .name-field {
+  display: none;
   margin: 0;
+  margin-right: 5px;
   color: white;
   font-size: 20px;
+
+  @media (min-width: 425px) {
+    display: block;
+  }
 }
 
 .resource-field {
-    margin: 17px 0;
+    margin: 22px 0;
     font-size: 20px;
 }
 
