@@ -3,6 +3,7 @@ import { Button, SelectField, FontIcon, DatePicker } from 'react-md';
 
 import DeleteZone from '../DeleteZone';
 import { handleDropDeleteZone } from '../../instruments/dragWeek';
+import { EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
@@ -11,45 +12,20 @@ import { getStyles } from '../../instruments/utils';
 export class Week extends React.Component {
   constructor(props) {
     super(props);
-    let weekToShow = [];
-    weekToShow.curWeek = false;
-    weekToShow.weekCounter = 0;
+
     this.state = {
       ...this._applyEventsOnDates(this.props.events),
-      filtered: this.props.events,
+      filtered: [],
       dateToShow: Date.now(),
-      avalMonthes: [
-        {name: 'January', abbreviation: 'Jan'},
-        {name: 'February', abbreviation: 'Feb'},
-        {name: 'March', abbreviation: 'Mar'},
-        {name: 'April', abbreviation: 'Apr'},
-        {name: 'May', abbreviation: 'May'},
-        {name: 'June', abbreviation: 'Jun'},
-        {name: 'July', abbreviation: 'Jul'},
-        {name: 'August', abbreviation: 'Aug'},
-        {name: 'September', abbreviation: 'Sep'},
-        {name: 'October', abbreviation: 'Oct'},
-        {name: 'November', abbreviation: 'Nov'},
-        {name: 'December', abbreviation: 'Dec'}
-      ],
-      avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
-      eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
       curMonth: (new Date()).toString().slice(4, 7),
       curYear: (new Date()).getFullYear(),
-      stateItems: [
-        {name: 'All', abbreviation: 'All'},
-        {name: 'deadline', abbreviation: 'deadline'},
-        {name: 'event', abbreviation: 'event'},
-        {name: 'lecture', abbreviation: 'lecture'},
-        {name: 'webinar', abbreviation: 'webinar'},
-        {name: 'workshop', abbreviation: 'workshop'}
-      ],
       toastsToDeleteZone: [],
       value: 'All',
       from: 'All',
       to: 'All',
       top: 0
-    }
+    };
+
     this._filterByType = _filterByType.bind(this);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
@@ -63,13 +39,21 @@ export class Week extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.events.length !== this.props.events.length) {
-      this.setState({ ...this._applyEventsOnDates(this.props.events), filtered: this.props.events });
+    if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
+      this.updateState();
     }
   }
 
   componentDidMount() {
     setTimeout(this._slideDown, 500);
+    this.updateState();
+  }
+
+  updateState() {
+    this.setState({
+      ...this._applyEventsOnDates(this.props.events),
+      filtered: this.props.events
+    });
   }
 
   _slideDown = () => {
@@ -85,7 +69,7 @@ export class Week extends React.Component {
     let avalWeeks = [];
     let appliedEventsMonth = this._calculateMonthArr(date);
     events.forEach((event, eventIndex) => {
-      let eventDate = new Date(event.start.seconds * 1000);
+      let eventDate = new Date(event.start);
       appliedEventsMonth.forEach((week, weekIndex) => {
         week.forEach((day, dayIndex) => {
           if (eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)) {
@@ -144,7 +128,7 @@ export class Week extends React.Component {
       let isCurrentMonth = curMonthNumber === monthNumber;
       weekNumber = this._calculateWeekNum(weekday);
       let today = false;
-      weekArr.curWeek = false;
+      weekArr.curWeek = weekArr.curWeek || false;
       if(curDate.toString().slice(0, 15) === (new Date()).toString().slice(0, 15)) {
         today = true;
         weekArr.curWeek = true;
@@ -213,8 +197,8 @@ export class Week extends React.Component {
   _toggle = (e) => {
     e.nativeEvent.path.forEach(el => {
       if(el.classList && el.classList.contains('action')) {
-        if(this.state.toggleValue === el.dataset.type) this._filterByType('All');
-        else this._filterByType(el.dataset.type);
+        if(this.state.toggleValue === el.dataset.type) this._filterByType('All', true);
+        else this._filterByType(el.dataset.type, true);
       }
     });
   }
@@ -267,7 +251,7 @@ export class Week extends React.Component {
     }
   }
 
- openDialog = (event, eventIndex) => e => {
+  openDialog = (event, eventIndex) => e => {
     if (event) {
       const [{ pageX, pageY }] = e.changedTouches || [e];
       this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
@@ -278,7 +262,6 @@ export class Week extends React.Component {
     let today = false;
     let isInCurMonth = [];
     let NumDayArr = [];
-    console.log(this.state);
     this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].forEach(day => {
       isInCurMonth.push({ isCurrentMonth: day.isCurrentMonth, weekday: day.weekday });
       NumDayArr.push(day.dayNumber)
@@ -312,12 +295,10 @@ export class Week extends React.Component {
             label="Select type of event"
             placeholder="Some State"
             value={this.state.value}
-            menuItems={this.state.stateItems}
-            onChange={this._filterByType}
+            menuItems={EVENT_TYPES}
+            onChange={val => this._filterByType(val, true)}
             errorText="A state is required"
             className="md-cell"
-            itemLabel="name"
-            itemValue="abbreviation"
           />
         </div>
         <h3>Calendar Selector:</h3>
@@ -326,8 +307,8 @@ export class Week extends React.Component {
             id="statesControlled2"
             label="Select month"
             placeholder="Some State"
-            value={this.state.curMonth}
-            menuItems={this.state.avalMonthes}
+            value={(new Date(this.state.dateToShow)).toString().slice(4, 7)}
+            menuItems={AVAIL_MONTHES}
             onChange={this._changeMonth}
             errorText="A state is required"
             className="md-cell"
@@ -338,8 +319,8 @@ export class Week extends React.Component {
             id="statesControlled1"
             label="Select year"
             placeholder="Some State"
-            value={this.state.curYear.toString()}
-            menuItems={this.state.avalYears}
+            value={(new Date(this.state.dateToShow)).getFullYear().toString()}
+            menuItems={AVAIL_YEARS}
             onChange={this._changeYear}
             errorText="A state is required"
             className="md-cell"
@@ -348,7 +329,6 @@ export class Week extends React.Component {
             id="statesControlled1"
             label="Select week"
             placeholder="Some State"
-
             value={this.state.weekToShow.weekCounter}
             menuItems={this.state.avalWeeks}
             onChange={this._changeWeek}
@@ -361,7 +341,7 @@ export class Week extends React.Component {
         <div style={{maxWidth: 750, margin: 'auto', overflow: 'hidden'}}>
           <div className="navigation">
             <Button className="navigate-button" onClick={this._prevWeek} icon>navigate_before</Button>
-            <Button raised className="action date-container" children={`${this.state.curMonth} ${this.state.curYear}, ${this.state.weekToShow.weekCounter+1} week`} />
+            <Button raised className="action date-container" children={`${(new Date(this.state.dateToShow)).toString().slice(4, 7)} ${(new Date(this.state.dateToShow)).getFullYear()}, ${this.state.weekToShow.weekCounter + 1} week`} />
             <Button className="navigate-button" onClick={this._nextWeek} icon>navigate_next</Button>
           </div>
 
@@ -400,7 +380,7 @@ export class Week extends React.Component {
               <div
                 key={day.weekday}
                 style={day.event ? getStyles(day.event) : {}}
-                className={`${day.event ? day.event.type : ''} event-column-week`}
+                className={`${day.event ? day.event.type : 'is-disabled'} event-column event-column__week`}
                 onDragStart={this.handleDragStart}
                 onDragEnter={this.handleDragEnter}
                 onDragLeave={this.handleDragLeave}
@@ -408,7 +388,7 @@ export class Week extends React.Component {
                 onDrop={this.handleDrop}
                 onDragEnd={this.handleDragEnd}
                 onClick={this.openDialog(day.event, index)}
-                draggable={true}
+                draggable
               >
                 {this.props.isAdmin &&
                   <div style={{ borderRadius: '5px', position: 'relative', height: '100%' }}>

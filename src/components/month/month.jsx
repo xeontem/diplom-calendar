@@ -5,7 +5,7 @@ import Button from 'react-md/lib/Buttons';
 
 import DeleteZone from '../DeleteZone';
 
-import { EVENT_TYPES } from '../../instruments/constants';
+import { EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 import { handleDropDeleteZone } from '../../instruments/dragMonth';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
@@ -16,27 +16,12 @@ export class Month extends React.Component {
     this.state = {
       addNew: false,
       dateToShow: Date.now(),
-      avalMonthes: [
-        { abbreviation: 'Jan', name: 'January' },
-        { abbreviation: 'Feb', name: 'February' },
-        { abbreviation: 'Mar', name: 'March' },
-        { abbreviation: 'Apr', name: 'April' },
-        { abbreviation: 'May', name: 'May' },
-        { abbreviation: 'Jun', name: 'June' },
-        { abbreviation: 'Jul', name: 'July' },
-        { abbreviation: 'Aug', name: 'August' },
-        { abbreviation: 'Sep', name: 'September' },
-        { abbreviation: 'Oct', name: 'October' },
-        { abbreviation: 'Nov', name: 'November' },
-        { abbreviation: 'Dec', name: 'December' }
-      ],
-      avalYears: ['2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
       curMonth: (new Date()).toString().slice(4, 7),
       curYear: (new Date()).getFullYear(),
       appliedEventsMonth: this._applyEventsOnDates(this.props.events),
-      filtered: this.props.events,
-      toasts: [{text: "events successfully loaded"}],
+      filtered: [],
       toastsToDeleteZone: [],
+      toggleValue: 'All',
       value: 'All',
       from: 'All',
       to: 'All'
@@ -50,9 +35,17 @@ export class Month extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
-      const appliedEventsMonth = this._applyEventsOnDates(this.props.events);
-      this.setState({ appliedEventsMonth });
+      this.updateState();
     }
+  }
+
+  componentDidMount() {
+    this.updateState();
+  }
+
+  updateState() {
+    const appliedEventsMonth = this._applyEventsOnDates(this.props.events);
+    this.setState({ appliedEventsMonth, filtered: this.props.events });
   }
 
   _applyEventsOnDates(events, date = Date.now()) {
@@ -61,9 +54,8 @@ export class Month extends React.Component {
       let eventDate = new Date(event.start);
       month.forEach((week, weekIndex) => {
         week.forEach((day, dayIndex) => {
-          if(eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)){
+          if (eventDate.toString().slice(0, 15) === day.curDate.toString().slice(0, 15)) {
             day.event = event;
-            day.eventIndex = eventIndex;
           };
         });
       });
@@ -170,7 +162,7 @@ export class Month extends React.Component {
     let curMonth = new Date(dateToShow).toString().slice(4, 7);
     if(curMonth === "Dec") curYear--;
     let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
-    this.setState({curYear, curMonth, dateToShow, appliedEventsMonth});
+    this.setState({ curYear, curMonth, dateToShow, appliedEventsMonth });
   }
 
   _nextMonth = () => {
@@ -181,8 +173,6 @@ export class Month extends React.Component {
     let appliedEventsMonth = this._applyEventsOnDates(this.state.filtered, dateToShow);
     this.setState({curYear, curMonth, dateToShow, appliedEventsMonth});
   }
-
-  _rerender = () => {this.setState({addNew: true})}
 
   _openDialog = event => e => {
     if (event) {
@@ -231,7 +221,7 @@ export class Month extends React.Component {
             label="Select month"
             placeholder="Some State"
             value={this.state.curMonth}
-            menuItems={this.state.avalMonthes}
+            menuItems={AVAIL_MONTHES}
             onChange={this._changeMonth}
             errorText="A state is required"
             className="md-cell"
@@ -243,7 +233,7 @@ export class Month extends React.Component {
             label="Select year"
             placeholder="Some State"
             value={this.state.curYear.toString()}
-            menuItems={this.state.avalYears}
+            menuItems={AVAIL_YEARS}
             onChange={this._changeYear}
             errorText="A state is required"
             className="md-cell"
@@ -272,7 +262,7 @@ export class Month extends React.Component {
                 <Button
                   key={index*30}
                   className={`table-cell ${day.event ? day.event.type : ''} ${day.today ? 'today' : ''} ${day.isCurrentMonth ? '' : 'disabled-cell'}`}
-                  onDragStart={handleDragStart(this, day.event, day.eventIndex)}
+                  onDragStart={handleDragStart(this, day.event, index)}
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
                   onDragOver={handleDragOver}

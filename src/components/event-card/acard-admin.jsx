@@ -174,7 +174,7 @@ export default class ExpandableMediaCard extends React.Component {
             closeOnSave={false}
             onSave={this.props.addNewResource}
             saveLabel="ADD"
-            cancelLabel="HIDE"
+            cancelLabel="FOLD"
           >
             <CSSTransitionGroup
               component="section"

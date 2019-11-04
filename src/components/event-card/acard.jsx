@@ -58,32 +58,27 @@ export default class ExpandableMediaCard extends React.Component {
     <ExpansionList style={{ padding: 16 }}>
       <ExpansionPanel
         label="Resourses"
-        contentClassName="md-grid">
-          <CSSTransitionGroup
-            component="section"
-            transitionName="opacity"
-            transitionEnterTimeout={1000}
-            transitionLeave={false}
-          >
-            {this.props.event.resources.map((resource, i) => (
-              <div key={i}>
-              <h4>Type: {resource.type}</h4>
-              <p>{resource.description}</p>
-              <Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
-              <Divider/>
-              </div>
-            ))}
-          </CSSTransitionGroup>
+        cancelLabel="FOLD"
+        saveLabel="OK"
+        contentClassName="md-grid"
+      >
+        <CSSTransitionGroup
+          component="section"
+          transitionName="opacity"
+          transitionEnterTimeout={1000}
+          transitionLeave={false}
+        >
+          {this.props.event.resources.map((resource, i) => (
+            <div key={i}>
+            <h4>Type: {resource.type}</h4>
+            <p>{resource.description}</p>
+            <Button className="md-cell--right" flat children="Link" href={resource.resource} target="_blank"/>
+            <Divider/>
+            </div>
+          ))}
+        </CSSTransitionGroup>
       </ExpansionPanel>
     </ExpansionList>
-    <Button
-      tooltipPosition="top"
-      tooltipLabel="send feedback"
-      href="mailto:xeontem@gmail.com"
-      floating
-      secondary
-      fixed>mail_outline
-    </Button>
     </Card>
   )}
 }

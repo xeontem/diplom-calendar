@@ -5,41 +5,23 @@ import scroll from '../../instruments/scroll';
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
 import { setStartTime, setEndTime } from '../../instruments/initResize';
 import { getStyles } from '../../instruments/utils';
+import { EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 
 export class Day extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      day: { weekday: this._calculateWeekNum(new Date(Date.now()).getDay()), date: new Date(Date.now()), today: true, events: [] },
-      avalDays: [1,2,3],
-      avalMonthes: [
-        {name: 'January', abbreviation: 0},
-        {name: 'February', abbreviation: 1},
-        {name: 'March', abbreviation: 2},
-        {name: 'April', abbreviation: 3},
-        {name: 'May', abbreviation: 4},
-        {name: 'June', abbreviation: 5},
-        {name: 'July', abbreviation: 6},
-        {name: 'August', abbreviation: 7},
-        {name: 'September', abbreviation: 8},
-        {name: 'October', abbreviation: 9},
-        {name: 'November', abbreviation: 10},
-        {name: 'December', abbreviation: 11}
-      ],
-      avalYears: ['2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010'],
-      eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
-      curMonth: new Date(Date.now()).getMonth(),
+      day: {
+        weekday: this._calculateWeekNum(new Date(Date.now()).getDay()),
+        date: new Date(Date.now()),
+        today: true,
+        events: []
+      },
+      avalDays: [],
+      curMonth: (new Date()).toString().slice(4, 7),
       curYear: new Date(Date.now()).getFullYear(),
       appliedEventsMonth: this._applyEventsOnDates(this.props.events)[0],
       dayIndex: new Date(Date.now()).getDate() - 1,
-      stateItems: [
-        {name: 'All', abbreviation: 'All'},
-        {name: 'deadline', abbreviation: 'deadline'},
-        {name: 'event', abbreviation: 'event'},
-        {name: 'lecture', abbreviation: 'lecture'},
-        {name: 'webinar', abbreviation: 'webinar'},
-        {name: 'workshop', abbreviation: 'workshop'}
-      ],
       backupDayEvents: [],
       filtered: [],
       toastsToDeleteZone: [],
@@ -50,21 +32,26 @@ export class Day extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.events.length !== this.props.events.length) {
-      const [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.props.events);
-      const day = appliedEventsMonth[this.state.dayIndex];
-      this.setState({
-        avalDays,
-        day,
-        filtered: this.props.events,
-        backupDayEvents,
-        appliedEventsMonth,
-      });
+      this.updateState();
     }
   }
 
   componentDidMount() {
     scroll();
-    setTimeout(this._slideDown, 1000);
+    setTimeout(this._slideDown, 500);
+    this.updateState();
+  }
+
+  updateState() {
+    const [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.props.events);
+    const day = appliedEventsMonth[this.state.dayIndex];
+    this.setState({
+      avalDays,
+      day,
+      filtered: this.props.events,
+      backupDayEvents,
+      appliedEventsMonth,
+    });
   }
 
   _slideDown = () => {
@@ -85,7 +72,7 @@ export class Day extends React.Component {
       avaldays.push(dayIndex + 1);
       events.forEach((event, eventIndex) => {
 
-        const eventDate = new Date(event.start.seconds * 1000);
+        const eventDate = new Date(event.start);
 
         if(
           eventDate.getFullYear() === day.date.getFullYear() &&
@@ -162,21 +149,21 @@ export class Day extends React.Component {
     dateToShow.setDate(backupDayNumber);
     let dayIndex = backupDayNumber;
     let day = appliedEventsMonth[dayIndex];
-    this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
+    this.setState({ avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex });
   }
 
   _changeMonth = (curMonth) => {
-    let dateToShow = new Date(this.state.day.date.toString());
+    let dateToShow = new Date(this.state.day.date).toString();
+    dateToShow = new Date(`${dateToShow.slice(0, 4)}${curMonth}${dateToShow.slice(7)}`);
     let backupDayNumber = dateToShow.getDate();
-    dateToShow.setDate(1);
-    dateToShow.setMonth(curMonth);
+
     // check if more then numbers in month
     let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
     if(backupDayNumber > avalDays.length-1) backupDayNumber = avalDays.length-1;
     dateToShow.setDate(backupDayNumber);
     let dayIndex = backupDayNumber;
     let day = appliedEventsMonth[dayIndex];
-    this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
+    this.setState({ curMonth, avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex });
   }
 
   _changeDay = selectedDay => {
@@ -199,10 +186,10 @@ export class Day extends React.Component {
     let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
     let dayIndex = appliedEventsMonth.length-1;
     let day = appliedEventsMonth[dayIndex];
-    this.setState({avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex});
+    this.setState({ avalDays, day, backupDayEvents, appliedEventsMonth, dayIndex });
   }
 
-  _nextMonth = _nextDay => {
+  _nextMonth = () => {
     let dateToShow = new Date(this.state.day.date.toString());
     dateToShow.setDate(this.state.dayIndex + 2);
     let [appliedEventsMonth, avalDays, backupDayEvents] = this._applyEventsOnDates(this.state.filtered, dateToShow);
@@ -221,7 +208,7 @@ export class Day extends React.Component {
     let day = this.state.appliedEventsMonth[dayIndex];
     let backupDayEvents = [];
     if(day.events) backupDayEvents = day.events.slice();
-    this.setState({dayIndex, day, backupDayEvents});
+    this.setState({ dayIndex, day, backupDayEvents });
   }
 
   _nextDay = () => {
@@ -259,12 +246,10 @@ export class Day extends React.Component {
             label="Select type of event"
             placeholder="Some State"
             value={this.state.value}
-            menuItems={this.state.stateItems}
+            menuItems={EVENT_TYPES}
             onChange={this._filterByType}
             errorText="A state is required"
             className="md-cell"
-            itemLabel="name"
-            itemValue="abbreviation"
           />
         </div>
         <h3>Calendar Selector:</h3>
@@ -283,8 +268,8 @@ export class Day extends React.Component {
             id="statesControlled2"
             label="Select month"
             placeholder="Some State"
-            value={this.state.day.date.getMonth()}
-            menuItems={this.state.avalMonthes}
+            value={this.state.day.date.toString().slice(4, 7)}
+            menuItems={AVAIL_MONTHES}
             onChange={this._changeMonth}
             errorText="A state is required"
             className="md-cell"
@@ -296,7 +281,7 @@ export class Day extends React.Component {
             label="Select year"
             placeholder="Some State"
             value={this.state.day.date.getFullYear().toString()}
-            menuItems={this.state.avalYears}
+            menuItems={AVAIL_YEARS}
             onChange={this._changeYear}
             errorText="A state is required"
             className="md-cell"
@@ -327,7 +312,7 @@ export class Day extends React.Component {
               <div
                 key={event.title}
                 style={getStyles(event)}
-                className={`${event.type} event-column-day`}
+                className={`${event.type} event-column event-column__day`}
                 onClick={this.openDialog(event, this.state.day.eventIndexes[index])}
               >
                 {this.props.isAdmin &&

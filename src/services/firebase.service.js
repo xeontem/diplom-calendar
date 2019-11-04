@@ -31,9 +31,15 @@ const eventsCollection = DB.collection('events');
 
 
 // Read
-export const getEvents = cb => eventsCollection
-  .onSnapshot(snap => cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+export const getEvents = cb => eventsCollection.onSnapshot(snap =>
+  cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
 
 export const updateEvent = ({ id, ...newEvent }) => eventsCollection.doc(id).update(newEvent);
+  // .catch(e => {
+  //   const numberDate = new Date(newEvent.start).getTime();
+  //   const newTime = new Date(numberDate + (1000*60*60*24*31*31)).getTime();
+  //   console.log(new Date(newTime));
+  //   eventsCollection.doc().set({ ...newEvent, start: newTime });
+  // });
 
 export const createNewEvent = ({ id, ...newEvent }) => eventsCollection.doc().set(newEvent);

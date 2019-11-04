@@ -18,14 +18,14 @@ export const getEmptyEvent = () => ({
 });
 
 export const getStyles = event => {
-  let startHours = new Date(event.start.seconds * 1000).getHours();
-  let startMins = new Date(event.start.seconds * 1000).getMinutes();
+  let startHours = new Date(event.start).getHours();
+  let startMins = new Date(event.start).getMinutes();
   let marginTop = 24 + 55 * startHours;
   marginTop += startMins * 0.9;
-  let endHours = new Date(Number(new Date(event.start.seconds * 1000)) + Number(new Date(event.duration))).getHours();
-  let endMins = new Date(Number(new Date(event.start.seconds * 1000)) + Number(new Date(event.duration))).getMinutes();
-  let startDate = new Date(event.start.seconds * 1000).getDate();
-  let endDate = new Date(Number(new Date(event.start.seconds * 1000)) + Number(new Date(event.duration))).getDate();
+  let endHours = new Date(Number(new Date(event.start)) + Number(new Date(event.duration))).getHours();
+  let endMins = new Date(Number(new Date(event.start)) + Number(new Date(event.duration))).getMinutes();
+  let startDate = new Date(event.start).getDate();
+  let endDate = new Date(Number(new Date(event.start)) + Number(new Date(event.duration))).getDate();
   let marginBottom = 28 + (23 - endHours) * 55;
   marginBottom -= endMins * 0.9;
   if(startDate !== endDate) marginBottom = -20;
