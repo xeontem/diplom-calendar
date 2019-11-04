@@ -6,6 +6,7 @@ import TableBody from 'react-md/lib/DataTables/TableBody';
 import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
+import { EVENT_TYPES } from '../../instruments/constants';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
@@ -14,7 +15,6 @@ export class Table extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      eventTypes: ['All', 'deadline', 'event', 'lecture', 'webinar', 'workshop'],
       events: this.props.events,
       filtered: this.props.events,
       value: 'All',
@@ -28,7 +28,10 @@ export class Table extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.events.length !== this.props.events.length) {
-      this.setState({ events: this.props.events, filtered: this.props.events });
+      this.setState({
+        events: this.props.events,
+        filtered: this.props.events
+      });
     }
   }
 
@@ -64,7 +67,7 @@ export class Table extends React.Component {
             label="Select type of event"
             value={this.state.value}
             placeholder="Some State"
-            menuItems={this.state.eventTypes}
+            menuItems={EVENT_TYPES}
             onChange={this._filterByType}
             errorText="A state is required"
             className="md-cell"
@@ -88,7 +91,7 @@ export class Table extends React.Component {
                   <TableColumn>{event.type.toUpperCase()}</TableColumn>
                   <TableColumn>{event.title.toUpperCase()}</TableColumn>
                   <TableColumn>{event.description.slice(0, 45)+'...'}</TableColumn>
-                  <TableColumn>{'event.location'}</TableColumn>
+                  <TableColumn>{event.location}</TableColumn>
                 </TableRow>
               )}
             </TableBody>

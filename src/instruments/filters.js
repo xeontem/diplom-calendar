@@ -1,9 +1,7 @@
-export function _filterByType(value) {
-  // alert('_filterByType');
-  let filtered = this.state.events;
-  if(this.state.from !== 'All') {
+export function _filterByType(value, isWeek = false) {
+  let filtered = this.props.events;
 
-    // let fromDate = new Date(this.state.from);
+  if (this.state.from !== 'All') {
     let dayFrom = this.state.from.getDate();
     let monthFrom = this.state.from.getMonth();
     let yearFrom = this.state.from.getFullYear();
@@ -19,9 +17,7 @@ export function _filterByType(value) {
     });
   }
 
-  if(this.state.to !== 'All') {
-
-    // let toDate = new Date(this.state.to);
+  if (this.state.to !== 'All') {
     let dayTo = this.state.to.getDate();
     let monthTo = this.state.to.getMonth();
     let yearTo = this.state.to.getFullYear();
@@ -36,18 +32,25 @@ export function _filterByType(value) {
       return false;
     });
   }
-  if(value !== 'All') {
-    filtered = filtered.filter((event) => {
-      return event.type === value;
-    });
+
+  if (value !== 'All') {
+    filtered = filtered.filter(e => e.type === value);
   }
+
   let appliedEventsMonth;
-  if(this._applyEventsOnDates) appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
-  this.setState({filtered, value, toggleValue: value, appliedEventsMonth});
+
+  if (this._applyEventsOnDates) {
+    appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+  }
+
+  if (isWeek) {
+    this.setState({ filtered, value, toggleValue: value, ...appliedEventsMonth });
+  } else {
+    this.setState({ filtered, value, toggleValue: value, appliedEventsMonth });
+  }
 }
 
 export function _filterByToDate(to) {
-
   let toDate = to.slice(3, 6);
   toDate += to.slice(0, 2);
   toDate += to.slice(5);
@@ -57,9 +60,8 @@ export function _filterByToDate(to) {
   let yearTo = toDate.getFullYear();
 
   let filtered = this.state.events;
-  if(this.state.from !== 'All') {
 
-    // let fromDate = new Date(this.state.from);
+  if (this.state.from !== 'All') {
     let dayFrom = this.state.from.getDate();
     let monthFrom = this.state.from.getMonth();
     let yearFrom = this.state.from.getFullYear();
@@ -85,18 +87,21 @@ export function _filterByToDate(to) {
     return false;
   });
 
-  if(this.state.value !== 'All') {
+  if (this.state.value !== 'All') {
     filtered = filtered.filter((event) => {
       return event.type === this.state.value;
     });
   }
+
   let appliedEventsMonth;
-  if(this._applyEventsOnDates) appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+  if (this._applyEventsOnDates) {
+    appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+  }
+
   this.setState({filtered, to: toDate, appliedEventsMonth});
 }
 
 export function _filterByFromDate(from) {
-
   let fromDate = from.slice(3, 6);
   fromDate += from.slice(0, 2);
   fromDate += from.slice(5);
@@ -115,9 +120,8 @@ export function _filterByFromDate(from) {
     if(month === monthFrom && day >= dayFrom) return true;
     return false;
   });
-  if(this.state.to !== 'All') {
 
-    // let toDate = new Date(this.state.to);
+  if (this.state.to !== 'All') {
     let dayTo = this.state.to.getDate();
     let monthTo = this.state.to.getMonth();
     let yearTo = this.state.to.getFullYear();
@@ -132,12 +136,18 @@ export function _filterByFromDate(from) {
       return false;
     });
   }
-  if(this.state.value !== 'All') {
+
+  if (this.state.value !== 'All') {
     filtered = filtered.filter((event) => {
       return event.type === this.state.value;
     });
   }
+
   let appliedEventsMonth;
-  if(this._applyEventsOnDates) appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+
+  if (this._applyEventsOnDates) {
+    appliedEventsMonth = this._applyEventsOnDates(filtered, this.state.dateToShow);
+  }
+
   this.setState({filtered, from: fromDate, appliedEventsMonth});
 }
