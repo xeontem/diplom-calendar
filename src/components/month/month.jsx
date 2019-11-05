@@ -5,7 +5,7 @@ import Button from 'react-md/lib/Buttons';
 
 import DeleteZone from '../DeleteZone';
 
-import { EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
+import { AVAIL_DAYS, EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 import { handleDropDeleteZone } from '../../instruments/dragMonth';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragMonth';
@@ -113,16 +113,7 @@ export class Month extends React.Component {
   }
 
   _calculateWeekNum(weekDay) {
-    switch(weekDay) {
-      case "Mon": return 0;
-      case "Tue": return 1;
-      case "Wed": return 2;
-      case "Thu": return 3;
-      case "Fri": return 4;
-      case "Sat": return 5;
-      case "Sun": return 6;
-      default: return 0;
-    }
+    return AVAIL_DAYS.indexOf(weekDay);
   }
 
   _progressBarShower = () => {

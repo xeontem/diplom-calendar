@@ -1,4 +1,6 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCPSkUCNDS5sQrVId7cEL3JgAa-aJdhe5o",
@@ -14,23 +16,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const DB = firebase.firestore();
+const auth = firebase.auth();
 const eventsCollection = DB.collection('events');
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
-// Add
-// DB.collection("users").add({
-//     first: "Ada",
-//     last: "Lovelace",
-//     born: 1815
-// })
-// .then(function(docRef) {
-//     console.log("Document written with ID: ", docRef.id);
-// })
-// .catch(function(error) {
-//     console.error("Error adding document: ", error);
-// });
-
-
-// Read
 export const getEvents = cb => eventsCollection.onSnapshot(snap =>
   cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
 
@@ -43,3 +33,12 @@ export const updateEvent = ({ id, ...newEvent }) => eventsCollection.doc(id).upd
   // });
 
 export const createNewEvent = ({ id, ...newEvent }) => eventsCollection.doc().set(newEvent);
+
+
+export const login = () => auth.signInWithPopup(provider)
+  .then(result => ({ displayName: result.user.displayName, photoURL: result.user.photoURL }))
+  .catch(console.log);
+
+export const logout = () => auth.signOut()
+  .then(() => null)
+  .catch(console.log);
