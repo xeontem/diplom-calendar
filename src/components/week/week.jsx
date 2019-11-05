@@ -3,7 +3,7 @@ import { Button, SelectField, FontIcon, DatePicker } from 'react-md';
 
 import DeleteZone from '../DeleteZone';
 import { handleDropDeleteZone } from '../../instruments/dragWeek';
-import { EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
+import { AVAIL_DAYS, EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
@@ -149,16 +149,7 @@ export class Week extends React.Component {
   }
 
   _calculateWeekNum(weekDay) {
-    switch(weekDay) {
-      case "Mon": return 0;
-      case "Tue": return 1;
-      case "Wed": return 2;
-      case "Thu": return 3;
-      case "Fri": return 4;
-      case "Sat": return 5;
-      case "Sun": return 6;
-      default: return 0;
-    }
+    return AVAIL_DAYS.indexOf(weekDay);
   }
 
   _removeToast = () => {
@@ -259,16 +250,7 @@ export class Week extends React.Component {
   }
 
   render() {
-    let today = false;
-    let isInCurMonth = [];
-    let NumDayArr = [];
-    this.state.appliedEventsMonth[this.state.weekToShow.weekCounter].forEach(day => {
-      isInCurMonth.push({ isCurrentMonth: day.isCurrentMonth, weekday: day.weekday });
-      NumDayArr.push(day.dayNumber)
-      if (day.today) {
-        today = (new Date()).toString().slice(0, 3);
-      }
-    });
+    const curWeek = this.state.appliedEventsMonth[this.state.weekToShow.weekCounter];
     return (
       <div className="agenda-wrapper">
         {false && <DeleteZone parent={this} toasts={this.state.toastsToDeleteZone} handleDropDeleteZone={handleDropDeleteZone}/> }
@@ -347,27 +329,13 @@ export class Week extends React.Component {
 
           <div className="header-week">
             <div className="column-week"><Button icon style={{marginTop: -7}}>access_time</Button></div>
-            <div className={today === 'Mon' ? "column-week today-week-day today" : !isInCurMonth[0].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[0]}</span>Mon</p>
-            </div>
-            <div className={today === 'Tue' ? "column-week today-week-day today" : !isInCurMonth[1].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[1]}</span>Tue</p>
-            </div>
-            <div className={today === 'Wed' ? "column-week today-week-day today" : !isInCurMonth[2].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[2]}</span>Wed</p>
-            </div>
-            <div className={today === 'Thu' ? "column-week today-week-day today" : !isInCurMonth[3].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[3]}</span>Thu</p>
-            </div>
-            <div className={today === 'Fri' ? "column-week today-week-day today" : !isInCurMonth[4].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[4]}</span>Fri</p>
-            </div>
-            <div className={today === 'Sat' ? "column-week today-week-day today" : !isInCurMonth[5].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[5]}</span>Sat</p>
-            </div>
-            <div className={today === 'Sun' ? "column-week today-week-day today" : !isInCurMonth[6].isCurrentMonth ? "disabled column-week" : "column-week"}>
-              <p><span className="week-day-number">{NumDayArr[6]}</span>Sun</p>
-            </div>
+            {AVAIL_DAYS.map((day, i) =>
+              <div key={day} className={`
+                column-week ${curWeek[i].today ? 'today-week-day today' : curWeek[i].isCurrentMonth ? '' : 'disabled'}
+              `}>
+                <p><span className="week-day-number">{curWeek[i].dayNumber}</span>{day}</p>
+              </div>
+            )}
           </div>
           <div className="body-week">
             <div className="time">

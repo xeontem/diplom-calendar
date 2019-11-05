@@ -15,18 +15,16 @@ import { ConnectedWeek } from './components/week';
 import { ConnectedDay } from './components/day';
 import { ConnectedTable } from './components/table';
 import { ConnectedAgenda } from './components/agenda';
-import { LoginPopup } from './components/login';
-import SigninDialog from './components/login/signinDialog';
 import { EventDialog } from './components/event-dialog';
 
 import { toggleDialog } from './store/actions/dialog-popup-actions';
-import { setEvents, startFetching, unmarkEventsUpdated } from './store/actions/global-state-actions';
+import { setEvents, startFetching, unmarkEventsUpdated, toggleAdmin } from './store/actions/global-state-actions';
 import { showToast, removeToast } from './store/actions/toast-actions';
 
 import { _closeSaveMonth } from './instruments/emptyEventOpenClose';
 import { capitalise, getEmptyEvent } from './instruments/utils';
 import { apiCallForHerokuDB } from './instruments/fetching';
-import { getEvents } from './services/firebase.service';
+import { getEvents, login, logout } from './services/firebase.service';
 import './App.css';
 
 const PAGES = [
@@ -42,24 +40,17 @@ export class App extends PureComponent {
     super(props);
     this.state = {
       links: PAGES.map(link => ({ ...link, active: window.location.href.includes(link.pageName) })),
-      visible: false,
-      signInvisible: false,
-      user: 'user',
-      avatar: ''
+      user: null,
     };
   }
 
   componentDidMount(prevProps) {
     this.props.startFetching();
     getEvents(events => {
-      this.props.showToast({text: "events successfully loaded"});
+      this.props.showToast({ text: 'events successfully loaded' });
       this.props.setEvents(events);
       this.props.unmarkEventsUpdated();
     });
-  }
-
-  _handleChange = () => {
-    this.props.toggleAdmin();
   }
 
   _resetEvents = () => {
@@ -69,14 +60,18 @@ export class App extends PureComponent {
     });
   }
 
-  _openLoginDialog = () => {
-    let visible = !this.state.visible;
-    this.setState({ visible });
+  logIn = () => {
+    login().then(user => {
+      this.props.toggleAdmin(true);
+      this.setState({ user });
+    });
   }
 
-  _openSigninDialog = () => {
-    let signInvisible = !this.state.signInvisible;
-    this.setState({ signInvisible });
+  logOut = () => {
+    logout().then(user => {
+      this.props.toggleAdmin(false);
+      this.setState({ user });
+    });
   }
 
   routerLinkHandler = name => e => {
@@ -100,14 +95,6 @@ export class App extends PureComponent {
   }
 
   render() {
-    const buttons = [
-      <Avatar src={this.state.avatar} role="presentation" />,
-      <Button flat children={this.state.user} />,
-      <Button icon tooltipLabel="sign in" onClick={this._openSigninDialog}>assignment</Button>,
-      <Button icon tooltipLabel="log in" onClick={this._openLoginDialog}>assignment_ind</Button>,
-      <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>,
-      this.props.eventsLoading ? <LinearProgress id="progress" className="loading-bar" style={{top: '50px'}} /> : null
-    ].filter(x => x);
     const isAddEventButton = this.props.isAdmin && !this.props.isDialogOpen;
     return (
         <NavigationDrawer
@@ -123,11 +110,18 @@ export class App extends PureComponent {
           contentClassName="md-grid"
           toolbarTitle={this.getTitle()}
           toolbarTitleClassName="page-title"
-          toolbarActions={buttons}
+          toolbarActions={[
+              <Avatar src={this.state.user ? this.state.user.photoURL : ''} style={{ display: this.state.user ? 'inline-block' : 'none' }} role="presentation" />,
+              <Button flat style={{ display: this.state.user ? 'inline-block' : 'none' }} children={this.state.user ? this.state.user.displayName : ''} />,
+              <Button icon tooltipLabel={this.state.user ? 'log out' : 'log in'} onClick={this.state.user ? this.logOut : this.logIn}>assignment_ind</Button>,
+              <Button icon tooltipLabel="reset events" onClick={this._resetEvents}>refresh</Button>,
+              <LinearProgress
+                id="progress"
+                className="loading-bar"
+                style={{ display: this.props.eventsLoading ? 'block' : 'none', top: '50px' }}
+              />
+          ]}
         >
-          <LoginPopup visible={this.state.visible} app={this} />
-          <SigninDialog visible={this.state.signInvisible} app={this}></SigninDialog>
-
           <BrowserRouter>
           <div>
             {PAGES.map(({ pageName }) => <Link ref={`LINK_${pageName.toUpperCase()}`} key={pageName} to={`/${pageName}`} />)}
@@ -166,6 +160,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  toggleAdmin: bindActionCreators(toggleAdmin, dispatch),
   toggleDialog: bindActionCreators(toggleDialog, dispatch),
   setEvents: bindActionCreators(setEvents, dispatch),
   startFetching: bindActionCreators(startFetching, dispatch),
