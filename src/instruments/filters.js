@@ -1,4 +1,4 @@
-export function _filterByType(value, isWeek = false) {
+export function _filterByType(isWeek = false, value) {
   let filtered = this.props.events;
 
   if (this.state.from !== 'All') {

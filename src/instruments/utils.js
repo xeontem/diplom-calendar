@@ -13,7 +13,7 @@ export const getEmptyEvent = () => ({
   speakers: [],
   start: Date.now(),
   title: '',
-  type: EVENT_TYPES[1],
+  type: EVENT_TYPES[1].value,
   videoId: DEFAULT_VIDEO_ID,
 });
 

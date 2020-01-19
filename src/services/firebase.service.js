@@ -24,7 +24,10 @@ provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 export const getEvents = cb => eventsCollection.onSnapshot(snap =>
   cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
 
-export const updateEvent = ({ id, ...newEvent }) => eventsCollection.doc(id).update(newEvent);
+export const updateEvent = ({ id, ...newEvent }) => {
+  console.log(newEvent);
+  return eventsCollection.doc(id).update(newEvent);
+};
   // .catch(e => {
   //   const numberDate = new Date(newEvent.start).getTime();
   //   const newTime = new Date(numberDate + (1000*60*60*24*31*31)).getTime();

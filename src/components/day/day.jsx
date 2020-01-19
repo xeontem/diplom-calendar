@@ -2,6 +2,9 @@ import React from 'react';// eslint-disable-next-line
 import { SelectField, Snackbar, LinearProgress, DatePicker, FontIcon, Button } from 'react-md';
 import smile from './legosmile.svg';
 import scroll from '../../instruments/scroll';
+import { Filter } from '../bottom-filter/filter';
+import { EventSelector } from '../event-type-selector/selector';
+
 import { _closeSaveDay } from '../../instruments/emptyEventOpenClose';
 import { setStartTime, setEndTime } from '../../instruments/initResize';
 import { getStyles } from '../../instruments/utils';
@@ -241,15 +244,9 @@ export class Day extends React.Component {
       <div className="agenda-wrapper">
         <h3>Events Selector:</h3>
         <div className="md-grid no-padding box">
-          <SelectField
-            id="statesControlled"
-            label="Select type of event"
-            placeholder="Some State"
+          <EventSelector
             value={this.state.value}
-            menuItems={EVENT_TYPES}
             onChange={this._filterByType}
-            errorText="A state is required"
-            className="md-cell"
           />
         </div>
         <h3>Calendar Selector:</h3>
@@ -333,14 +330,7 @@ export class Day extends React.Component {
             }
           </div>
         </div>
-        <h3>Legend:</h3>
-        <div className="md-grid no-padding box" onClick={this._toggle}>
-          <Button raised data-type="deadline" className={this.state.value === 'deadline' ? "action today" : "action"}><div className="event-cell deadline"></div><p>deadline</p></Button>
-          <Button raised data-type="webinar" className={this.state.value === 'webinar' ? "action today" : "action"}><div className="event-cell webinar"></div><p>webinar</p></Button>
-          <Button raised data-type="lecture" className={this.state.value === 'lecture' ? "action today" : "action"}><div className="event-cell lecture"></div><p>lecture</p></Button>
-          <Button raised data-type="workshop" className={this.state.value === 'workshop' ? "action today" : "action"}><div className="event-cell workshop"></div><p>workshop</p></Button>
-          <Button raised data-type="event" className={this.state.value === 'event' ? "action today" : "action"}><div className="event-cell event"></div><p>event</p></Button>
-        </div>
+        <Filter toggleValue={this.state.toggleValue} _filterByType={this._filterByType} />
       </div>
     )
   }

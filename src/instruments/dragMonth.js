@@ -1,4 +1,5 @@
 import { sendToBackend } from './fetching';
+import { updateEvent } from '../services/firebase.service';
 
 let initElementEvent = null;
 let initElementEventIndex = 0;
@@ -46,22 +47,8 @@ export function handleDragLeave(e) {
   }
 }
 
-export const handleDrop = (component, curDate) => e => {
-  // this / e.target is current target element.
-
-  if (e.stopPropagation) {
-    e.stopPropagation(); // stops the browser from redirecting.
-  }
-
-  initElementEvent.start = curDate;
-
-  let filtered = component.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(component.state.filtered.slice(initElementEventIndex+1));
-  filtered.push(initElementEvent);
-  let appliedEventsMonth = component._applyEventsOnDates(filtered, component.state.dateToShow);
-  component.setState({appliedEventsMonth, filtered, toastsToDeleteZone: []});
-  sendToBackend(initElementEvent);
-  return false;
+export const handleDrop = start => e => {
+  return updateEvent({ ...initElementEvent, start });
 }
 
 export const handleDragEnd = (component, isMobile) => e => {

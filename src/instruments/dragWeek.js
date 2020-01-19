@@ -1,13 +1,16 @@
 import { sendToBackend } from './fetching';
+import { updateEvent } from '../services/firebase.service';
 
 let initElementEvent = null;
 let initElementEventIndex = 0;
 
-export function handleDragStart(week, e) {
-  e.target.style.opacity = '0.4';  // this / e.target is the source node.
-  initElementEvent = this.props.day.event;
-  initElementEventIndex = this.props.eventIndex;
-  if(!week.state.toastsToDeleteZone[0]) week.setState({toastsToDeleteZone: [{text: 'Drag here to delete'}]});
+export function handleDragStart(e, week, event) {
+  e.target.style.opacity = '0.4';
+  initElementEvent = event;
+
+  if (!week.state.toastsToDeleteZone[0]) {
+    week.setState({toastsToDeleteZone: [{ text: 'Drag here to delete' }]});
+  }
 }
 
 export function handleDragOver(e) {
@@ -31,21 +34,8 @@ export function handleDragLeave(e) {
   // if(e.target.className === "day-number") e.target.parentElement.parentElement.classList.remove('over');
 }
 
-export function handleDrop(e) {
-  // this / e.target is current target element.
-
-  if (e.stopPropagation) {
-    e.stopPropagation(); // stops the browser from redirecting.
-  }
-  initElementEvent.start = this.props.day.curDate;
-
-  let filtered = this.props.week.state.filtered.slice(0, initElementEventIndex);
-  filtered = filtered.concat(this.props.week.state.filtered.slice(initElementEventIndex+1));
-  filtered.push(initElementEvent);
-  let appliedEventsMonth = this.props.week._applyEventsOnDates(filtered, this.props.week.state.dateToShow);
-  this.props.week.setState({appliedEventsMonth, filtered});
-  sendToBackend(initElementEvent);
-  return false;
+export const handleDrop = start => e => {
+  return updateEvent({ ...initElementEvent, start });
 }
 
 export function handleDragEnd(e) {
@@ -62,7 +52,7 @@ export function handleDropDeleteZone(week, e) {
   if (e.stopPropagation) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
-  
+
   if(e.target.id === "snackbarAlert") {
     let event = week.state.filtered[initElementEventIndex];
     let filtered = week.state.filtered.slice(0, initElementEventIndex);
