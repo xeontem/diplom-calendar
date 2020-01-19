@@ -1,9 +1,11 @@
 import React from 'react';// eslint-disable-next-line
 import { Button, SelectField, FontIcon, DatePicker } from 'react-md';
-
+import { Filter } from '../bottom-filter/filter';
 import DeleteZone from '../DeleteZone';
+import { EventSelector } from '../event-type-selector/selector';
+
 import { handleDropDeleteZone } from '../../instruments/dragWeek';
-import { AVAIL_DAYS, EVENT_TYPES, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
+import { AVAIL_DAYS, AVAIL_MONTHES, AVAIL_YEARS } from '../../instruments/constants';
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveWeek } from '../../instruments/emptyEventOpenClose';
 import { handleDragStart, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleDragEnd } from '../../instruments/dragWeek';
@@ -26,7 +28,7 @@ export class Week extends React.Component {
       top: 0
     };
 
-    this._filterByType = _filterByType.bind(this);
+    this._filterByType = _filterByType.bind(this, true);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
 
@@ -40,18 +42,19 @@ export class Week extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
-      this.updateState();
+      this.updateState(false);
     }
   }
 
   componentDidMount() {
     setTimeout(this._slideDown, 500);
-    this.updateState();
+    this.updateState(true);
   }
 
-  updateState() {
+  updateState(updateWeek) {
     this.setState({
       ...this._applyEventsOnDates(this.props.events),
+      ...(updateWeek ? {} : { weekToShow: this.state.weekToShow }),
       filtered: this.props.events
     });
   }
@@ -272,15 +275,9 @@ export class Week extends React.Component {
             onChange={this._filterByToDate}
             autoOk
           />
-          <SelectField
-            id="statesControlled"
-            label="Select type of event"
-            placeholder="Some State"
+          <EventSelector
             value={this.state.value}
-            menuItems={EVENT_TYPES}
-            onChange={val => this._filterByType(val, true)}
-            errorText="A state is required"
-            className="md-cell"
+            onChange={this._filterByType}
           />
         </div>
         <h3>Calendar Selector:</h3>
@@ -349,11 +346,11 @@ export class Week extends React.Component {
                 key={day.weekday}
                 style={day.event ? getStyles(day.event) : {}}
                 className={`${day.event ? day.event.type : 'is-disabled'} event-column event-column__week`}
-                onDragStart={this.handleDragStart}
+                onDragStart={e => this.handleDragStart(e, this, day.event)}
                 onDragEnter={this.handleDragEnter}
                 onDragLeave={this.handleDragLeave}
                 onDragOver={this.handleDragOver}
-                onDrop={this.handleDrop}
+                onDrop={this.handleDrop(day.curDate.getTime())}
                 onDragEnd={this.handleDragEnd}
                 onClick={this.openDialog(day.event, index)}
                 draggable
@@ -372,14 +369,7 @@ export class Week extends React.Component {
             )}
           </div>
         </div>
-        <h3>Legend:</h3>
-        <div className="md-grid no-padding box" onClick={this._toggle}>
-          <Button raised data-type="deadline" className={this.state.toggleValue === 'deadline' ? "action today" : "action"}><div className="event-cell deadline"></div><p>deadline</p></Button>
-          <Button raised data-type="webinar" className={this.state.toggleValue === 'webinar' ? "action today" : "action"}><div className="event-cell webinar"></div><p>webinar</p></Button>
-          <Button raised data-type="lecture" className={this.state.toggleValue === 'lecture' ? "action today" : "action"}><div className="event-cell lecture"></div><p>lecture</p></Button>
-          <Button raised data-type="workshop" className={this.state.toggleValue === 'workshop' ? "action today" : "action"}><div className="event-cell workshop"></div><p>workshop</p></Button>
-          <Button raised data-type="event" className={this.state.toggleValue === 'event' ? "action today" : "action"}><div className="event-cell event"></div><p>event</p></Button>
-        </div>
+        <Filter toggleValue={this.state.toggleValue} _filterByType={this._filterByType} />
       </div>
     )
   }

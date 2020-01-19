@@ -19,7 +19,7 @@ export class Agenda extends React.Component {
       to: 'All'
     };
 
-    this._filterByType = _filterByType.bind(this);
+    this._filterByType = _filterByType.bind(this, false);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
   }

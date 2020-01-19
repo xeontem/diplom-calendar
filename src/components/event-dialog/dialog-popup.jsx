@@ -3,9 +3,10 @@ import { Toolbar, Button, DialogContainer, SelectField, TextField } from 'react-
 
 import Card from '../event-card/acard';
 import CardAdmin from '../event-card/acard-admin';
+import { EventSelector } from '../event-type-selector/selector';
 
 import { _loadSpeakers, apiCallForHerokuDB } from '../../instruments/fetching';
-import { EVENT_TYPES, DEFAULT_AVATAR } from '../../instruments/constants';
+import { LECTURES_TYPES, EVENT_TYPES, DEFAULT_AVATAR } from '../../instruments/constants';
 import { getEmptyEvent } from '../../instruments/utils';
 import { updateEvent, createNewEvent } from '../../services/firebase.service';
 
@@ -138,23 +139,19 @@ export class DialogPopup extends React.Component {
     const nav = this.props.isAdmin
       ? <div className="container">
         <p className="name-field">Type:</p>
+        <EventSelector
+          value={this.state.newEvent.type}
+          onChange={this.changeEventProp('type')}
+        />
+        <p className="name-field">Title:</p>
         <SelectField
           className="title-selector"
           id="type-selector"
-          value={this.state.newEvent.type}
-          onChange={this.changeEventProp('type')}
-          menuItems={EVENT_TYPES}
-        />
-        <p className="name-field">Title:</p>
-        <TextField
-          id="title-input"
-          className="md-cell md-cell--bottom text-title"
-          style={{ margin: 0 }}
           value={this.state.newEvent.title}
           onChange={this.changeEventProp('title')}
-          size={8}
-          customSize="title"
-          lineDirection="right"
+          menuItems={LECTURES_TYPES}
+          itemLabel="label"
+          itemValue="value"
         />
       </div>
       : null;

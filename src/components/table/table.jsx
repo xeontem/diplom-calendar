@@ -7,6 +7,7 @@ import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 import { EVENT_TYPES } from '../../instruments/constants';
+import { EventSelector } from '../event-type-selector/selector';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
@@ -21,7 +22,7 @@ export class Table extends React.Component {
       from: 'All',
       to: 'All'
     }
-    this._filterByType = _filterByType.bind(this);
+    this._filterByType = _filterByType.bind(this, false);
     this._filterByToDate = _filterByToDate.bind(this);
     this._filterByFromDate = _filterByFromDate.bind(this);
   }
@@ -62,17 +63,9 @@ export class Table extends React.Component {
             onChange={this._filterByToDate}
             autoOk
           />
-          <SelectField
-            id="statesControlled"
-            label="Select type of event"
+          <EventSelector
             value={this.state.value}
-            placeholder="Some State"
-            menuItems={EVENT_TYPES}
             onChange={this._filterByType}
-            errorText="A state is required"
-            className="md-cell"
-            itemLabel="name"
-            itemValue="abbreviation"
           />
         </div>
         <div>
