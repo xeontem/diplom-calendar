@@ -190,6 +190,7 @@ export class Month extends React.Component {
             autoOk
           />
           <EventSelector
+            className="global-selector"
             value={this.state.value}
             onChange={this._filterByType}
           />

@@ -10,7 +10,8 @@ const mapStateToProps = state => ({
   toasts: state.toastsReducer.toasts,
   isMobile: state.globalState.isMobile,
   isAdmin: state.globalState.isAdmin,
-  events: state.globalState.events
+  events: state.globalState.events,
+  eventsUpdated: state.globalState.eventsUpdated
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -53,6 +53,7 @@ export default class ExpandableMediaCard extends React.Component {
     `${date.getHours() < 10 ? '0' : ''}${date.getHours()}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()}`
 
   render() {
+    console.log(this.props.event);
     return (
       <Card style={{ maxWidth: this.props.mobile ? '95%' : '70%' }} className="md-block-expanded md-block-centered">
         <div style={{marginLeft: 15, marginTop: 80}}>
@@ -74,7 +75,6 @@ export default class ExpandableMediaCard extends React.Component {
             id="start-date-picker"
             className="md-cell"
             label={this.getDateLabel(new Date(this.props.event.start))}
-            locales="en-EN"
             onChange={this.changeDate}
             autoOk
           />
@@ -89,52 +89,6 @@ export default class ExpandableMediaCard extends React.Component {
         </div>
         {/* TODO: add duration range here */}
         <Divider/>
-        <Media className="iframe-wrapper">
-          <iframe
-            className="move-on-top"
-            src={YOUTUBE_DOMAIN + this.props.event.videoId}
-            frameBorder="0"
-            style={{border: 0}}
-            allowFullScreen
-          ></iframe>
-          <MediaOverlay>
-            <CardTitle
-              title="Video ID for the lesson:"
-              subtitle={
-                <TextField
-                  id="video-id-input"
-                  value={this.props.event.videoId}
-                  placeholder="insert video id here"
-                  rows={1}
-                  onChange={this.props.changeEventProp('videoId')}
-                />
-              }
-            />
-          </MediaOverlay>
-        </Media>
-        <Media className="iframe-wrapper">
-          <iframe
-            className="move-on-top"
-            src={GMAPS_API + this.props.event.location}
-            frameBorder="0"
-            style={{border: 0}}
-            allowFullScreen
-          ></iframe>
-          <MediaOverlay>
-            <CardTitle
-              className="location-wrapper"
-              title="Location"
-              subtitle={
-                <TextField
-                  id="location-input"
-                  defaultValue={this.props.event.location}
-                  rows={1}
-                  onChange={this.props.changeEventProp('location')}
-                />
-              }
-            />
-          </MediaOverlay>
-        </Media>
         <div className="md-grid">
           {this.props.event.speakers.map((speaker, i) => (
             <CardTitle
@@ -223,6 +177,52 @@ export default class ExpandableMediaCard extends React.Component {
             </CSSTransitionGroup>
           </ExpansionPanel>
         </ExpansionList>
+        <Media className="iframe-wrapper">
+          <iframe
+            className="move-on-top"
+            src={GMAPS_API + this.props.event.location}
+            frameBorder="0"
+            style={{border: 0}}
+            allowFullScreen
+          ></iframe>
+          <MediaOverlay>
+            <CardTitle
+              className="location-wrapper"
+              title="Location"
+              subtitle={
+                <TextField
+                  id="location-input"
+                  defaultValue={this.props.event.location}
+                  rows={1}
+                  onChange={this.props.changeEventProp('location')}
+                />
+              }
+            />
+          </MediaOverlay>
+        </Media>
+        <Media className="iframe-wrapper">
+          <iframe
+            className="move-on-top"
+            src={YOUTUBE_DOMAIN + this.props.event.videoId}
+            frameBorder="0"
+            style={{border: 0}}
+            allowFullScreen
+          ></iframe>
+          <MediaOverlay>
+            <CardTitle
+              title="Video ID for the lesson:"
+              subtitle={
+                <TextField
+                  id="video-id-input"
+                  value={this.props.event.videoId}
+                  placeholder="insert video id here"
+                  rows={1}
+                  onChange={this.props.changeEventProp('videoId')}
+                />
+              }
+            />
+          </MediaOverlay>
+        </Media>
       </Card>
     );
   }

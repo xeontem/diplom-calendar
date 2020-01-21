@@ -25,7 +25,7 @@ provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
 export const onAuthStateChanged = new Promise(res => {
   auth.onAuthStateChanged(data => {
-    res(userAdapter(data));
+    res(data ? userAdapter(data) : null);
   });
 });
 
@@ -51,5 +51,4 @@ export const login = () => auth.signInWithPopup(provider)
   .catch(console.log);
 
 export const logout = () => auth.signOut()
-  .then(() => null)
   .catch(console.log);
