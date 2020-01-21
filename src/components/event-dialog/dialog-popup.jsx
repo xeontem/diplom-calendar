@@ -145,7 +145,6 @@ export class DialogPopup extends React.Component {
         />
         <p className="name-field">Title:</p>
         <SelectField
-          className="title-selector"
           id="type-selector"
           value={this.state.newEvent.title}
           onChange={this.changeEventProp('title')}

@@ -24,7 +24,7 @@ import { showToast, removeToast } from './store/actions/toast-actions';
 import { _closeSaveMonth } from './instruments/emptyEventOpenClose';
 import { capitalise, getEmptyEvent } from './instruments/utils';
 import { apiCallForHerokuDB } from './instruments/fetching';
-import { getEvents, login, logout } from './services/firebase.service';
+import { getEvents, login, logout, onAuthStateChanged } from './services/firebase.service';
 import './App.css';
 
 const PAGES = [
@@ -51,6 +51,8 @@ export class App extends PureComponent {
       this.props.setEvents(events);
       this.props.unmarkEventsUpdated();
     });
+
+    this.onLogin(onAuthStateChanged);
   }
 
   _resetEvents = () => {
@@ -60,11 +62,15 @@ export class App extends PureComponent {
     });
   }
 
-  logIn = () => {
-    login().then(user => {
+  onLogin(promise) {
+    return promise.then(user => {
       this.props.toggleAdmin(true);
       this.setState({ user });
     });
+  }
+
+  logIn = () => {
+    this.onLogin(login())
   }
 
   logOut = () => {

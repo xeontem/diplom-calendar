@@ -2,6 +2,8 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 
+const userAdapter = result => ({ displayName: result.displayName, photoURL: result.photoURL });
+
 const firebaseConfig = {
   apiKey: "AIzaSyCPSkUCNDS5sQrVId7cEL3JgAa-aJdhe5o",
   authDomain: "diplom-calendar.firebaseapp.com",
@@ -21,6 +23,12 @@ const eventsCollection = DB.collection('events');
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
+export const onAuthStateChanged = new Promise(res => {
+  auth.onAuthStateChanged(data => {
+    res(userAdapter(data));
+  });
+});
+
 export const getEvents = cb => eventsCollection.onSnapshot(snap =>
   cb(snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
 
@@ -39,7 +47,7 @@ export const createNewEvent = ({ id, ...newEvent }) => eventsCollection.doc().se
 
 
 export const login = () => auth.signInWithPopup(provider)
-  .then(result => ({ displayName: result.user.displayName, photoURL: result.user.photoURL }))
+  .then(data => userAdapter(data.user))
   .catch(console.log);
 
 export const logout = () => auth.signOut()

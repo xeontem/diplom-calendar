@@ -3,7 +3,7 @@ import defaultAvatar from '../../img/avatar.png';
 const getInitialState = () => ({
   isAdmin: false,
   discard: false,
-  isMobile: true,
+  isMobile: false,
   defaultAvatar,
   eventsLoading: false,
   eventsUpdated: false,

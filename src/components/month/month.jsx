@@ -228,13 +228,9 @@ export class Month extends React.Component {
             <Button className="navigate-button" onClick={this._nextMonth} icon>navigate_next</Button>
           </div>
           <div className="header-week">
-            <div className="column-month">{this.props.isMobile ? 'Mon' : 'Monday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Tue' : 'Tuesday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Wed' : 'Wednesday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Thu' : 'Thursday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Fri' : 'Friday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Sat' : 'Saturday'}</div>
-            <div className="column-month">{this.props.isMobile ? 'Sun' : 'Sunday'}</div>
+            { AVAIL_DAYS.map(day =>
+              <div key={day} className="column-month">{day}</div>
+            ) }
           </div>
           { this.state.appliedEventsMonth.map((week, i) =>
             <div className="body-month" key={i}>
