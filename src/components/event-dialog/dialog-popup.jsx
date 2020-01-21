@@ -135,7 +135,7 @@ export class DialogPopup extends React.Component {
   render() {
     const title = this.props.isAdmin
       ? null
-      : `${this.state.newEvent.type.toUpperCase()}: ${this.state.newEvent.title.toUpperCase()}`;
+      : `${(EVENT_TYPES.find(t => t.value === this.state.newEvent.type) || { label: '' }).label.toUpperCase()}: ${(LECTURES_TYPES.find(t => t.value === this.state.newEvent.title) || { label: '' }).label.toUpperCase()}`;
     const nav = this.props.isAdmin
       ? <div className="container">
         <p className="name-field">Type:</p>

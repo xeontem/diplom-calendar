@@ -52,7 +52,7 @@ export class App extends PureComponent {
       this.props.unmarkEventsUpdated();
     });
 
-    this.onLogin(onAuthStateChanged);
+    this.onLoginStateChange(onAuthStateChanged);
   }
 
   _resetEvents = () => {
@@ -62,15 +62,15 @@ export class App extends PureComponent {
     });
   }
 
-  onLogin(promise) {
+  onLoginStateChange(promise) {
     return promise.then(user => {
-      this.props.toggleAdmin(true);
+      this.props.toggleAdmin(!!user);
       this.setState({ user });
     });
   }
 
   logIn = () => {
-    this.onLogin(login())
+    this.onLoginStateChange(login())
   }
 
   logOut = () => {

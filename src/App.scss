@@ -13,3 +13,9 @@ header {
   bottom: 3vh;
   z-index: 1000;
 }
+
+.global-selector {
+  display: flex !important;
+  flex-direction: column-reverse;
+  margin-bottom: 8px;
+}

@@ -6,18 +6,20 @@ import TableBody from 'react-md/lib/DataTables/TableBody';
 import TableHeader from 'react-md/lib/DataTables/TableHeader';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
-import { EVENT_TYPES } from '../../instruments/constants';
+import { EVENT_TYPES, LECTURES_TYPES } from '../../instruments/constants';
 import { EventSelector } from '../event-type-selector/selector';
 
 import { _filterByFromDate, _filterByToDate, _filterByType } from '../../instruments/filters';
 import { _closeSaveTableAgenda } from '../../instruments/emptyEventOpenClose';
+
+import './styles.css';
 
 export class Table extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       events: this.props.events,
-      filtered: this.props.events,
+      filtered: this.mapEvents(this.props.events),
       value: 'All',
       from: 'All',
       to: 'All'
@@ -28,12 +30,31 @@ export class Table extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.events.length !== this.props.events.length) {
+    if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
       this.setState({
         events: this.props.events,
-        filtered: this.props.events
+        filtered: this.mapEvents(this.props.events)
       });
     }
+  }
+
+  mapEvents(events) {
+    return events.reduce((filtered, event) => {
+      const eventTime = this.getEventDate(event.start, 4, 16);
+      const timeValue = new Date(eventTime).getTime();
+      const eventDay = filtered.find(map => map.time === eventTime);
+      if (eventDay) {
+        eventDay.events.push(event);
+      } else {
+        filtered.push({ timeValue, time: eventTime, events: [event] });
+      }
+      return filtered;
+    }, [])
+      .map(dayEvent => {
+        dayEvent.events.sort((a, b) => a.start - b.start);
+        return this.getInvalidEventIndexes(dayEvent);
+      })
+      .sort((a, b) => a.timeValue - b.timeValue);
   }
 
   openDialog = (event, eventIndex) => e => {
@@ -41,6 +62,43 @@ export class Table extends React.Component {
       const [{ pageX, pageY }] = e.changedTouches || [e];
       this.props.toggleDialog({ isOpen: true, pageX, pageY, event, eventIndex });
     }
+  }
+
+  getInvalidEventIndexes(dayEvent) {
+    return {
+      ...dayEvent,
+      invalidEventIndexes: dayEvent.events.reduce((titles, event, i) => {
+        const eventTitles = titles.find(t => t.title === event.title);
+        if (eventTitles) {
+          eventTitles.events.push(event);
+        } else {
+          titles.push({ title: event.title, events: [event] });
+        }
+        return titles;
+      }, []).reduce((indexes, titles, i, arr) => {
+        if (titles.events.length > 1) {
+          const restTitles = arr.filter(t => t.title !== titles.title)
+          restTitles.forEach(rts => {
+            rts.events.forEach(re => {
+              const less = titles.events.find(e => e.start < re.start);
+              const  more = titles.events.find(e => e.start > re.start);
+              if (less && more) {
+                indexes.push(more.id);
+              }
+            });
+          });
+        }
+        return indexes;
+      }, [])
+    };
+  }
+
+  getEventDate(start, startTrim, endTrim) {
+    return (new Date(start)).toString().slice(startTrim, endTrim);
+  }
+
+  invaliCheck(dayEvents, id) {
+    return dayEvents.invalidEventIndexes.includes(id) ? 'invalid-event' : '';
   }
 
   render() {
@@ -64,6 +122,7 @@ export class Table extends React.Component {
             autoOk
           />
           <EventSelector
+            className="global-selector"
             value={this.state.value}
             onChange={this._filterByType}
           />
@@ -72,21 +131,31 @@ export class Table extends React.Component {
           <DataTable plain onClick={this._showInfo}>
             <TableHeader>
               <TableRow>
-                <TableColumn>type</TableColumn>
-                <TableColumn>title</TableColumn>
-                <TableColumn>description</TableColumn>
-                <TableColumn>location</TableColumn>
+                <TableColumn>Type</TableColumn>
+                <TableColumn>Title</TableColumn>
+                <TableColumn>Time</TableColumn>
+                <TableColumn>Location</TableColumn>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {this.state.filtered.map((event, i) =>
-                <TableRow key={event.description.slice(0, 45)} onClick={this.openDialog(event, i)} className="pointer">
-                  <TableColumn>{event.type.toUpperCase()}</TableColumn>
-                  <TableColumn>{event.title.toUpperCase()}</TableColumn>
-                  <TableColumn>{event.description.slice(0, 45)+'...'}</TableColumn>
-                  <TableColumn>{event.location}</TableColumn>
-                </TableRow>
-              )}
+              { this.state.filtered.flatMap((dayEvents, i) =>
+                dayEvents.events.map((event, i) => [
+                  (i === 0 &&
+                    <TableRow key={dayEvents.time} className="day-header">
+                      <TableColumn>{dayEvents.time}</TableColumn>
+                      <TableColumn></TableColumn>
+                      <TableColumn></TableColumn>
+                      <TableColumn></TableColumn>
+                    </TableRow>
+                  ),
+                  <TableRow key={event.id} onClick={this.openDialog(event, i)} className={`pointer ${this.invaliCheck(dayEvents, event.id)}`}>
+                    <TableColumn>{(EVENT_TYPES.find(t => t.value === event.type) || {}).label}</TableColumn>
+                    <TableColumn>{(LECTURES_TYPES.find(t => t.value === event.title) || {}).label}</TableColumn>
+                    <TableColumn>{this.getEventDate(event.start, 16, 21)}</TableColumn>
+                    <TableColumn>{event.location}</TableColumn>
+                  </TableRow>
+                ].filter(x => x))
+              ) }
             </TableBody>
           </DataTable>
         </div>

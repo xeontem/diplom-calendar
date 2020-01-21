@@ -8,7 +8,8 @@ const mapStateToProps = state => ({
   ...state.dialogPopupReducer,
   isAdmin: state.globalState.isAdmin,
   isMobile: state.globalState.isMobile,
-  events: state.globalState.events
+  events: state.globalState.events,
+  eventsUpdated: state.globalState.eventsUpdated
 });
 
 const mapDispatchToProps = dispatch => ({

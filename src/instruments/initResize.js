@@ -1,4 +1,4 @@
-import { sendToBackend } from './fetching';
+import { updateEvent } from '../services/firebase.service';
 
 export const setStartTime = eventProps => e => {
   let event = e.target.parentElement.parentElement;
@@ -35,7 +35,7 @@ export const setStartTime = eventProps => e => {
     document.documentElement.removeEventListener('touchmove', doDrag, false);
     document.documentElement.removeEventListener('mouseup', stopDrag, false);
     document.documentElement.removeEventListener('touchend', stopDrag, false);
-    sendToBackend(eventProps);
+    updateEvent(eventProps);
   }
 
   document.documentElement.addEventListener('mousemove', doDrag, false);
@@ -83,7 +83,7 @@ export const setEndTime = eventProps => e => {
     document.documentElement.removeEventListener('touchmove', doDrag, false);
     document.documentElement.removeEventListener('mouseup', stopDrag, false);
     document.documentElement.removeEventListener('touchend', stopDrag, false);
-    sendToBackend(eventProps);
+    updateEvent(eventProps);
   }
 
   document.documentElement.addEventListener('mousemove', doDrag, false);

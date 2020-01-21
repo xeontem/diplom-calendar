@@ -34,7 +34,7 @@ export class Day extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.events.length !== this.props.events.length) {
+    if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
       this.updateState();
     }
   }
@@ -130,15 +130,14 @@ export class Day extends React.Component {
     this.setState({ toasts: [] });
   }
 
-  _filterByType = (value) => {
-    let day = this.state.day;
-    if(day.events.length) {
-      day.events = this.state.backupDayEvents.filter((event) => {
-      if(value === 'All') return true;
-      return event.type === value});
-    }
-
-    this.setState({ day, value });
+  _filterByType = value => {
+    this.setState({
+      day: {
+        ...this.state.day,
+        events: this.state.backupDayEvents.filter(e => value === 'All' || e.type === value)
+      },
+      value
+    });
   }
 
   _changeYear = (curYear) => {
@@ -307,7 +306,7 @@ export class Day extends React.Component {
             {this.state.day.events.length
               ? this.state.day.events.map((event, index) =>
               <div
-                key={event.title}
+                key={event.id}
                 style={getStyles(event)}
                 className={`${event.type} event-column event-column__day`}
                 onClick={this.openDialog(event, this.state.day.eventIndexes[index])}
@@ -330,7 +329,7 @@ export class Day extends React.Component {
             }
           </div>
         </div>
-        <Filter toggleValue={this.state.toggleValue} _filterByType={this._filterByType} />
+        <Filter toggleValue={this.state.value} _filterByType={this._filterByType} />
       </div>
     )
   }
