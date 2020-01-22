@@ -19,7 +19,7 @@ export class Table extends React.Component {
     super(props);
     this.state = {
       events: this.props.events,
-      filtered: this.mapEvents(this.props.events),
+      filtered: this.validateEvents(this.props.events),
       value: 'All',
       from: 'All',
       to: 'All'
@@ -33,13 +33,13 @@ export class Table extends React.Component {
     if (prevProps.eventsUpdated && !this.props.eventsUpdated) {
       this.setState({
         events: this.props.events,
-        filtered: this.mapEvents(this.props.events)
+        filtered: this.validateEvents(this.props.events)
       });
     }
   }
 
-  mapEvents(events) {
-    return events.reduce((filtered, event) => {
+  validateEvents(events) {
+    const prevalidated = events.reduce((filtered, event) => {
       const eventTime = this.getEventDate(event.start, 4, 16);
       const timeValue = new Date(eventTime).getTime();
       const eventDay = filtered.find(map => map.time === eventTime);
@@ -55,6 +55,25 @@ export class Table extends React.Component {
         return this.getInvalidEventIndexes(dayEvent);
       })
       .sort((a, b) => a.timeValue - b.timeValue);
+    return this.checkNextDayEvent(prevalidated);
+  }
+
+  checkNextDayEvent(events) {
+    let prevDay;
+    return events.reduce((validated, eventDay) => {
+      if (prevDay) {
+        const prev = prevDay.events[prevDay.events.length - 1];
+        const next = eventDay.events[0];
+        const twelvehours = 1000 * 60 *60 * 12;
+        const sameLector = next.speakers.includes(prev.speakers[0]);
+        if (prev.title === next.title && (next.start - prev.start) < twelvehours && sameLector) {
+          eventDay.invalidEventIndexes.push(next.id);
+        }
+      }
+      prevDay = eventDay
+      validated.push(eventDay);
+      return validated;
+    }, []);
   }
 
   openDialog = (event, eventIndex) => e => {
@@ -82,7 +101,8 @@ export class Table extends React.Component {
             rts.events.forEach(re => {
               const less = titles.events.find(e => e.start < re.start);
               const  more = titles.events.find(e => e.start > re.start);
-              if (less && more) {
+              const sameLector = more && re.speakers.includes(more.speakers[0]);
+              if (less && more && sameLector) {
                 indexes.push(more.id);
               }
             });
