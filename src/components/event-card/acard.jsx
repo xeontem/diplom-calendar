@@ -8,7 +8,6 @@ import Avatar from 'react-md/lib/Avatars';
 import Button from 'react-md/lib/Buttons';
 import Divider from 'react-md/lib/Dividers';
 
-
 export default class ExpandableMediaCard extends React.Component {
   render() {
   let readyVideoURLToShow = 'https://www.youtube.com/embed/' + (this.props.event.videoId || '-sUXMzkh-jI');
