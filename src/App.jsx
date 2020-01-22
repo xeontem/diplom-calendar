@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import random from 'lodash/random';
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import FontIcon from 'react-md/lib/FontIcons';
 import ListItem from 'react-md/lib/Lists/ListItem';
@@ -24,7 +25,8 @@ import { showToast, removeToast } from './store/actions/toast-actions';
 import { _closeSaveMonth } from './instruments/emptyEventOpenClose';
 import { capitalise, getEmptyEvent } from './instruments/utils';
 import { apiCallForHerokuDB } from './instruments/fetching';
-import { getEvents, login, logout, onAuthStateChanged } from './services/firebase.service';
+import { getEvents, login, logout, onAuthStateChanged, updateEvent } from './services/firebase.service';
+import { LECTURES_TYPES } from './instruments/constants';
 import './App.css';
 
 const PAGES = [
@@ -56,9 +58,21 @@ export class App extends PureComponent {
   }
 
   _resetEvents = () => {
-    apiCallForHerokuDB('/reset').then(res => {
-      this.setState({resetted: true,
-        toast: [{text: res.mess}]});
+    // apiCallForHerokuDB('/reset').then(res => {
+    //   this.setState({resetted: true,
+    //     toast: [{text: res.mess}]});
+    // });
+    this.props.events.forEach(event => {
+      const building = random(1, 7);
+      const randTitleIndex = random(0, LECTURES_TYPES.length - 1);
+      const title = LECTURES_TYPES[randTitleIndex].value
+      const updated = {
+        ...event,
+        location: `бгуир корпус ${building}`,
+        title,
+        videoId: 'QPvYn0SoSGM'
+      };
+      updateEvent(updated);
     });
   }
 
@@ -163,6 +177,7 @@ const mapStateToProps = state => ({
   eventsLoading: state.globalState.eventsLoading,
   toasts: state.toastsReducer.toasts,
   isDialogOpen: state.dialogPopupReducer.isOpen,
+  events: state.globalState.events,
 });
 
 const mapDispatchToProps = dispatch => ({
