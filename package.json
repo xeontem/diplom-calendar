@@ -10,7 +10,7 @@
     "immutable": "^3.8.1",
     "md5": "^2.2.1",
     "modernizr": "^3.5.0",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.13.1",
     "npm-run-all": "^4.0.2",
     "ramda": "^0.26.1",
     "react": "^15.5.4",
